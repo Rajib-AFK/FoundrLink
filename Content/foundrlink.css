@@ -1,0 +1,589 @@
+/* FoundrLink Core Stylesheet - Matching Figma Design */
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+
+:root {
+    --fl-primary-dark: #0F172A;
+    --fl-primary-navy: #0B132B;
+    --fl-accent-teal: #4EE8C4;
+    --fl-accent-teal-dark: #10B981;
+    --fl-accent-blue: #0284C7;
+    --fl-bg-main: #F8FAFC;
+    --fl-bg-card: #FFFFFF;
+    --fl-border-color: #E2E8F0;
+    --fl-text-main: #0F172A;
+    --fl-text-muted: #64748B;
+    --fl-sidebar-width: 250px;
+}
+
+body {
+    font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--fl-bg-main);
+    color: var(--fl-text-main);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Base Typography & Helpers */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    color: var(--fl-text-main);
+}
+
+.text-teal {
+    color: var(--fl-accent-teal-dark) !important;
+}
+
+.bg-teal-subtle {
+    background-color: #ECFDF5 !important;
+    color: #065F46 !important;
+}
+
+/* Master Layout - Sidebar & Main Content */
+.fl-app-wrapper {
+    display: flex;
+    min-height: 100vh;
+    background-color: var(--fl-bg-main);
+}
+
+.fl-sidebar {
+    width: var(--fl-sidebar-width);
+    min-width: var(--fl-sidebar-width);
+    background-color: #FFFFFF;
+    border-right: 1px solid var(--fl-border-color);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 24px 16px;
+    z-index: 1000;
+}
+
+.fl-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 0 8px 24px 8px;
+    text-decoration: none;
+}
+
+.fl-brand-logo {
+    width: 36px;
+    height: 36px;
+    background: #0F172A;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #FFFFFF;
+    font-size: 20px;
+}
+
+.fl-brand-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #0F172A;
+    line-height: 1.1;
+    margin: 0;
+}
+
+.fl-brand-subtitle {
+    font-size: 0.75rem;
+    color: var(--fl-text-muted);
+    margin: 0;
+}
+
+.fl-nav-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fl-nav-item {
+    width: 100%;
+}
+
+.fl-nav-link {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #475569;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.fl-nav-link i {
+    font-size: 1.15rem;
+}
+
+.fl-nav-link:hover {
+    background-color: #F1F5F9;
+    color: #0F172A;
+}
+
+.fl-nav-link.active {
+    background-color: var(--fl-accent-teal);
+    color: #0F172A;
+    font-weight: 700;
+}
+
+.fl-sidebar-footer {
+    padding-top: 16px;
+    border-top: 1px solid var(--fl-border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.fl-user-badge {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px;
+    border-radius: 10px;
+    background-color: #F8FAFC;
+}
+
+.fl-avatar-sm {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #CBD5E1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 600;
+    color: #334155;
+    font-size: 0.85rem;
+    object-fit: cover;
+}
+
+/* Main Content Area */
+.fl-main-area {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    background-color: var(--fl-bg-main);
+}
+
+.fl-topbar {
+    height: 70px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid var(--fl-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 999;
+}
+
+.fl-search-box {
+    position: relative;
+    width: 380px;
+}
+
+.fl-search-box input {
+    width: 100%;
+    padding: 8px 16px 8px 40px;
+    border-radius: 8px;
+    border: 1px solid var(--fl-border-color);
+    background-color: #F8FAFC;
+    font-size: 0.9rem;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.fl-search-box input:focus {
+    border-color: #94A3B8;
+    background-color: #FFFFFF;
+}
+
+.fl-search-box i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #94A3B8;
+    font-size: 0.95rem;
+}
+
+.fl-topbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.fl-icon-btn {
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    border: 1px solid transparent;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #475569;
+    position: relative;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.fl-icon-btn:hover {
+    background-color: #F1F5F9;
+    color: #0F172A;
+}
+
+.fl-unread-dot {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 8px;
+    height: 8px;
+    background-color: #EF4444;
+    border-radius: 50%;
+    border: 2px solid #FFFFFF;
+}
+
+.fl-content-container {
+    padding: 32px;
+    flex: 1;
+}
+
+/* Cards & Widgets */
+.fl-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--fl-border-color);
+    border-radius: 14px;
+    padding: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    margin-bottom: 24px;
+}
+
+.fl-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+}
+
+.fl-stat-card {
+    background-color: #FFFFFF;
+    border: 1px solid var(--fl-border-color);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+
+.fl-stat-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fl-text-muted);
+    margin-bottom: 4px;
+}
+
+.fl-stat-value {
+    font-size: 1.85rem;
+    font-weight: 800;
+    color: #0F172A;
+    margin: 0;
+}
+
+.fl-stat-icon-wrapper {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.25rem;
+}
+
+/* Buttons */
+.btn-fl-primary {
+    background-color: #0F172A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: background-color 0.2s;
+}
+
+.btn-fl-primary:hover {
+    background-color: #1E293B;
+    color: #FFFFFF;
+}
+
+.btn-fl-teal {
+    background-color: #0D9488;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 8px 18px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+}
+
+.btn-fl-teal:hover {
+    background-color: #0F766E;
+    color: #FFFFFF;
+}
+
+.btn-fl-outline {
+    background-color: #FFFFFF;
+    color: #334155;
+    border: 1px solid var(--fl-border-color);
+    border-radius: 8px;
+    padding: 8px 16px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.btn-fl-outline:hover {
+    background-color: #F8FAFC;
+    border-color: #CBD5E1;
+    color: #0F172A;
+}
+
+/* Badges */
+.fl-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fl-badge-active {
+    background-color: #ECFDF5;
+    color: #059669;
+}
+
+.fl-badge-pending {
+    background-color: #FEF3C7;
+    color: #D97706;
+}
+
+.fl-badge-draft {
+    background-color: #F1F5F9;
+    color: #64748B;
+}
+
+.fl-badge-rejected {
+    background-color: #FEE2E2;
+    color: #DC2626;
+}
+
+.fl-badge-role-founder {
+    background-color: #EEF2FF;
+    color: #4F46E5;
+}
+
+.fl-badge-role-investor {
+    background-color: #F0FDF4;
+    color: #16A34A;
+}
+
+.fl-badge-role-technical {
+    background-color: #F1F5F9;
+    color: #475569;
+}
+
+/* Tables */
+.fl-table {
+    width: 100%;
+    margin-bottom: 0;
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.fl-table th {
+    background-color: #F8FAFC;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--fl-text-muted);
+    padding: 12px 16px;
+    border-top: 1px solid var(--fl-border-color);
+    border-bottom: 1px solid var(--fl-border-color);
+}
+
+.fl-table td {
+    padding: 16px;
+    vertical-align: middle;
+    border-bottom: 1px solid #F1F5F9;
+    font-size: 0.9rem;
+}
+
+.fl-table tr:hover td {
+    background-color: #FAFAFA;
+}
+
+/* Public & Landing Page Styles */
+.fl-landing-hero {
+    background-color: #000000;
+    color: #FFFFFF;
+    padding: 120px 24px 80px;
+    text-align: center;
+    background-image: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.15), transparent 70%);
+}
+
+.fl-landing-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    border-radius: 30px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    margin-bottom: 24px;
+}
+
+.fl-landing-title {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    max-width: 850px;
+    margin: 0 auto 24px;
+}
+
+.fl-landing-highlight {
+    color: #34D399;
+}
+
+.fl-landing-subtitle {
+    font-size: 1.15rem;
+    color: #94A3B8;
+    max-width: 650px;
+    margin: 0 auto 36px;
+    line-height: 1.6;
+}
+
+/* Chat & Messaging UI */
+.fl-chat-wrapper {
+    display: flex;
+    height: calc(100vh - 140px);
+    background: #FFFFFF;
+    border: 1px solid var(--fl-border-color);
+    border-radius: 14px;
+    overflow: hidden;
+}
+
+.fl-chat-sidebar {
+    width: 320px;
+    border-right: 1px solid var(--fl-border-color);
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-chat-thread-list {
+    flex: 1;
+    overflow-y: auto;
+}
+
+.fl-chat-thread-item {
+    display: flex;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid #F1F5F9;
+    cursor: pointer;
+    text-decoration: none;
+    color: inherit;
+    transition: background 0.15s;
+}
+
+.fl-chat-thread-item:hover, .fl-chat-thread-item.active {
+    background-color: #F8FAFC;
+    border-left: 3px solid var(--fl-accent-teal);
+}
+
+.fl-chat-window {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.fl-chat-header {
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--fl-border-color);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.fl-chat-messages {
+    flex: 1;
+    padding: 24px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fl-bubble-received {
+    align-self: flex-start;
+    max-width: 60%;
+    background-color: #F1F5F9;
+    color: #0F172A;
+    padding: 12px 16px;
+    border-radius: 14px 14px 14px 2px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.fl-bubble-sent {
+    align-self: flex-end;
+    max-width: 60%;
+    background-color: #0F172A;
+    color: #FFFFFF;
+    padding: 12px 16px;
+    border-radius: 14px 14px 2px 14px;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.fl-chat-input-bar {
+    padding: 16px 24px;
+    border-top: 1px solid var(--fl-border-color);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}

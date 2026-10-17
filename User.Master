@@ -1,0 +1,157 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="User.master.cs" Inherits="FoundrLink.UserMaster" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - FoundrLink</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/Content/foundrlink.css" rel="stylesheet" />
+
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body>
+    <form runat="server" class="fl-app-wrapper">
+        <asp:ScriptManager runat="server" EnableCdn="false" />
+
+        <!-- Left Sidebar Navigation -->
+        <aside class="fl-sidebar">
+            <div>
+                <!-- Brand Header -->
+                <a class="fl-brand" runat="server" href="~/Dashboard.aspx">
+                    <div class="fl-brand-logo">
+                        <i class="bi bi-hexagon-fill text-teal"></i>
+                    </div>
+                    <div>
+                        <h1 class="fl-brand-title">FoundrLink</h1>
+                        <p class="fl-brand-subtitle">Founder Discovery</p>
+                    </div>
+                </a>
+
+                <!-- Primary Nav -->
+                <ul class="fl-nav-list mt-3">
+                    <li class="fl-nav-item">
+                        <a id="navDashboard" runat="server" href="~/Dashboard.aspx" class="fl-nav-link">
+                            <i class="bi bi-grid-fill"></i>
+                            <span>Dashboard</span>
+                        </a>
+                    </li>
+                    <li class="fl-nav-item">
+                        <a id="navDiscover" runat="server" href="~/ExploreStartups.aspx" class="fl-nav-link">
+                            <i class="bi bi-search"></i>
+                            <span>Discover</span>
+                        </a>
+                    </li>
+                    <li class="fl-nav-item">
+                        <a id="navFounders" runat="server" href="~/FindCoFounders.aspx" class="fl-nav-link">
+                            <i class="bi bi-people-fill"></i>
+                            <span>Founders</span>
+                        </a>
+                    </li>
+                    <li class="fl-nav-item">
+                        <a id="navStartups" runat="server" href="~/ManageStartup.aspx" class="fl-nav-link">
+                            <i class="bi bi-briefcase-fill"></i>
+                            <span>Startups</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Sidebar Footer -->
+            <div class="fl-sidebar-footer">
+                <ul class="fl-nav-list">
+                    <li class="fl-nav-item">
+                        <a id="navSettings" runat="server" href="~/Settings.aspx" class="fl-nav-link">
+                            <i class="bi bi-gear"></i>
+                            <span>Settings</span>
+                        </a>
+                    </li>
+                    <li class="fl-nav-item">
+                        <a id="navSupport" runat="server" href="~/Support.aspx" class="fl-nav-link">
+                            <i class="bi bi-question-circle"></i>
+                            <span>Support</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <!-- User profile badge at bottom -->
+                <div class="fl-user-badge d-flex align-items-center justify-content-between">
+                    <a runat="server" href="~/Profile.aspx" class="d-flex align-items-center gap-2 text-decoration-none text-dark flex-grow-1">
+                        <asp:Image ID="imgSidebarAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="~/Images/default-avatar.png" />
+                        <div class="overflow-hidden">
+                            <div class="fw-bold text-truncate small">
+                                <asp:Literal ID="litSidebarUserName" runat="server" Text="Founder User" />
+                            </div>
+                            <div class="text-muted small" style="font-size: 0.72rem;">
+                                <asp:Literal ID="litSidebarUserRole" runat="server" Text="Founder" />
+                            </div>
+                        </div>
+                    </a>
+                    <asp:LinkButton ID="btnSidebarLogout" runat="server" CssClass="text-secondary p-1" OnClick="btnSidebarLogout_Click" ToolTip="Log out">
+                        <i class="bi bi-box-arrow-right"></i>
+                    </asp:LinkButton>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <div class="fl-main-area">
+            <!-- Topbar Header -->
+            <header class="fl-topbar">
+                <div class="fl-search-box">
+                    <i class="bi bi-search"></i>
+                    <asp:TextBox ID="txtSearch" runat="server" placeholder="Search platform..." OnTextChanged="txtSearch_TextChanged" AutoPostBack="true" />
+                </div>
+
+                <div class="fl-topbar-actions">
+                    <!-- Notifications -->
+                    <a runat="server" href="~/Notifications.aspx" class="fl-icon-btn" title="Notifications">
+                        <i class="bi bi-bell fs-5"></i>
+                        <asp:Panel ID="pnlUnreadNotif" runat="server" CssClass="fl-unread-dot" Visible="false" />
+                    </a>
+
+                    <!-- Messages -->
+                    <a runat="server" href="~/Messages.aspx" class="fl-icon-btn" title="Messages">
+                        <i class="bi bi-chat-text fs-5"></i>
+                        <asp:Panel ID="pnlUnreadMsg" runat="server" CssClass="fl-unread-dot" Visible="false" />
+                    </a>
+
+                    <!-- Create Startup Button -->
+                    <a runat="server" href="~/ManageStartup.aspx" class="btn btn-fl-primary">
+                        <i class="bi bi-plus-lg"></i>
+                        <span>Create Startup</span>
+                    </a>
+
+                    <!-- User Profile Avatar -->
+                    <a runat="server" href="~/Profile.aspx" class="d-flex align-items-center gap-2 text-decoration-none text-dark">
+                        <asp:Image ID="imgTopbarAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="~/Images/default-avatar.png" />
+                        <div class="d-none d-md-block text-start">
+                            <div class="fw-bold small lh-1">
+                                <asp:Literal ID="litTopbarUserName" runat="server" Text="Founder User" />
+                            </div>
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <asp:Literal ID="litTopbarRole" runat="server" Text="Entrepreneur" />
+                            </small>
+                        </div>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Page Body Content -->
+            <main class="fl-content-container">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server">
+                </asp:ContentPlaceHolder>
+            </main>
+        </div>
+    </form>
+
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src="~/Scripts/chart.umd.min.js"></script>
+    <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
+    </asp:ContentPlaceHolder>
+</body>
+</html>

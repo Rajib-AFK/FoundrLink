@@ -1,0 +1,128 @@
+<%@ Master Language="C#" AutoEventWireup="true" CodeBehind="Site.master.cs" Inherits="FoundrLink.SiteMaster" %>
+
+<!DOCTYPE html>
+<html lang="en">
+<head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title><%: Page.Title %> - FoundrLink</title>
+
+    <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
+    <link href="~/Content/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/Content/foundrlink.css" rel="stylesheet" />
+
+    <asp:ContentPlaceHolder ID="HeadContent" runat="server">
+    </asp:ContentPlaceHolder>
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <form runat="server" class="d-flex flex-column flex-grow-1">
+        <asp:ScriptManager runat="server" EnableCdn="false" />
+
+        <!-- Public Top Navigation -->
+        <header class="navbar navbar-expand-lg navbar-dark bg-black py-3 border-bottom border-dark">
+            <div class="container">
+                <a class="navbar-brand d-flex align-items-center gap-2 fw-bold fs-4 text-white" runat="server" href="~/">
+                    <div class="fl-brand-logo bg-teal-subtle text-dark fs-5">
+                        <i class="bi bi-diagram-3-fill"></i>
+                    </div>
+                    <span>Foundr<span class="text-teal">Link</span></span>
+                </a>
+                
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#publicNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="publicNav">
+                    <ul class="navbar-nav mx-auto mb-2 mb-lg-0 gap-3">
+                        <li class="nav-item">
+                            <a class="nav-link text-light text-opacity-75" runat="server" href="~/">Home</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light text-opacity-75" runat="server" href="~/ExploreStartups.aspx">Explore Startups</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-light text-opacity-75" runat="server" href="~/FindCoFounders.aspx">Find Co-Founders</a>
+                        </li>
+                    </ul>
+
+                    <div class="d-flex align-items-center gap-3">
+                        <asp:PlaceHolder ID="phAnonymous" runat="server">
+                            <a class="nav-link text-white fw-semibold px-2" runat="server" href="~/Login.aspx">Log In</a>
+                            <a class="btn btn-fl-teal px-4" runat="server" href="~/Register.aspx">Join Free</a>
+                        </asp:PlaceHolder>
+                        <asp:PlaceHolder ID="phLoggedIn" runat="server" Visible="false">
+                            <a class="btn btn-fl-teal" runat="server" href="~/Dashboard.aspx">Go to Dashboard</a>
+                            <asp:LinkButton ID="btnLogout" runat="server" CssClass="btn btn-outline-light btn-sm" OnClick="btnLogout_Click">Logout</asp:LinkButton>
+                        </asp:PlaceHolder>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-grow-1">
+            <asp:ContentPlaceHolder ID="MainContent" runat="server">
+            </asp:ContentPlaceHolder>
+        </main>
+
+        <!-- Public Footer -->
+        <footer class="bg-black text-white py-5 border-top border-dark mt-auto">
+            <div class="container">
+                <div class="row g-4 justify-content-between mb-5">
+                    <div class="col-lg-4">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <div class="fl-brand-logo bg-teal-subtle text-dark fs-6">
+                                <i class="bi bi-diagram-3-fill"></i>
+                            </div>
+                            <span class="fw-bold fs-5">FoundrLink</span>
+                        </div>
+                        <p class="text-secondary small mb-0 pe-lg-4">
+                            Engineering serendipity for the top percentile of global builders and backers.
+                        </p>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <h6 class="fw-bold text-uppercase fs-7 tracking-wider mb-3 text-light">Platform</h6>
+                        <ul class="list-unstyled text-secondary small d-flex flex-direction-column gap-2">
+                            <li><a href="ExploreStartups.aspx" class="text-secondary text-decoration-none">For Founders</a></li>
+                            <li><a href="ExploreStartups.aspx" class="text-secondary text-decoration-none">For Investors</a></li>
+                            <li><a href="FindCoFounders.aspx" class="text-secondary text-decoration-none">Matching Algorithm</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <h6 class="fw-bold text-uppercase fs-7 tracking-wider mb-3 text-light">Resources</h6>
+                        <ul class="list-unstyled text-secondary small d-flex flex-direction-column gap-2">
+                            <li><a href="#" class="text-secondary text-decoration-none">Deal Flow Reports</a></li>
+                            <li><a href="#" class="text-secondary text-decoration-none">Term Sheet Templates</a></li>
+                            <li><a href="#" class="text-secondary text-decoration-none">Due Diligence Checklist</a></li>
+                        </ul>
+                    </div>
+
+                    <div class="col-6 col-md-2">
+                        <h6 class="fw-bold text-uppercase fs-7 tracking-wider mb-3 text-light">Company</h6>
+                        <ul class="list-unstyled text-secondary small d-flex flex-direction-column gap-2">
+                            <li><a href="#" class="text-secondary text-decoration-none">About Us</a></li>
+                            <li><a href="#" class="text-secondary text-decoration-none">Privacy Policy</a></li>
+                            <li><a href="#" class="text-secondary text-decoration-none">Terms of Service</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="d-flex flex-wrap justify-content-between align-items-center pt-4 border-top border-secondary border-opacity-25 text-secondary small">
+                    <p class="mb-0">&copy; <%: DateTime.Now.Year %> FoundrLink Inc. All rights reserved.</p>
+                    <div class="d-flex gap-3">
+                        <a href="#" class="text-secondary"><i class="bi bi-twitter-x"></i></a>
+                        <a href="#" class="text-secondary"><i class="bi bi-linkedin"></i></a>
+                        <a href="#" class="text-secondary"><i class="bi bi-envelope"></i></a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+    </form>
+
+    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
+    </asp:ContentPlaceHolder>
+</body>
+</html>
