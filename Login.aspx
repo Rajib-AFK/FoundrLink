@@ -107,7 +107,7 @@
                     <label class="form-label small fw-semibold text-dark">Password</label>
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-lock"></i></span>
-                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control border-start-0 ps-0" TextMode="Password" placeholder="••••••••" />
+                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control border-start-0 ps-0" TextMode="Password" placeholder="Enter your password" />
                     </div>
                     <asp:RequiredFieldValidator ID="rfvPassword" runat="server" ControlToValidate="txtPassword" ErrorMessage="Password is required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgLogin" />
                 </div>

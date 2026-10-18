@@ -114,12 +114,12 @@
                     <div class="row g-2 mb-3">
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold text-dark mb-1">Password</label>
-                            <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" />
+                            <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="Create a password" />
                             <asp:RequiredFieldValidator ID="rfvPassword" runat="server" ControlToValidate="txtPassword" ErrorMessage="Password required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                         </div>
                         <div class="col-md-6">
                             <label class="form-label small fw-semibold text-dark mb-1">Confirm Password</label>
-                            <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" />
+                            <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="Confirm password" />
                             <asp:RequiredFieldValidator ID="rfvConfirm" runat="server" ControlToValidate="txtConfirmPassword" ErrorMessage="Confirm password required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                             <asp:CompareValidator ID="cvPasswords" runat="server" ControlToValidate="txtConfirmPassword" ControlToCompare="txtPassword" ErrorMessage="Passwords do not match." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                         </div>

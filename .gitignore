@@ -441,3 +441,6 @@ Database.df
 *.ldf
 File Uploading/
 [Ff]ile [Uu]ploading/
+
+/docs/
+eval.md
