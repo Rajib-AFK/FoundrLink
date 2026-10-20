@@ -2,58 +2,65 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
-        .fl-notif-item {
+        .fl-notif-card {
             background: #FFFFFF;
             border: 1px solid var(--fl-border-color);
-            border-radius: 12px;
-            padding: 18px 24px;
-            margin-bottom: 12px;
+            border-radius: var(--fl-radius-card);
+            padding: 20px 24px;
+            margin-bottom: 16px;
             display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            transition: all 0.2s ease;
+            align-items: center;
+            justify-content: space-between;
+            transition: all 0.15s ease;
         }
-        .fl-notif-item:hover {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.04);
+        .fl-notif-card:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
             border-color: #CBD5E1;
         }
-        .fl-notif-item.unread {
-            background: #F8FAFC;
-            border-left: 4px solid var(--fl-accent-teal);
+        .fl-notif-card.unread {
+            background: #FFFFFF;
+            border-left: 4px solid #006591;
         }
-        .fl-notif-icon {
+        .fl-notif-icon-circle {
             width: 44px;
             height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 1.25rem;
+            font-size: 1.15rem;
             flex-shrink: 0;
+        }
+        .fl-notif-icon-blue {
+            background-color: #E0F2FE;
+            color: #0284C7;
+        }
+        .fl-notif-icon-gray {
+            background-color: #F1F5F9;
+            color: #475569;
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="row mb-4 align-items-center">
-        <div class="col-md-8">
-            <h2 class="fw-bold fs-3 text-dark mb-1">Notifications</h2>
-            <p class="text-muted mb-0">Stay updated on your startup matches, team requests, and platform activity.</p>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold fs-3 text-dark mb-0" style="font-size: 2rem; letter-spacing: -0.02em;">Notifications</h2>
         </div>
-        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-            <asp:LinkButton ID="btnMarkAllRead" runat="server" CssClass="btn btn-outline-secondary btn-sm" OnClick="btnMarkAllRead_Click">
-                <i class="bi bi-check2-all me-1"></i> Mark all as read
+        <div>
+            <asp:LinkButton ID="btnMarkAllRead" runat="server" CssClass="btn-fl-outline" OnClick="btnMarkAllRead_Click" style="font-size: 0.82rem; padding: 7px 16px;">
+                Mark all as read
             </asp:LinkButton>
         </div>
     </div>
 
     <!-- Filter Pills -->
     <div class="d-flex flex-wrap gap-2 mb-4">
-        <asp:LinkButton ID="btnFilterAll" runat="server" CssClass="btn btn-sm btn-dark rounded-pill px-3" CommandArgument="All" OnClick="Filter_Click">All</asp:LinkButton>
-        <asp:LinkButton ID="btnFilterUnread" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3" CommandArgument="Unread" OnClick="Filter_Click">Unread</asp:LinkButton>
-        <asp:LinkButton ID="btnFilterRequests" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3" CommandArgument="Requests" OnClick="Filter_Click">Requests</asp:LinkButton>
-        <asp:LinkButton ID="btnFilterMatches" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3" CommandArgument="Matches" OnClick="Filter_Click">Matches</asp:LinkButton>
-        <asp:LinkButton ID="btnFilterActivity" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3" CommandArgument="Activity" OnClick="Filter_Click">Activity</asp:LinkButton>
+        <asp:LinkButton ID="btnFilterAll" runat="server" CssClass="btn btn-sm btn-dark rounded-pill px-3 py-1 fw-medium" CommandArgument="All" OnClick="Filter_Click" style="font-size: 0.8rem;">All</asp:LinkButton>
+        <asp:LinkButton ID="btnFilterUnread" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-medium" CommandArgument="Unread" OnClick="Filter_Click" style="font-size: 0.8rem; border-color: #E2E8F0; color: #475569;">Unread</asp:LinkButton>
+        <asp:LinkButton ID="btnFilterRequests" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-medium" CommandArgument="Requests" OnClick="Filter_Click" style="font-size: 0.8rem; border-color: #E2E8F0; color: #475569;">Requests</asp:LinkButton>
+        <asp:LinkButton ID="btnFilterMatches" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-medium" CommandArgument="Matches" OnClick="Filter_Click" style="font-size: 0.8rem; border-color: #E2E8F0; color: #475569;">Matches</asp:LinkButton>
+        <asp:LinkButton ID="btnFilterActivity" runat="server" CssClass="btn btn-sm btn-outline-secondary rounded-pill px-3 py-1 fw-medium" CommandArgument="Activity" OnClick="Filter_Click" style="font-size: 0.8rem; border-color: #E2E8F0; color: #475569;">Activity</asp:LinkButton>
     </div>
 
     <asp:Panel ID="pnlSuccessAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show mb-4" role="alert">
@@ -65,29 +72,27 @@
     <div class="fl-notif-container">
         <asp:Repeater ID="rptNotifications" runat="server" OnItemCommand="rptNotifications_ItemCommand">
             <ItemTemplate>
-                <div class='<%# "fl-notif-item " + (Convert.ToBoolean(Eval("IsRead")) ? "" : "unread") %>'>
-                    <div class='<%# "fl-notif-icon " + GetIconClass(Eval("NotificationType").ToString()) %>'>
-                        <i class='<%# GetIcon(Eval("NotificationType").ToString()) %>'></i>
-                    </div>
-
-                    <div class="flex-grow-1">
-                        <div class="d-flex justify-content-between align-items-center mb-1">
-                            <h6 class="fw-bold text-dark mb-0"><%# Eval("Title") %></h6>
-                            <span class="text-muted small" style="font-size: 0.75rem;"><%# FormatTime(Eval("CreatedAt")) %></span>
+                <div class='<%# "fl-notif-card " + (Convert.ToBoolean(Eval("IsRead")) ? "" : "unread") %>'>
+                    <div class="d-flex align-items-center gap-3 flex-grow-1">
+                        <div class='<%# "fl-notif-icon-circle " + (Convert.ToBoolean(Eval("ActionRequired")) ? "fl-notif-icon-blue" : "fl-notif-icon-gray") %>'>
+                            <i class='<%# GetIcon(Eval("NotificationType").ToString()) %>'></i>
                         </div>
-                        <p class="text-secondary small mb-2"><%# Eval("Message") %></p>
 
-                        <%# Convert.ToBoolean(Eval("ActionRequired")) ? @"
-                            <div class='d-flex gap-2 mt-2'>
-                                <asp:LinkButton runat='server' CommandName='Accept' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-fl-teal btn-sm px-3'>Accept</asp:LinkButton>
-                                <asp:LinkButton runat='server' CommandName='Decline' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-outline-secondary btn-sm px-3'>Decline</asp:LinkButton>
-                            </div>
-                        " : "" %>
+                        <div>
+                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;"><%# Eval("Title") %></div>
+                            <%# Convert.ToBoolean(Eval("ActionRequired")) ? @"
+                                <div class='d-flex gap-2 mt-2'>
+                                    <asp:LinkButton runat='server' CommandName='Accept' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-sm text-white px-3 fw-semibold' style='background:#006591; border-radius:6px; font-size:0.8rem;'>Accept</asp:LinkButton>
+                                    <asp:LinkButton runat='server' CommandName='Decline' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-sm btn-outline-secondary px-3 fw-semibold' style='border-radius:6px; font-size:0.8rem; border-color:#CBD5E1; color:#0F172A;'>Decline</asp:LinkButton>
+                                </div>
+                            " : "" %>
+                        </div>
                     </div>
 
-                    <div>
-                        <asp:LinkButton ID="btnDismiss" runat="server" CommandName="Dismiss" CommandArgument='<%# Eval("NotificationId") %>' CssClass="btn btn-link text-muted p-0" title="Delete notification">
-                            <i class="bi bi-x-lg"></i>
+                    <div class="d-flex align-items-center gap-3">
+                        <span class="text-muted small" style="font-size: 0.8rem;"><%# FormatTime(Eval("CreatedAt")) %></span>
+                        <asp:LinkButton ID="btnDismiss" runat="server" CommandName="Dismiss" CommandArgument='<%# Eval("NotificationId") %>' CssClass="btn btn-link text-muted p-0" title="Delete notification" style="color: #CBD5E1 !important;">
+                            <i class="bi bi-x-lg" style="font-size: 0.75rem;"></i>
                         </asp:LinkButton>
                     </div>
                 </div>
@@ -95,7 +100,7 @@
         </asp:Repeater>
 
         <asp:Panel ID="pnlEmpty" runat="server" Visible="false" CssClass="text-center py-5 bg-white rounded-3 border">
-            <i class="bi bi-bell-slash text-muted" style="font-size: 3rem;"></i>
+            <i class="bi bi-bell-slash text-muted" style="font-size: 2.5rem;"></i>
             <h5 class="fw-bold text-dark mt-3">No Notifications</h5>
             <p class="text-muted small">You're all caught up! Check back later for new updates.</p>
         </asp:Panel>

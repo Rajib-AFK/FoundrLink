@@ -3,12 +3,25 @@
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
         .fl-detail-meta-table td {
-            padding: 12px 0;
+            padding: 14px 0;
             border-bottom: 1px solid #F1F5F9;
-            font-size: 0.9rem;
+            font-size: 0.88rem;
         }
         .fl-detail-meta-table tr:last-child td {
             border-bottom: none;
+        }
+        .fl-startup-icon-box {
+            width: 72px;
+            height: 72px;
+            border-radius: 12px;
+            border: 1px solid #E2E8F0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #FFFFFF;
+            overflow: hidden;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.03);
         }
     </style>
 </asp:Content>
@@ -18,34 +31,35 @@
         <!-- Left Column -->
         <div class="col-lg-8">
             <!-- Header Card -->
-            <div class="fl-card mb-4">
-                <div class="d-flex align-items-start gap-4 mb-3">
-                    <div class="fl-startup-logo-box" style="width: 72px; height: 72px;">
-                        <asp:Image ID="imgLogo" runat="server" CssClass="rounded-2" Width="64" Height="64" style="object-fit:cover;" ImageUrl="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=150" />
+            <div class="fl-card mb-4 p-4">
+                <div class="d-flex align-items-center gap-4 mb-3">
+                    <div class="fl-startup-icon-box">
+                        <asp:Image ID="imgLogo" runat="server" Width="64" Height="64" style="object-fit:cover; border-radius:8px;" ImageUrl="https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=150" />
                     </div>
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
-                            <h2 class="fw-bold mb-0 text-dark">
+                            <h2 class="fw-bold mb-0 text-dark" style="font-size: 2rem; letter-spacing: -0.02em;">
                                 <asp:Literal ID="litStartupName" runat="server" Text="EcoTrack" />
                             </h2>
-                            <span class="badge bg-light text-muted border text-uppercase fw-bold">
+                            <span class="badge bg-light text-muted border text-uppercase fw-bold px-2 py-1" style="font-size: 0.72rem; border-radius: 4px;">
                                 <asp:Literal ID="litStageBadge" runat="server" Text="MVP" />
                             </span>
                         </div>
-                        <p class="text-muted mb-2 fs-6">
+                        <p class="text-secondary mb-2" style="font-size: 0.95rem; color: #475569 !important;">
                             <asp:Literal ID="litTagline" runat="server" Text="Helping small businesses reduce environmental impact" />
                         </p>
-                        <div class="d-flex align-items-center gap-3 text-muted small">
-                            <span><i class="bi bi-shield-shaded me-1"></i><asp:Literal ID="litIndustry" runat="server" Text="Sustainability" /></span>
-                            <span><i class="bi bi-person me-1"></i><asp:Literal ID="litFounder" runat="server" Text="Rajibul Sheikh (Founder)" /></span>
+                        <div class="d-flex align-items-center gap-3 text-muted small" style="font-size: 0.8rem;">
+                            <span><i class="bi bi-shield-check me-1" style="color: #10B981;"></i><asp:Literal ID="litIndustry" runat="server" Text="Sustainability" /></span>
+                            <span>&bull;</span>
+                            <span><i class="bi bi-person me-1"></i><asp:Literal ID="litFounder" runat="server" Text="Rajibul Sheikh(Founder)" /></span>
                         </div>
                     </div>
                 </div>
 
-                <div class="pt-3 border-top border-slate-100 d-flex gap-3">
-                    <asp:Button ID="btnRequestJoin" runat="server" Text="Request to Join" CssClass="btn btn-fl-primary px-4" OnClick="btnRequestJoin_Click" />
-                    <asp:Button ID="btnContactFounder" runat="server" Text="Contact Founder" CssClass="btn btn-fl-outline px-4" OnClick="btnContactFounder_Click" />
-                    <a id="lnkTeamDetails" runat="server" href="#" class="btn btn-fl-outline ms-auto">
+                <div class="pt-4 border-top d-flex gap-3 align-items-center" style="border-color: #F1F5F9 !important;">
+                    <asp:Button ID="btnRequestJoin" runat="server" Text="Request to Join" CssClass="btn-fl-primary px-4" OnClick="btnRequestJoin_Click" />
+                    <asp:Button ID="btnContactFounder" runat="server" Text="Contact Founder" CssClass="btn-fl-outline px-4" OnClick="btnContactFounder_Click" />
+                    <a id="lnkTeamDetails" runat="server" href="#" class="btn-fl-outline ms-auto" style="display:none;">
                         <i class="bi bi-people me-1"></i> View Team &amp; Careers
                     </a>
                 </div>
@@ -56,12 +70,12 @@
             </div>
 
             <!-- About Card -->
-            <div class="fl-card mb-4">
+            <div class="fl-card mb-4 p-4">
                 <div class="d-flex align-items-center gap-2 mb-3">
                     <i class="bi bi-info-circle text-dark fs-5"></i>
-                    <h5 class="fw-bold mb-0">About</h5>
+                    <h5 class="fw-bold mb-0 text-dark">About</h5>
                 </div>
-                <div class="text-muted lh-base" style="font-size: 0.95rem;">
+                <div class="text-secondary lh-base" style="font-size: 0.92rem; color: #475569 !important; line-height: 1.65;">
                     <asp:Literal ID="litAbout" runat="server" Text="EcoTrack is an integrated platform designed to help small to medium-sized businesses seamlessly track, analyze, and offset their carbon footprint. We are building a comprehensive dashboard that integrates with existing supply chain management tools to provide real-time sustainability metrics." />
                 </div>
             </div>
@@ -69,24 +83,24 @@
             <!-- The Problem & The Solution -->
             <div class="row g-4">
                 <div class="col-md-6">
-                    <div class="fl-card h-100">
+                    <div class="fl-card h-100 p-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <i class="bi bi-exclamation-triangle text-dark fs-5"></i>
-                            <h5 class="fw-bold mb-0">The Problem</h5>
+                            <h5 class="fw-bold mb-0 text-dark">The Problem</h5>
                         </div>
-                        <p class="text-muted small mb-0 lh-base">
+                        <p class="text-secondary small mb-0 lh-base" style="font-size: 0.85rem; color: #475569 !important; line-height: 1.6;">
                             <asp:Literal ID="litProblem" runat="server" Text="SMBs face increasing pressure to report on environmental impact, but lack affordable, easy-to-use tools. Current solutions are enterprise-focused, expensive, and require specialized sustainability officers." />
                         </p>
                     </div>
                 </div>
 
                 <div class="col-md-6">
-                    <div class="fl-card h-100">
+                    <div class="fl-card h-100 p-4">
                         <div class="d-flex align-items-center gap-2 mb-3">
                             <i class="bi bi-lightbulb text-dark fs-5"></i>
-                            <h5 class="fw-bold mb-0">The Solution</h5>
+                            <h5 class="fw-bold mb-0 text-dark">The Solution</h5>
                         </div>
-                        <p class="text-muted small mb-0 lh-base">
+                        <p class="text-secondary small mb-0 lh-base" style="font-size: 0.85rem; color: #475569 !important; line-height: 1.6;">
                             <asp:Literal ID="litSolution" runat="server" Text="A streamlined, AI-driven web application that automatically calculates emissions based on basic input data and utility bills, providing actionable reduction strategies and certified offset options." />
                         </p>
                     </div>
@@ -96,8 +110,8 @@
 
         <!-- Right Column: Metadata Sidebar -->
         <div class="col-lg-4">
-            <div class="fl-card">
-                <div class="text-uppercase tracking-wider fw-bold small text-muted mb-3">
+            <div class="fl-card p-4">
+                <div class="text-uppercase tracking-wider fw-bold text-dark mb-3" style="font-size: 0.8rem; letter-spacing: 0.06em;">
                     STARTUP DETAILS
                 </div>
 

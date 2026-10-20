@@ -16,7 +16,7 @@ namespace FoundrLink
         {
             if (!Page.IsValid) return;
 
-            string email = Session["Email"]?.ToString() ?? "user@foundrlink.com";
+            string email = Session["Email"]?.ToString() ?? "user@ripaldesign.studio";
             string category = ddlCategory.SelectedValue;
             string priority = ddlPriority.SelectedValue;
             string subject = txtSubject.Text.Trim();

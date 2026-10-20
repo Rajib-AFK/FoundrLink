@@ -109,14 +109,15 @@ namespace FoundrLink
         protected void btnSkill_Click(object sender, EventArgs e)
         {
             var btn = (LinkButton)sender;
-            string arg = btn.CommandArgument;
-            if (_activeSkill == arg)
+            string skill = btn.CommandArgument;
+
+            if (_activeSkill.Equals(skill, StringComparison.OrdinalIgnoreCase))
             {
                 _activeSkill = "";
             }
             else
             {
-                _activeSkill = arg;
+                _activeSkill = skill;
             }
             ViewState["ActiveSkill"] = _activeSkill;
             LoadFounders();
@@ -169,11 +170,15 @@ namespace FoundrLink
             if (skills == null || skills == DBNull.Value) return "";
             string s = skills.ToString();
             var sb = new StringBuilder();
+            int idx = 0;
             foreach (var item in s.Split(new[] { ',', ';' }, StringSplitOptions.RemoveEmptyEntries))
             {
                 if (!string.IsNullOrWhiteSpace(item))
                 {
-                    sb.Append("<span class=\"badge bg-light text-dark border text-uppercase me-1 mb-1\" style=\"font-size: 0.7rem;\">" + Server.HtmlEncode(item.Trim()) + "</span>");
+                    string trimmed = item.Trim();
+                    string chipClass = (idx == 0 || trimmed.Equals("React", StringComparison.OrdinalIgnoreCase)) ? "fl-skill-chip-blue" : "fl-skill-chip-gray";
+                    sb.Append("<span class=\"" + chipClass + " me-1 mb-1\">" + Server.HtmlEncode(trimmed.ToUpperInvariant()) + "</span>");
+                    idx++;
                 }
             }
             return sb.ToString();

@@ -246,13 +246,39 @@ BEGIN
 END
 GO
 
--- Password hash: PBKDF2 of 'Password123'
-DECLARE @DefaultPwd NVARCHAR(512) = '10000.HbBo9Q4mDoQ19K4EfuEczw==.agGzYGJcPYaHJ7fjRBNzviLbh9pnUi+U4+OdzYQonrg=';
+-- Password hash: SHA256 of 'Password123'
+DECLARE @DefaultPwd NVARCHAR(512) = '008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601';
 
 -- Verify default users exist
-IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'admin@foundrlink.com')
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'admin@ripaldesign.studio')
 BEGIN
     INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
-    VALUES ('Admin User', 'admin@foundrlink.com', @DefaultPwd, 'Admin', 'Platform Administrator', 'Mumbai, India', 'FoundrLink System Administrator', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
+    VALUES ('Admin User', 'admin@ripaldesign.studio', @DefaultPwd, 'Admin', 'Platform Administrator', 'Mumbai, India', 'FoundrLink System Administrator', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
+END
+GO
+
+-- Default Test Accounts: founder, cofounder, investor
+DECLARE @DefaultPwd NVARCHAR(512) = '008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601';
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'founder@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Demo Founder', 'founder@ripaldesign.studio', @DefaultPwd, 'Founder', 'Startup Founder & CEO', 'Bengaluru, India', 'Building next-generation SaaS tools.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', 'TechNovate', 1, 'Active');
+END
+GO
+
+DECLARE @DefaultPwd NVARCHAR(512) = '008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601';
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'cofounder@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Demo Co-Founder', 'cofounder@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'Full Stack Architect', 'Hyderabad, India', 'Full-stack systems engineer passionate about AI and distributed cloud architecture.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
+END
+GO
+
+DECLARE @DefaultPwd NVARCHAR(512) = '008c70392e3abfbd0fa47bbc2ed96aa99bd49e159727fcba0f2e6abeb3a9d601';
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'investor@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Demo Investor', 'investor@ripaldesign.studio', @DefaultPwd, 'Investor', 'Managing Partner', 'Mumbai, India', 'Early-stage angel and seed investor focused on B2B SaaS and consumer tech.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', 'Apex Capital', 1, 'Active');
 END
 GO
