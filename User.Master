@@ -15,7 +15,7 @@
     </asp:ContentPlaceHolder>
 </head>
 <body>
-    <form runat="server" class="fl-app-wrapper">
+    <form runat="server" class="fl-app-wrapper" enctype="multipart/form-data">
         <asp:ScriptManager runat="server" EnableCdn="false" />
 
         <!-- Left Sidebar Navigation -->

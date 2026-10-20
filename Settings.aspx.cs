@@ -1,6 +1,8 @@
 using System;
 using System.Data;
 using System.Data.SqlClient;
+using System.IO;
+using System.Linq;
 using System.Web.UI;
 using FoundrLink.Helpers;
 
@@ -12,9 +14,19 @@ namespace FoundrLink
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserId"] != null)
+            int? loggedInUserId = SecurityHelper.GetCurrentUserId();
+            if (loggedInUserId.HasValue)
+            {
+                CurrentUserId = loggedInUserId.Value;
+            }
+            else if (Session["UserId"] != null)
             {
                 CurrentUserId = Convert.ToInt32(Session["UserId"]);
+            }
+
+            if (Page.Form != null)
+            {
+                Page.Form.Enctype = "multipart/form-data";
             }
 
             pnlAlertSuccess.Visible = false;
@@ -67,6 +79,72 @@ namespace FoundrLink
             string bio = txtBio.Text.Trim();
             string avatarUrl = txtAvatarUrl.Text.Trim();
 
+            // Handle file upload if a file was provided
+            if (fuAvatar.HasFile)
+            {
+                // 1. Validate file extension
+                string ext = Path.GetExtension(fuAvatar.FileName).ToLowerInvariant();
+                string[] allowedExtensions = { ".jpg", ".jpeg", ".png", ".webp", ".gif" };
+                if (!allowedExtensions.Contains(ext))
+                {
+                    litAlertError.Text = "Invalid file type. Only JPG, PNG, WebP, and GIF images are allowed.";
+                    pnlAlertError.Visible = true;
+                    return;
+                }
+
+                // 2. Validate MIME type
+                string contentType = fuAvatar.PostedFile.ContentType.ToLowerInvariant();
+                string[] allowedMimeTypes = { "image/jpeg", "image/pjpeg", "image/png", "image/x-png", "image/webp", "image/gif" };
+                if (!allowedMimeTypes.Contains(contentType))
+                {
+                    litAlertError.Text = "Invalid image content. Please choose a valid image file.";
+                    pnlAlertError.Visible = true;
+                    return;
+                }
+
+                // 3. Validate file size (max 5 MB)
+                const int maxSizeBytes = 5 * 1024 * 1024;
+                if (fuAvatar.PostedFile.ContentLength > maxSizeBytes)
+                {
+                    litAlertError.Text = "The uploaded image exceeds the maximum size limit of 5 MB.";
+                    pnlAlertError.Visible = true;
+                    return;
+                }
+
+                if (fuAvatar.PostedFile.ContentLength <= 0)
+                {
+                    litAlertError.Text = "The uploaded file is empty. Please select a valid image.";
+                    pnlAlertError.Visible = true;
+                    return;
+                }
+
+                // 4. Save file to disk
+                try
+                {
+                    string folderVirtualPath = "~/Images/Avatars/";
+                    string folderPhysicalPath = Server.MapPath(folderVirtualPath);
+                    if (!Directory.Exists(folderPhysicalPath))
+                    {
+                        Directory.CreateDirectory(folderPhysicalPath);
+                    }
+
+                    string fileName = string.Format("avatar_{0}_{1:N}{2}", CurrentUserId, Guid.NewGuid(), ext);
+                    string saveFullPath = Path.Combine(folderPhysicalPath, fileName);
+
+                    fuAvatar.SaveAs(saveFullPath);
+
+                    // Compute web-accessible path
+                    avatarUrl = ResolveUrl(folderVirtualPath + fileName);
+                    txtAvatarUrl.Text = avatarUrl;
+                }
+                catch (Exception ex)
+                {
+                    litAlertError.Text = "An error occurred while saving the profile image: " + ex.Message;
+                    pnlAlertError.Visible = true;
+                    return;
+                }
+            }
+
             // Check if email already used by someone else
             string checkEmailSql = "SELECT COUNT(1) FROM Users WHERE Email = @Email AND UserId <> @UserId";
             int exists = Convert.ToInt32(DbHelper.ExecuteScalar(checkEmailSql, new SqlParameter("@Email", email), new SqlParameter("@UserId", CurrentUserId)));
@@ -86,7 +164,8 @@ namespace FoundrLink
                     Location = @Location,
                     Role = @Role,
                     Bio = @Bio,
-                    AvatarUrl = @AvatarUrl
+                    AvatarUrl = @AvatarUrl,
+                    UpdatedAt = SYSUTCDATETIME()
                 WHERE UserId = @UserId
             ";
 
@@ -112,7 +191,7 @@ namespace FoundrLink
 
             imgAvatarPreview.ImageUrl = !string.IsNullOrEmpty(avatarUrl) ? avatarUrl : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120";
 
-            litAlertSuccess.Text = "Your profile information has been saved successfully.";
+            litAlertSuccess.Text = "Your profile information and photo have been saved successfully.";
             pnlAlertSuccess.Visible = true;
         }
 

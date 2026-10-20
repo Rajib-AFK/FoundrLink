@@ -103,6 +103,18 @@
             <div class="fl-settings-card">
                 <h4 class="fw-bold text-dark mb-4" style="font-size: 1.25rem;">Profile Information</h4>
 
+                <!-- Profile Photo Upload Section -->
+                <div class="d-flex flex-wrap align-items-center gap-4 mb-4 p-3 bg-light rounded-3 border">
+                    <asp:Image ID="imgAvatarPreview" runat="server" CssClass="rounded-circle border shadow-sm" Width="80" Height="80" style="object-fit: cover; flex-shrink: 0;" ImageUrl="~/Images/default-avatar.png" />
+                    <div class="flex-grow-1" style="min-width: 240px;">
+                        <label class="form-label small fw-semibold text-dark mb-1">Profile Photo</label>
+                        <asp:FileUpload ID="fuAvatar" runat="server" CssClass="form-control form-control-sm mb-1" accept=".jpg,.jpeg,.png,.webp,.gif" />
+                        <div class="text-muted small" style="font-size: 0.75rem;">
+                            Upload a JPG, PNG, or WebP image (max 5 MB).
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-3 mb-3">
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-dark mb-1">First Name</label>
@@ -132,7 +144,6 @@
 
                 <!-- Optional metadata controls hidden to preserve code-behind -->
                 <div style="display:none;">
-                    <asp:Image ID="imgAvatarPreview" runat="server" />
                     <asp:TextBox ID="txtAvatarUrl" runat="server" />
                     <asp:TextBox ID="txtTitle" runat="server" />
                     <asp:TextBox ID="txtLocation" runat="server" />

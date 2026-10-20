@@ -13,6 +13,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Panel pnlAlertError;
         protected global::System.Web.UI.WebControls.Literal litAlertError;
         protected global::System.Web.UI.WebControls.Image imgAvatarPreview;
+        protected global::System.Web.UI.WebControls.FileUpload fuAvatar;
         protected global::System.Web.UI.WebControls.TextBox txtAvatarUrl;
         protected global::System.Web.UI.WebControls.TextBox txtFullName;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvFullName;
