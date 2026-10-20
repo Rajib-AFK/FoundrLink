@@ -104,10 +104,10 @@ This guide resolves common runtime issues, database connection errors, IIS confi
 
 ### Q3: What are the default test login credentials?
 > **Answer:**  
-> - **Platform Admin:** `admin@foundrlink.com` | `Password123`
-> - **Founder:** `founder@foundrlink.com` | `Password123`
-> - **Co-Founder:** `cofounder@foundrlink.com` | `Password123`
-> - **Investor:** `investor@foundrlink.com` | `Password123`
+> - **Platform Admin:** `admin@ripaldesign.studio` | `Password123`
+> - **Founder:** `founder@ripaldesign.studio` | `Password123`
+> - **Co-Founder:** `cofounder@ripaldesign.studio` | `Password123`
+> - **Investor:** `investor@ripaldesign.studio` | `Password123`
 
 ---
 

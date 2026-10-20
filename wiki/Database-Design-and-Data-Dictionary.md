@@ -359,10 +359,10 @@ The database seed script (`Database/FoundrLink_Schema_And_Seed.sql`) automatical
 
 | Email | Role | Default Password | Description |
 |---|---|---|---|
-| `admin@foundrlink.com` | `Admin` | `Password123` | Platform Administrator with full access to `/Admin/` |
-| `founder@foundrlink.com` | `Founder` | `Password123` | Pre-configured startup founder profile with active startup listings |
-| `cofounder@foundrlink.com` | `Co-Founder` | `Password123` | Technical builder profile with completed skill matrices |
-| `investor@foundrlink.com` | `Investor` | `Password123` | Angel investor profile with deal flow access |
+| `admin@ripaldesign.studio` | `Admin` | `Password123` | Platform Administrator with full access to `/Admin/` |
+| `founder@ripaldesign.studio` | `Founder` | `Password123` | Pre-configured startup founder profile with active startup listings |
+| `cofounder@ripaldesign.studio` | `Co-Founder` | `Password123` | Technical builder profile with completed skill matrices |
+| `investor@ripaldesign.studio` | `Investor` | `Password123` | Angel investor profile with deal flow access |
 
 > [!IMPORTANT]
 > The default password hash stored in the seed script corresponds to `Password123`.

@@ -107,10 +107,10 @@ Use any of the following accounts to test role-specific experiences:
 
 | Role | Email | Password | Access Target |
 |---|---|---|---|
-| **Administrator** | `admin@foundrlink.com` | `Password123` | Redirects to `/Admin/Dashboard.aspx` |
-| **Startup Founder** | `founder@foundrlink.com` | `Password123` | Redirects to `/Dashboard.aspx` |
-| **Technical Co-Founder** | `cofounder@foundrlink.com` | `Password123` | Profile showcases skills and compatibility |
-| **Angel Investor** | `investor@foundrlink.com` | `Password123` | Access to deal flow and request pitch deck |
+| **Administrator** | `admin@ripaldesign.studio` | `Password123` | Redirects to `/Admin/Dashboard.aspx` |
+| **Startup Founder** | `founder@ripaldesign.studio` | `Password123` | Redirects to `/Dashboard.aspx` |
+| **Technical Co-Founder** | `cofounder@ripaldesign.studio` | `Password123` | Profile showcases skills and compatibility |
+| **Angel Investor** | `investor@ripaldesign.studio` | `Password123` | Access to deal flow and request pitch deck |
 
 ---
 
@@ -118,7 +118,7 @@ Use any of the following accounts to test role-specific experiences:
 
 - [ ] **Home Page Loads:** `http://localhost:50321/Default.aspx` displays hero banner, statistics (12,000+ Founders, ₹4.2Cr Deployed), and deal showcase cards.
 - [ ] **Registration Works:** Visit `/Register.aspx`, create a test account, and confirm record is inserted into `dbo.Users`.
-- [ ] **Admin Login Works:** Sign in with `admin@foundrlink.com` / `Password123` and verify `/Admin/Dashboard.aspx` renders KPI cards.
+- [ ] **Admin Login Works:** Sign in with `admin@ripaldesign.studio` / `Password123` and verify `/Admin/Dashboard.aspx` renders KPI cards.
 - [ ] **Startup Discovery:** Visit `/ExploreStartups.aspx`, apply an industry filter (e.g. `FinTech`), and ensure filtered cards render.
 - [ ] **Co-Founder Search:** Visit `/FindCoFounders.aspx` and test searching by role or tech stack.
 - [ ] **Direct Messaging:** Open `/Messages.aspx` and verify conversation threads load.

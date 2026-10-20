@@ -58,10 +58,10 @@ sqlcmd -S "(localdb)\MSSQLLocalDB" -i "Database\FoundrLink_Schema_And_Seed.sql"
 ### 4. Test Accounts
 | Role | Email | Password | Target Portal |
 |---|---|---|---|
-| **Platform Administrator** | `admin@foundrlink.com` | `Password123` | `/Admin/Dashboard.aspx` |
-| **Startup Founder** | `founder@foundrlink.com` | `Password123` | `/Dashboard.aspx` |
-| **Technical Co-Founder** | `cofounder@foundrlink.com` | `Password123` | `/Profile.aspx` |
-| **Angel Investor** | `investor@foundrlink.com` | `Password123` | `/ExploreStartups.aspx` |
+| **Platform Administrator** | `admin@ripaldesign.studio` | `Password123` | `/Admin/Dashboard.aspx` |
+| **Startup Founder** | `founder@ripaldesign.studio` | `Password123` | `/Dashboard.aspx` |
+| **Technical Co-Founder** | `cofounder@ripaldesign.studio` | `Password123` | `/Profile.aspx` |
+| **Angel Investor** | `investor@ripaldesign.studio` | `Password123` | `/ExploreStartups.aspx` |
 
 ---
 

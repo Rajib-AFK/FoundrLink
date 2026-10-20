@@ -125,7 +125,7 @@
                 NOW ACCEPTING Q3 COHORT APPLICATIONS
             </div>
 
-            <h1 class="fl-landing-title">
+            <h1 class="fl-landing-highlight">
                 Connect with the top 1% of <span class="fl-landing-highlight">founders &amp;<br />investors.</span>
             </h1>
 

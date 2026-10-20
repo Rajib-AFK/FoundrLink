@@ -128,7 +128,7 @@
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-dark mb-1">Email Address</label>
-                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" placeholder="jadas@example.com" TextMode="Email" style="height: 44px;" />
+                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" placeholder="alex@ripaldesign.studio" TextMode="Email" style="height: 44px;" />
                     <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" ErrorMessage="Email is required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                     <asp:RegularExpressionValidator ID="revEmail" runat="server" ControlToValidate="txtEmail" ValidationExpression="^[^@\s]+@[^@\s]+\.[^@\s]+$" ErrorMessage="Invalid email address format." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                 </div>

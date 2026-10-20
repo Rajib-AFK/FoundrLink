@@ -185,7 +185,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtNewEmail" runat="server" CssClass="form-control rounded-3" TextMode="Email" placeholder="jane@foundrlink.com" />
+                        <asp:TextBox ID="txtNewEmail" runat="server" CssClass="form-control rounded-3" TextMode="Email" placeholder="jane@ripaldesign.studio" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Temporary Password <span class="text-danger">*</span></label>
