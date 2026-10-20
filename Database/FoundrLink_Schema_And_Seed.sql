@@ -246,8 +246,8 @@ BEGIN
 END
 GO
 
--- Password hash: SHA256 of 'Password123'
-DECLARE @DefaultPwd NVARCHAR(512) = '772C1532675FF34B7974A81DDB076EF3B6E6C7CB6AC8644853E9A0041102B935';
+-- Password hash: PBKDF2 of 'Password123'
+DECLARE @DefaultPwd NVARCHAR(512) = '10000.HbBo9Q4mDoQ19K4EfuEczw==.agGzYGJcPYaHJ7fjRBNzviLbh9pnUi+U4+OdzYQonrg=';
 
 -- Verify default users exist
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'admin@foundrlink.com')

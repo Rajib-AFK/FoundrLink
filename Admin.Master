@@ -116,7 +116,7 @@
             </header>
 
             <main class="fl-content-container">
-                <asp:ContentPlaceHolder ID="AdminContent" runat="server">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server">
                 </asp:ContentPlaceHolder>
             </main>
         </div>
