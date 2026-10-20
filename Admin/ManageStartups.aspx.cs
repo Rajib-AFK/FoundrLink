@@ -11,6 +11,12 @@ namespace FoundrLink.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
+            {
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
+            }
+
             pnlAlert.Visible = false;
 
             if (!IsPostBack)
@@ -21,54 +27,64 @@ namespace FoundrLink.Admin
 
         private void LoadStartups()
         {
-            string search = txtSearch.Text.Trim();
-            string industry = ddlIndustry.SelectedValue;
-            string status = ddlStatus.SelectedValue;
-
-            string sql = @"
-                SELECT 
-                    s.StartupId,
-                    s.Name,
-                    s.Tagline,
-                    s.Industry,
-                    s.Stage,
-                    s.LogoUrl,
-                    s.FundingGoal,
-                    s.Status,
-                    u.FullName AS FounderName,
-                    u.Email AS FounderEmail
-                FROM Startups s
-                INNER JOIN Users u ON s.FounderId = u.UserId
-                WHERE 1=1
-            ";
-
-            if (!string.IsNullOrEmpty(search))
+            try
             {
-                sql += " AND (s.Name LIKE '%' + @Search + '%' OR s.Problem LIKE '%' + @Search + '%' OR s.Location LIKE '%' + @Search + '%' OR u.FullName LIKE '%' + @Search + '%')";
+                string search = txtSearch.Text.Trim();
+                string industry = ddlIndustry.SelectedValue;
+                string status = ddlStatus.SelectedValue;
+
+                string sql = @"
+                    SELECT 
+                        s.StartupId,
+                        s.Name,
+                        s.Tagline,
+                        s.Industry,
+                        s.Stage,
+                        s.LogoUrl,
+                        s.FundingGoal,
+                        s.Status,
+                        u.FullName AS FounderName,
+                        u.Email AS FounderEmail
+                    FROM dbo.Startups s
+                    INNER JOIN dbo.Users u ON s.FounderId = u.UserId
+                    WHERE 1=1
+                ";
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    sql += " AND (s.Name LIKE '%' + @Search + '%' OR s.Problem LIKE '%' + @Search + '%' OR s.Location LIKE '%' + @Search + '%' OR u.FullName LIKE '%' + @Search + '%')";
+                }
+
+                if (!string.IsNullOrEmpty(industry))
+                {
+                    sql += " AND s.Industry = @Industry";
+                }
+
+                if (!string.IsNullOrEmpty(status))
+                {
+                    sql += " AND s.Status = @Status";
+                }
+
+                sql += " ORDER BY s.StartupId DESC";
+
+                SqlParameter[] p = new SqlParameter[]
+                {
+                    new SqlParameter("@Search", search),
+                    new SqlParameter("@Industry", industry),
+                    new SqlParameter("@Status", status)
+                };
+
+                DataTable dt = DbHelper.ExecuteDataTable(sql, p);
+                rptStartups.DataSource = dt;
+                rptStartups.DataBind();
             }
-
-            if (!string.IsNullOrEmpty(industry))
+            catch (Exception ex)
             {
-                sql += " AND s.Industry = @Industry";
+                System.Diagnostics.Trace.TraceError("LoadStartups error: " + ex);
+                litAlertMsg.Text = "An error occurred while loading startups.";
+                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
+                pnlAlert.Visible = true;
             }
-
-            if (!string.IsNullOrEmpty(status))
-            {
-                sql += " AND s.Status = @Status";
-            }
-
-            sql += " ORDER BY s.StartupId DESC";
-
-            SqlParameter[] p = new SqlParameter[]
-            {
-                new SqlParameter("@Search", search),
-                new SqlParameter("@Industry", industry),
-                new SqlParameter("@Status", status)
-            };
-
-            DataTable dt = DbHelper.ExecuteDataTable(sql, p);
-            rptStartups.DataSource = dt;
-            rptStartups.DataBind();
         }
 
         protected void btnFilter_Click(object sender, EventArgs e)
@@ -86,28 +102,65 @@ namespace FoundrLink.Admin
 
         protected void rptStartups_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            if (!SecurityHelper.IsUserAdmin())
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+
             int startupId = Convert.ToInt32(e.CommandArgument);
 
             if (e.CommandName == "TogglePublish")
             {
-                string sql = "UPDATE Startups SET Status = CASE WHEN Status = 'Published' THEN 'Draft' ELSE 'Published' END WHERE StartupId = @Id";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
+                try
+                {
+                    string sql = "UPDATE dbo.Startups SET Status = CASE WHEN Status = 'Published' THEN 'Draft' ELSE 'Published' END WHERE StartupId = @Id";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
 
-                litAlertMsg.Text = "Startup visibility status updated successfully.";
-                pnlAlert.Visible = true;
-                LoadStartups();
+                    litAlertMsg.Text = "Startup visibility status updated successfully.";
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                    LoadStartups();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError("TogglePublish error: " + ex);
+                    litAlertMsg.Text = "An error occurred while updating startup status.";
+                    pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                }
             }
             else if (e.CommandName == "DeleteStartup")
             {
-                // Delete references first
-                DbHelper.ExecuteNonQuery("DELETE FROM TeamMembers WHERE StartupId = @Id", new SqlParameter("@Id", startupId));
-                DbHelper.ExecuteNonQuery("DELETE FROM OpenPositions WHERE StartupId = @Id", new SqlParameter("@Id", startupId));
-                DbHelper.ExecuteNonQuery("DELETE FROM ConnectionRequests WHERE StartupId = @Id", new SqlParameter("@Id", startupId));
-                DbHelper.ExecuteNonQuery("DELETE FROM Startups WHERE StartupId = @Id", new SqlParameter("@Id", startupId));
+                try
+                {
+                    DbHelper.ExecuteInTransaction((conn, trans) =>
+                    {
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = trans;
+                            cmd.CommandText = @"
+                                DELETE FROM dbo.ConnectionRequests WHERE StartupId = @Id;
+                                DELETE FROM dbo.TeamMembers WHERE StartupId = @Id;
+                                DELETE FROM dbo.OpenPositions WHERE StartupId = @Id;
+                                DELETE FROM dbo.Startups WHERE StartupId = @Id;";
+                            cmd.Parameters.Add(new SqlParameter("@Id", SqlDbType.Int) { Value = startupId });
+                            cmd.ExecuteNonQuery();
+                        }
+                    });
 
-                litAlertMsg.Text = "Startup and related records permanently deleted.";
-                pnlAlert.Visible = true;
-                LoadStartups();
+                    litAlertMsg.Text = "Startup and related records permanently deleted.";
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                    LoadStartups();
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.TraceError("DeleteStartup error: " + ex);
+                    litAlertMsg.Text = "An error occurred while deleting the startup.";
+                    pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                }
             }
         }
     }

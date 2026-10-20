@@ -17,8 +17,13 @@ namespace FoundrLink.Admin
         protected global::System.Web.UI.WebControls.Button btnReset;
         protected global::System.Web.UI.WebControls.Repeater rptUsers;
         protected global::System.Web.UI.WebControls.TextBox txtNewFullName;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNewFullName;
         protected global::System.Web.UI.WebControls.TextBox txtNewEmail;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNewEmail;
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revNewEmail;
         protected global::System.Web.UI.WebControls.TextBox txtNewPassword;
+        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNewPassword;
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revNewPassword;
         protected global::System.Web.UI.WebControls.DropDownList ddlNewRole;
         protected global::System.Web.UI.WebControls.DropDownList ddlNewVerified;
         protected global::System.Web.UI.WebControls.Button btnCreateUser;

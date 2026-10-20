@@ -12,6 +12,12 @@ namespace FoundrLink
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!SecurityHelper.IsUserLoggedIn())
+            {
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
+            }
+
             if (!string.IsNullOrEmpty(Request.QueryString["id"]) && int.TryParse(Request.QueryString["id"], out int sId))
             {
                 _startupId = sId;
@@ -68,44 +74,78 @@ namespace FoundrLink
                     litMetaTeamSize.Text = r["TeamSize"]?.ToString() + " Members";
                     litMetaLocation.Text = r["Location"]?.ToString() ?? "Remote";
                     litMetaCommitment.Text = r["Commitment"]?.ToString() ?? "Part-time / Equity";
+
+                    int? currentUserId = SecurityHelper.GetCurrentUserId();
+                    if (currentUserId.HasValue && currentUserId.Value == _founderId)
+                    {
+                        btnRequestJoin.Visible = false;
+                    }
+                }
+                else
+                {
+                    Response.Redirect("~/ExploreStartups.aspx");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("StartupDetails error: " + ex.Message);
+                System.Diagnostics.Trace.TraceError("StartupDetails error: " + ex);
             }
         }
 
         protected void btnRequestJoin_Click(object sender, EventArgs e)
         {
             int? currentUserId = SecurityHelper.GetCurrentUserId();
-            int senderId = currentUserId ?? 2;
+            if (!currentUserId.HasValue)
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+            int senderId = currentUserId.Value;
+
+            if (senderId == _founderId)
+            {
+                pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                pnlAlert.Visible = true;
+                litAlertMessage.Text = "You are the founder of this startup.";
+                return;
+            }
 
             try
             {
+                // Check for existing pending request
+                string checkSql = "SELECT COUNT(1) FROM dbo.CollaborationRequests WHERE SenderUserId = @SenderId AND StartupId = @StartupId AND Status = 'Pending'";
+                int existing = Convert.ToInt32(DbHelper.ExecuteScalar(checkSql,
+                    DbHelper.CreateParam("@SenderId", SqlDbType.Int, senderId),
+                    DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId)));
+
+                if (existing > 0)
+                {
+                    pnlAlert.CssClass = "alert alert-info py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                    litAlertMessage.Text = "You have already sent a request to join this startup.";
+                    return;
+                }
+
                 string insertReq = @"
                     INSERT INTO dbo.CollaborationRequests (SenderUserId, ReceiverUserId, StartupId, Message, Status, CreatedAt)
-                    VALUES (@SenderId, @ReceiverId, @StartupId, 'I am excited about this project and would love to join your founding team.', 'Pending', GETDATE());";
+                    VALUES (@SenderId, @ReceiverId, @StartupId, 'I am excited about this project and would love to join your founding team.', 'Pending', SYSUTCDATETIME());";
 
                 DbHelper.ExecuteNonQuery(insertReq,
                     DbHelper.CreateParam("@SenderId", SqlDbType.Int, senderId),
                     DbHelper.CreateParam("@ReceiverId", SqlDbType.Int, _founderId),
                     DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId));
 
+                pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
                 pnlAlert.Visible = true;
                 litAlertMessage.Text = "Your collaboration request has been submitted to the founder!";
             }
             catch (Exception ex)
             {
+                System.Diagnostics.Trace.TraceError("StartupDetails btnRequestJoin error: " + ex);
+                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
                 pnlAlert.Visible = true;
-                pnlAlert.CssClass = "alert alert-danger mt-3 py-2 small";
-                litAlertMessage.Text = "Unable to send request: " + ex.Message;
+                litAlertMessage.Text = "An error occurred while submitting your request. Please try again.";
             }
-        }
-
-        protected void btnContactFounder_Click(object sender, EventArgs e)
-        {
-            Response.Redirect("~/Messages.aspx?partnerId=" + _founderId);
         }
     }
 }

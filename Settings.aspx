@@ -176,6 +176,7 @@
                         <label class="form-label small fw-semibold text-dark mb-1">New Password</label>
                         <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
                         <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="New password is required." ValidationGroup="PasswordGroup" />
+                        <asp:RegularExpressionValidator ID="revNewPassword" runat="server" ControlToValidate="txtNewPassword" ValidationExpression=".{8,}" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Must be at least 8 characters." ValidationGroup="PasswordGroup" />
                     </div>
 
                     <div class="col-6">
@@ -191,17 +192,17 @@
                 </div>
             </div>
 
-            <!-- 3. Delete Account Card -->
+            <!-- 3. Deactivate Account Card -->
             <div class="fl-danger-card">
-                <h4 class="fw-bold text-danger mb-1" style="font-size: 1.25rem;">Delete Account</h4>
-                <p class="text-muted small mb-4">Once you delete your account, there is no going back. Please be certain.</p>
+                <h4 class="fw-bold text-danger mb-1" style="font-size: 1.25rem;">Deactivate Account</h4>
+                <p class="text-muted small mb-4">Temporarily disable your profile, hidden from discovery until reactivated.</p>
 
                 <div class="fl-deactivate-inner-box">
                     <div>
                         <div class="fw-bold text-dark small" style="font-size: 0.9rem;">Deactivate Account</div>
-                        <div class="text-muted small" style="font-size: 0.8rem;">Temporarily remove your data from FoundrLink.</div>
+                        <div class="text-muted small" style="font-size: 0.8rem;">Temporarily remove your data from FoundrLink discovery.</div>
                     </div>
-                    <asp:Button ID="btnDeactivate" runat="server" Text="Delete Account" CssClass="btn-fl-danger" OnClientClick="return confirm('Are you sure you want to deactivate your account?');" OnClick="btnDeactivate_Click" />
+                    <asp:Button ID="btnDeactivate" runat="server" Text="Deactivate Account" CssClass="btn-fl-danger" OnClientClick="return confirm('Are you sure you want to deactivate your account?');" OnClick="btnDeactivate_Click" />
                 </div>
             </div>
         </div>

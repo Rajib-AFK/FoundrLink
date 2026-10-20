@@ -11,10 +11,10 @@ namespace FoundrLink.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            // Verify admin authentication
-            if (Session["Role"]?.ToString() != "Admin")
+            if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
             {
-                // In demo/dev mode, allow viewing or redirect if needed
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
             }
 
             pnlAlert.Visible = false;
@@ -29,62 +29,101 @@ namespace FoundrLink.Admin
 
         private void LoadStats()
         {
-            // Total Users
-            object userCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Users");
-            litTotalUsers.Text = userCount != null ? Convert.ToInt32(userCount).ToString("N0") : "0";
+            try
+            {
+                // Total Users
+                object userCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Users");
+                litTotalUsers.Text = userCount != null ? Convert.ToInt32(userCount).ToString("N0") : "0";
 
-            // Active Startups
-            object startupCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Startups WHERE Status = 'Published'");
-            litActiveStartups.Text = startupCount != null ? Convert.ToInt32(startupCount).ToString("N0") : "0";
+                // Active Startups
+                object startupCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Startups WHERE Status = 'Published'");
+                litActiveStartups.Text = startupCount != null ? Convert.ToInt32(startupCount).ToString("N0") : "0";
 
-            // Pending Reports
-            object reportCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM ModerationReports WHERE Status = 'Pending'");
-            litPendingReports.Text = reportCount != null ? Convert.ToInt32(reportCount).ToString("N0") : "0";
+                // Pending Reports
+                object reportCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.ModerationReports WHERE Status = 'Pending'");
+                litPendingReports.Text = reportCount != null ? Convert.ToInt32(reportCount).ToString("N0") : "0";
 
-            // Total Connections
-            object connCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM ConnectionRequests");
-            litTotalConnections.Text = connCount != null ? Convert.ToInt32(connCount).ToString("N0") : "0";
+                // Total Connections
+                object connCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.ConnectionRequests");
+                litTotalConnections.Text = connCount != null ? Convert.ToInt32(connCount).ToString("N0") : "0";
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Admin LoadStats error: " + ex);
+            }
         }
 
         private void LoadStartups()
         {
-            string sql = "SELECT TOP 5 StartupId, Name, Industry, Stage, Location, LogoUrl, Status FROM Startups ORDER BY StartupId DESC";
-            DataTable dt = DbHelper.ExecuteDataTable(sql);
-            rptStartups.DataSource = dt;
-            rptStartups.DataBind();
+            try
+            {
+                string sql = "SELECT TOP 5 StartupId, Name, Industry, Stage, Location, LogoUrl, Status FROM dbo.Startups ORDER BY StartupId DESC";
+                DataTable dt = DbHelper.ExecuteDataTable(sql);
+                rptStartups.DataSource = dt;
+                rptStartups.DataBind();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Admin LoadStartups error: " + ex);
+            }
         }
 
         private void LoadUsers()
         {
-            string sql = "SELECT TOP 5 UserId, FullName, Email, Role, AvatarUrl, Status FROM Users ORDER BY UserId DESC";
-            DataTable dt = DbHelper.ExecuteDataTable(sql);
-            rptUsers.DataSource = dt;
-            rptUsers.DataBind();
+            try
+            {
+                string sql = "SELECT TOP 5 UserId, FullName, Email, Role, AvatarUrl, Status FROM dbo.Users ORDER BY UserId DESC";
+                DataTable dt = DbHelper.ExecuteDataTable(sql);
+                rptUsers.DataSource = dt;
+                rptUsers.DataBind();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("Admin LoadUsers error: " + ex);
+            }
         }
 
         protected void rptStartups_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            if (!SecurityHelper.IsUserAdmin())
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+
             int startupId = Convert.ToInt32(e.CommandArgument);
 
-            if (e.CommandName == "Approve")
+            try
             {
-                string sql = "UPDATE Startups SET Status = 'Published' WHERE StartupId = @Id";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
+                if (e.CommandName == "Approve")
+                {
+                    string sql = "UPDATE dbo.Startups SET Status = 'Published' WHERE StartupId = @Id";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
 
-                litAlertMsg.Text = "Startup status updated to <strong>Published</strong>.";
-                pnlAlert.Visible = true;
-                LoadStartups();
-                LoadStats();
+                    litAlertMsg.Text = "Startup status updated to <strong>Published</strong>.";
+                    pnlAlert.CssClass = "alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0";
+                    pnlAlert.Visible = true;
+                    LoadStartups();
+                    LoadStats();
+                }
+                else if (e.CommandName == "Reject")
+                {
+                    string sql = "UPDATE dbo.Startups SET Status = 'Draft' WHERE StartupId = @Id";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
+
+                    litAlertMsg.Text = "Startup status set to <strong>Draft</strong>.";
+                    pnlAlert.CssClass = "alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0";
+                    pnlAlert.Visible = true;
+                    LoadStartups();
+                    LoadStats();
+                }
             }
-            else if (e.CommandName == "Reject")
+            catch (Exception ex)
             {
-                string sql = "UPDATE Startups SET Status = 'Draft' WHERE StartupId = @Id";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
-
-                litAlertMsg.Text = "Startup status set to <strong>Draft</strong>.";
+                System.Diagnostics.Trace.TraceError("Admin rptStartups_ItemCommand error: " + ex);
+                litAlertMsg.Text = "An error occurred while updating startup status.";
+                pnlAlert.CssClass = "alert alert-danger alert-dismissible fade show rounded-3 shadow-sm border-0";
                 pnlAlert.Visible = true;
-                LoadStartups();
-                LoadStats();
             }
         }
     }

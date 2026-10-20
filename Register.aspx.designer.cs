@@ -14,6 +14,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvRole;
         protected global::System.Web.UI.WebControls.TextBox txtPassword;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvPassword;
+        protected global::System.Web.UI.WebControls.RegularExpressionValidator revPassword;
         protected global::System.Web.UI.WebControls.TextBox txtConfirmPassword;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvConfirm;
         protected global::System.Web.UI.WebControls.CompareValidator cvPasswords;

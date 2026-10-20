@@ -14,6 +14,12 @@ namespace FoundrLink
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!SecurityHelper.IsUserLoggedIn())
+            {
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
+            }
+
             if (!IsPostBack)
             {
                 LoadDashboardData();
@@ -23,7 +29,12 @@ namespace FoundrLink
         private void LoadDashboardData()
         {
             int? currentUserId = SecurityHelper.GetCurrentUserId();
-            int userId = currentUserId ?? 2; // Default to Rachit (UserId 2) if browsing demo
+            if (!currentUserId.HasValue)
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+            int userId = currentUserId.Value;
 
             try
             {
@@ -60,11 +71,11 @@ namespace FoundrLink
 
                 object msgObj = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Messages WHERE ReceiverId = @UserId",
                     DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
-                litActiveMessages.Text = (msgObj != null && Convert.ToInt32(msgObj) > 0) ? msgObj.ToString() : "12";
+                litActiveMessages.Text = (msgObj != null && Convert.ToInt32(msgObj) > 0) ? msgObj.ToString() : "0";
 
                 object teamObj = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.TeamMembers WHERE UserId = @UserId",
                     DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
-                litTeamsJoined.Text = (teamObj != null && Convert.ToInt32(teamObj) > 0) ? teamObj.ToString() : "2";
+                litTeamsJoined.Text = (teamObj != null && Convert.ToInt32(teamObj) > 0) ? teamObj.ToString() : "0";
 
                 // 3. Chart Data from ConnectionGrowth
                 string growthQuery = @"
@@ -128,7 +139,7 @@ namespace FoundrLink
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("Dashboard error: " + ex.Message);
+                System.Diagnostics.Trace.TraceError("Dashboard error: " + ex);
             }
         }
 
@@ -138,7 +149,14 @@ namespace FoundrLink
             {
                 int targetUserId = Convert.ToInt32(e.CommandArgument);
                 int? currentUserId = SecurityHelper.GetCurrentUserId();
-                int senderId = currentUserId ?? 2;
+                if (!currentUserId.HasValue)
+                {
+                    Response.Redirect("~/Login.aspx");
+                    return;
+                }
+                int senderId = currentUserId.Value;
+
+                if (senderId == targetUserId) return;
 
                 try
                 {
@@ -158,7 +176,7 @@ namespace FoundrLink
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Connection request error: " + ex.Message);
+                    System.Diagnostics.Trace.TraceError("Connection request error: " + ex);
                 }
             }
         }

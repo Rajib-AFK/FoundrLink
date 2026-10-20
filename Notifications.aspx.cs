@@ -9,7 +9,7 @@ namespace FoundrLink
 {
     public partial class Notifications : Page
     {
-        private int CurrentUserId = 1;
+        private int CurrentUserId;
         private string CurrentFilter
         {
             get => ViewState["CurrentFilter"] as string ?? "All";
@@ -18,10 +18,13 @@ namespace FoundrLink
 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if (Session["UserId"] != null)
+            int? currentUserId = SecurityHelper.GetCurrentUserId();
+            if (!currentUserId.HasValue)
             {
-                CurrentUserId = Convert.ToInt32(Session["UserId"]);
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
             }
+            CurrentUserId = currentUserId.Value;
 
             if (!IsPostBack)
             {
@@ -31,42 +34,49 @@ namespace FoundrLink
 
         private void LoadNotifications()
         {
-            string sql = "SELECT NotificationId, UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt FROM Notifications WHERE UserId = @UserId";
-
-            switch (CurrentFilter)
+            try
             {
-                case "Unread":
-                    sql += " AND IsRead = 0";
-                    break;
-                case "Requests":
-                    sql += " AND (NotificationType = 'Request' OR ActionRequired = 1)";
-                    break;
-                case "Matches":
-                    sql += " AND (NotificationType = 'Match' OR Title LIKE '%Match%')";
-                    break;
-                case "Activity":
-                    sql += " AND (NotificationType = 'Activity' OR NotificationType = 'System')";
-                    break;
+                string sql = "SELECT NotificationId, UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt FROM dbo.Notifications WHERE UserId = @UserId";
+
+                switch (CurrentFilter)
+                {
+                    case "Unread":
+                        sql += " AND IsRead = 0";
+                        break;
+                    case "Requests":
+                        sql += " AND (NotificationType = 'Request' OR ActionRequired = 1)";
+                        break;
+                    case "Matches":
+                        sql += " AND (NotificationType = 'Match' OR Title LIKE '%Match%')";
+                        break;
+                    case "Activity":
+                        sql += " AND (NotificationType = 'Activity' OR NotificationType = 'System')";
+                        break;
+                }
+
+                sql += " ORDER BY CreatedAt DESC";
+
+                DataTable dt = DbHelper.ExecuteDataTable(sql, new SqlParameter("@UserId", CurrentUserId));
+
+                if (dt.Rows.Count > 0)
+                {
+                    rptNotifications.Visible = true;
+                    pnlEmpty.Visible = false;
+                    rptNotifications.DataSource = dt;
+                    rptNotifications.DataBind();
+                }
+                else
+                {
+                    rptNotifications.Visible = false;
+                    pnlEmpty.Visible = true;
+                }
+
+                UpdateFilterPillStyles();
             }
-
-            sql += " ORDER BY CreatedAt DESC";
-
-            DataTable dt = DbHelper.ExecuteDataTable(sql, new SqlParameter("@UserId", CurrentUserId));
-
-            if (dt.Rows.Count > 0)
+            catch (Exception ex)
             {
-                rptNotifications.Visible = true;
-                pnlEmpty.Visible = false;
-                rptNotifications.DataSource = dt;
-                rptNotifications.DataBind();
+                System.Diagnostics.Trace.TraceError("LoadNotifications error: " + ex);
             }
-            else
-            {
-                rptNotifications.Visible = false;
-                pnlEmpty.Visible = true;
-            }
-
-            UpdateFilterPillStyles();
         }
 
         private void UpdateFilterPillStyles()
@@ -92,43 +102,57 @@ namespace FoundrLink
 
         protected void btnMarkAllRead_Click(object sender, EventArgs e)
         {
-            string sql = "UPDATE Notifications SET IsRead = 1 WHERE UserId = @UserId";
-            DbHelper.ExecuteNonQuery(sql, new SqlParameter("@UserId", CurrentUserId));
+            try
+            {
+                string sql = "UPDATE dbo.Notifications SET IsRead = 1 WHERE UserId = @UserId";
+                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@UserId", CurrentUserId));
 
-            litSuccessMsg.Text = "All notifications marked as read.";
-            pnlSuccessAlert.Visible = true;
+                litSuccessMsg.Text = "All notifications marked as read.";
+                pnlSuccessAlert.Visible = true;
 
-            LoadNotifications();
+                LoadNotifications();
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("btnMarkAllRead error: " + ex);
+            }
         }
 
         protected void rptNotifications_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
             int notifId = Convert.ToInt32(e.CommandArgument);
 
-            if (e.CommandName == "Dismiss")
+            try
             {
-                string sql = "DELETE FROM Notifications WHERE NotificationId = @Id AND UserId = @UserId";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
-                LoadNotifications();
-            }
-            else if (e.CommandName == "Accept")
-            {
-                // Mark notification read and add activity
-                string sql = "UPDATE Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
+                if (e.CommandName == "Dismiss")
+                {
+                    string sql = "DELETE FROM dbo.Notifications WHERE NotificationId = @Id AND UserId = @UserId";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
+                    LoadNotifications();
+                }
+                else if (e.CommandName == "Accept")
+                {
+                    // Mark notification read and add activity
+                    string sql = "UPDATE dbo.Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
 
-                litSuccessMsg.Text = "Request successfully accepted! They have been notified.";
-                pnlSuccessAlert.Visible = true;
-                LoadNotifications();
-            }
-            else if (e.CommandName == "Decline")
-            {
-                string sql = "UPDATE Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
+                    litSuccessMsg.Text = "Request successfully accepted! They have been notified.";
+                    pnlSuccessAlert.Visible = true;
+                    LoadNotifications();
+                }
+                else if (e.CommandName == "Decline")
+                {
+                    string sql = "UPDATE dbo.Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
 
-                litSuccessMsg.Text = "Request declined.";
-                pnlSuccessAlert.Visible = true;
-                LoadNotifications();
+                    litSuccessMsg.Text = "Request declined.";
+                    pnlSuccessAlert.Visible = true;
+                    LoadNotifications();
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("rptNotifications_ItemCommand error: " + ex);
             }
         }
 

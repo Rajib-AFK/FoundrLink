@@ -1,5 +1,6 @@
 using System;
 using System.Data;
+using System.Data.SqlClient;
 using System.IO;
 using System.Web.UI;
 using FoundrLink.Helpers;
@@ -12,6 +13,12 @@ namespace FoundrLink
 
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!SecurityHelper.IsUserLoggedIn())
+            {
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
+            }
+
             if (!string.IsNullOrEmpty(Request.QueryString["id"]) && int.TryParse(Request.QueryString["id"], out int sId))
             {
                 _startupId = sId;
@@ -31,11 +38,32 @@ namespace FoundrLink
         {
             try
             {
-                string sql = "SELECT * FROM dbo.Startups WHERE StartupId = @StartupId";
+                int? currentUserId = SecurityHelper.GetCurrentUserId();
+                if (!currentUserId.HasValue)
+                {
+                    Response.Redirect("~/Login.aspx");
+                    return;
+                }
+
+                string sql = @"
+                    SELECT StartupId, FounderId, Name, Tagline, Industry, Stage, LogoUrl, 
+                           ShortDescription, FullDescription, Problem, Solution, TeamSize, 
+                           RequiredSkills, Location, WebsiteUrl, Status 
+                    FROM dbo.Startups 
+                    WHERE StartupId = @StartupId";
+
                 DataTable dt = DbHelper.ExecuteDataTable(sql, DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId));
                 if (dt.Rows.Count > 0)
                 {
                     DataRow r = dt.Rows[0];
+                    int founderId = Convert.ToInt32(r["FounderId"]);
+
+                    if (founderId != currentUserId.Value && !SecurityHelper.IsUserAdmin())
+                    {
+                        Response.Redirect("~/ExploreStartups.aspx");
+                        return;
+                    }
+
                     txtName.Text = r["Name"]?.ToString();
                     txtTagline.Text = r["Tagline"]?.ToString();
                     if (ddlIndustry.Items.FindByValue(r["Industry"]?.ToString()) != null)
@@ -51,11 +79,20 @@ namespace FoundrLink
                     txtLocation.Text = r["Location"]?.ToString();
                     txtWebsite.Text = r["WebsiteUrl"]?.ToString();
                     litStatusBadge.Text = r["Status"]?.ToString() ?? "Draft";
+
+                    ViewState["CurrentLogoUrl"] = r["LogoUrl"]?.ToString();
+                }
+                else
+                {
+                    Response.Redirect("~/ExploreStartups.aspx");
                 }
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine("LoadStartup error: " + ex.Message);
+                System.Diagnostics.Trace.TraceError("LoadStartup error: " + ex);
+                litSuccess.Text = "An error occurred while loading the startup data.";
+                pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
+                pnlSuccess.Visible = true;
             }
         }
 
@@ -74,7 +111,31 @@ namespace FoundrLink
             if (!Page.IsValid) return;
 
             int? currentUserId = SecurityHelper.GetCurrentUserId();
-            int founderId = currentUserId ?? 2;
+            if (!currentUserId.HasValue)
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+            int founderId = currentUserId.Value;
+
+            if (_startupId.HasValue)
+            {
+                object ownerObj = DbHelper.ExecuteScalar("SELECT FounderId FROM dbo.Startups WHERE StartupId = @StartupId",
+                    DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId.Value));
+                if (ownerObj == null || ownerObj == DBNull.Value)
+                {
+                    litSuccess.Text = "The startup you are attempting to edit does not exist.";
+                    pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
+                    pnlSuccess.Visible = true;
+                    return;
+                }
+                int existingFounderId = Convert.ToInt32(ownerObj);
+                if (existingFounderId != founderId && !SecurityHelper.IsUserAdmin())
+                {
+                    Response.Redirect("~/ExploreStartups.aspx");
+                    return;
+                }
+            }
 
             string name = txtName.Text.Trim();
             string tagline = txtTagline.Text.Trim();
@@ -90,22 +151,29 @@ namespace FoundrLink
             string location = txtLocation.Text.Trim();
             string website = txtWebsite.Text.Trim();
 
-            string logoUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200";
+            string logoUrl = ViewState["CurrentLogoUrl"] as string ?? "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200";
+            string newlySavedFilePath = null;
 
             if (fuLogo.HasFile)
             {
-                try
+                if (!SecurityHelper.ValidateUploadedImage(fuLogo.PostedFile, 5 * 1024 * 1024, out string logoError))
                 {
-                    string ext = Path.GetExtension(fuLogo.FileName).ToLowerInvariant();
-                    if (ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".svg")
-                    {
-                        string fileName = "startup_" + Guid.NewGuid().ToString("N").Substring(0, 8) + ext;
-                        string savePath = Server.MapPath("~/Images/" + fileName);
-                        fuLogo.SaveAs(savePath);
-                        logoUrl = "Images/" + fileName;
-                    }
+                    litSuccess.Text = logoError;
+                    pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
+                    pnlSuccess.Visible = true;
+                    return;
                 }
-                catch { }
+
+                string ext = Path.GetExtension(fuLogo.FileName).ToLowerInvariant();
+                string fileName = "startup_" + Guid.NewGuid().ToString("N").Substring(0, 8) + ext;
+                string saveDir = Server.MapPath("~/Images/");
+                if (!Directory.Exists(saveDir))
+                {
+                    Directory.CreateDirectory(saveDir);
+                }
+                newlySavedFilePath = Path.Combine(saveDir, fileName);
+                fuLogo.SaveAs(newlySavedFilePath);
+                logoUrl = "Images/" + fileName;
             }
 
             try
@@ -116,6 +184,7 @@ namespace FoundrLink
                     string updateSql = @"
                         UPDATE dbo.Startups 
                         SET Name = @Name, Tagline = @Tagline, Industry = @Industry, Stage = @Stage,
+                            LogoUrl = @LogoUrl,
                             ShortDescription = @ShortDescription, FullDescription = @FullDescription,
                             Problem = @Problem, Solution = @Solution, TeamSize = @TeamSize,
                             RequiredSkills = @RequiredSkills, Location = @Location, WebsiteUrl = @WebsiteUrl,
@@ -127,6 +196,7 @@ namespace FoundrLink
                         DbHelper.CreateParam("@Tagline", SqlDbType.NVarChar, tagline),
                         DbHelper.CreateParam("@Industry", SqlDbType.NVarChar, industry),
                         DbHelper.CreateParam("@Stage", SqlDbType.NVarChar, stage),
+                        DbHelper.CreateParam("@LogoUrl", SqlDbType.NVarChar, logoUrl),
                         DbHelper.CreateParam("@ShortDescription", SqlDbType.NVarChar, shortDesc),
                         DbHelper.CreateParam("@FullDescription", SqlDbType.NVarChar, fullDesc),
                         DbHelper.CreateParam("@Problem", SqlDbType.NVarChar, problem),
@@ -139,7 +209,9 @@ namespace FoundrLink
                         DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId.Value)
                     );
 
+                    ViewState["CurrentLogoUrl"] = logoUrl;
                     litSuccess.Text = "Startup updated successfully!";
+                    pnlSuccess.CssClass = "alert alert-success py-2 small mb-4";
                     pnlSuccess.Visible = true;
                 }
                 else
@@ -190,7 +262,12 @@ namespace FoundrLink
             }
             catch (Exception ex)
             {
-                litSuccess.Text = "Error saving startup: " + ex.Message;
+                if (newlySavedFilePath != null && File.Exists(newlySavedFilePath))
+                {
+                    try { File.Delete(newlySavedFilePath); } catch { }
+                }
+                System.Diagnostics.Trace.TraceError("SaveStartup error: " + ex);
+                litSuccess.Text = "An unexpected error occurred while saving the startup. Please try again.";
                 pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
                 pnlSuccess.Visible = true;
             }
@@ -200,16 +277,44 @@ namespace FoundrLink
         {
             if (_startupId.HasValue)
             {
+                int? currentUserId = SecurityHelper.GetCurrentUserId();
+                if (!currentUserId.HasValue)
+                {
+                    Response.Redirect("~/Login.aspx");
+                    return;
+                }
+
                 try
                 {
-                    DbHelper.ExecuteNonQuery("DELETE FROM dbo.Startups WHERE StartupId = @StartupId",
+                    object ownerObj = DbHelper.ExecuteScalar("SELECT FounderId FROM dbo.Startups WHERE StartupId = @StartupId",
                         DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId.Value));
+                    if (ownerObj == null || (Convert.ToInt32(ownerObj) != currentUserId.Value && !SecurityHelper.IsUserAdmin()))
+                    {
+                        Response.Redirect("~/ExploreStartups.aspx");
+                        return;
+                    }
+
+                    DbHelper.ExecuteInTransaction((conn, trans) =>
+                    {
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = trans;
+                            cmd.CommandText = @"
+                                DELETE FROM dbo.ConnectionRequests WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.TeamMembers WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.OpenPositions WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.Startups WHERE StartupId = @StartupId;";
+                            cmd.Parameters.Add(new SqlParameter("@StartupId", SqlDbType.Int) { Value = _startupId.Value });
+                            cmd.ExecuteNonQuery();
+                        }
+                    });
 
                     Response.Redirect("~/ExploreStartups.aspx");
                 }
                 catch (Exception ex)
                 {
-                    litSuccess.Text = "Error deleting startup: " + ex.Message;
+                    System.Diagnostics.Trace.TraceError("DeleteStartup error: " + ex);
+                    litSuccess.Text = "An unexpected error occurred while deleting the startup. Please try again.";
                     pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
                     pnlSuccess.Visible = true;
                 }

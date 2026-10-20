@@ -11,6 +11,12 @@ namespace FoundrLink.Admin
     {
         protected void Page_Load(object sender, EventArgs e)
         {
+            if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
+            {
+                Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                return;
+            }
+
             pnlAlert.Visible = false;
 
             if (!IsPostBack)
@@ -21,39 +27,49 @@ namespace FoundrLink.Admin
 
         private void LoadReports()
         {
-            string search = txtSearch.Text.Trim();
-            string status = ddlStatusFilter.SelectedValue;
-            string priority = ddlPriorityFilter.SelectedValue;
-
-            string sql = "SELECT ReportId, ReportCode, ReporterEmail, ReportedItem, ReportType, Priority, Details, Status, CreatedAt, ResolvedAt FROM ModerationReports WHERE 1=1";
-
-            if (!string.IsNullOrEmpty(search))
+            try
             {
-                sql += " AND (ReportCode LIKE '%' + @Search + '%' OR ReporterEmail LIKE '%' + @Search + '%' OR ReportedItem LIKE '%' + @Search + '%' OR Details LIKE '%' + @Search + '%')";
+                string search = txtSearch.Text.Trim();
+                string status = ddlStatusFilter.SelectedValue;
+                string priority = ddlPriorityFilter.SelectedValue;
+
+                string sql = "SELECT ReportId, ReportCode, ReporterEmail, ReportedItem, ReportType, Priority, Details, Status, CreatedAt, ResolvedAt FROM dbo.ModerationReports WHERE 1=1";
+
+                if (!string.IsNullOrEmpty(search))
+                {
+                    sql += " AND (ReportCode LIKE '%' + @Search + '%' OR ReporterEmail LIKE '%' + @Search + '%' OR ReportedItem LIKE '%' + @Search + '%' OR Details LIKE '%' + @Search + '%')";
+                }
+
+                if (!string.IsNullOrEmpty(status))
+                {
+                    sql += " AND Status = @Status";
+                }
+
+                if (!string.IsNullOrEmpty(priority))
+                {
+                    sql += " AND Priority = @Priority";
+                }
+
+                sql += " ORDER BY CASE WHEN Status = 'Pending' THEN 1 ELSE 2 END, CreatedAt DESC";
+
+                SqlParameter[] p = new SqlParameter[]
+                {
+                    new SqlParameter("@Search", search),
+                    new SqlParameter("@Status", status),
+                    new SqlParameter("@Priority", priority)
+                };
+
+                DataTable dt = DbHelper.ExecuteDataTable(sql, p);
+                rptReports.DataSource = dt;
+                rptReports.DataBind();
             }
-
-            if (!string.IsNullOrEmpty(status))
+            catch (Exception ex)
             {
-                sql += " AND Status = @Status";
+                System.Diagnostics.Trace.TraceError("LoadReports error: " + ex);
+                litAlertMsg.Text = "An error occurred while loading reports.";
+                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
+                pnlAlert.Visible = true;
             }
-
-            if (!string.IsNullOrEmpty(priority))
-            {
-                sql += " AND Priority = @Priority";
-            }
-
-            sql += " ORDER BY CASE WHEN Status = 'Pending' THEN 1 ELSE 2 END, CreatedAt DESC";
-
-            SqlParameter[] p = new SqlParameter[]
-            {
-                new SqlParameter("@Search", search),
-                new SqlParameter("@Status", status),
-                new SqlParameter("@Priority", priority)
-            };
-
-            DataTable dt = DbHelper.ExecuteDataTable(sql, p);
-            rptReports.DataSource = dt;
-            rptReports.DataBind();
         }
 
         protected void btnFilter_Click(object sender, EventArgs e)
@@ -71,25 +87,43 @@ namespace FoundrLink.Admin
 
         protected void rptReports_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
+            if (!SecurityHelper.IsUserAdmin())
+            {
+                Response.Redirect("~/Login.aspx");
+                return;
+            }
+
             int reportId = Convert.ToInt32(e.CommandArgument);
 
-            if (e.CommandName == "Resolve")
+            try
             {
-                string sql = "UPDATE ModerationReports SET Status = 'Resolved', ResolvedAt = GETDATE() WHERE ReportId = @Id";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
+                if (e.CommandName == "Resolve")
+                {
+                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Resolved', ResolvedAt = GETDATE() WHERE ReportId = @Id";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
 
-                litAlertMsg.Text = "Ticket successfully marked as <strong>Resolved</strong>.";
-                pnlAlert.Visible = true;
-                LoadReports();
+                    litAlertMsg.Text = "Ticket successfully marked as <strong>Resolved</strong>.";
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                    LoadReports();
+                }
+                else if (e.CommandName == "Dismiss")
+                {
+                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Dismissed', ResolvedAt = GETDATE() WHERE ReportId = @Id";
+                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
+
+                    litAlertMsg.Text = "Ticket marked as <strong>Dismissed</strong>.";
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    pnlAlert.Visible = true;
+                    LoadReports();
+                }
             }
-            else if (e.CommandName == "Dismiss")
+            catch (Exception ex)
             {
-                string sql = "UPDATE ModerationReports SET Status = 'Dismissed', ResolvedAt = GETDATE() WHERE ReportId = @Id";
-                DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
-
-                litAlertMsg.Text = "Ticket marked as <strong>Dismissed</strong>.";
+                System.Diagnostics.Trace.TraceError("rptReports_ItemCommand error: " + ex);
+                litAlertMsg.Text = "An error occurred while updating the report status.";
+                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
                 pnlAlert.Visible = true;
-                LoadReports();
             }
         }
 

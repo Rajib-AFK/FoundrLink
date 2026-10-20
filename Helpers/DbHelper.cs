@@ -103,5 +103,30 @@ namespace FoundrLink.Helpers
                 Value = value ?? DBNull.Value
             };
         }
+
+        /// <summary>
+        /// Executes a series of operations atomically within a single SQL transaction.
+        /// </summary>
+        public static void ExecuteInTransaction(Action<SqlConnection, SqlTransaction> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            using (var conn = GetConnection())
+            {
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        action(conn, tx);
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        try { tx.Rollback(); } catch { }
+                        throw;
+                    }
+                }
+            }
+        }
     }
 }

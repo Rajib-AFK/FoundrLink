@@ -103,7 +103,7 @@
     <!-- Users Table Card -->
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid #E2E8F0 !important;">
         <div class="table-responsive">
-            <asp:Repeater ID="rptUsers" runat="server" OnItemCommand="rptUsers_ItemCommand">
+            <asp:Repeater ID="rptUsers" runat="server" OnItemCommand="rptUsers_ItemCommand" OnItemDataBound="rptUsers_ItemDataBound">
                 <HeaderTemplate>
                     <table class="table align-middle mb-0">
                         <thead>
@@ -130,7 +130,15 @@
                             <%# Eval("Email") %>
                         </td>
                         <td class="fl-admin-td text-dark small">
-                            <%# Eval("Role") %>
+                            <asp:DropDownList ID="ddlRoleChange" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlRoleChange_SelectedIndexChanged" CssClass="form-select form-select-sm py-0 px-2 d-inline-block" style="font-size: 0.8rem; height: 28px; width: auto; max-width: 125px;">
+                                <asp:ListItem Text="Founder" Value="Founder" />
+                                <asp:ListItem Text="Co-Founder" Value="Co-Founder" />
+                                <asp:ListItem Text="Investor" Value="Investor" />
+                                <asp:ListItem Text="Advisor" Value="Advisor" />
+                                <asp:ListItem Text="Technical" Value="Technical" />
+                                <asp:ListItem Text="Admin" Value="Admin" />
+                            </asp:DropDownList>
+                            <asp:HiddenField ID="hfRowUserId" runat="server" Value='<%# Eval("UserId") %>' />
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.82rem;">
                             Oct 12, 2023
@@ -182,14 +190,19 @@
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Full Name <span class="text-danger">*</span></label>
                         <asp:TextBox ID="txtNewFullName" runat="server" CssClass="form-control rounded-3" placeholder="Jane Doe" />
+                        <asp:RequiredFieldValidator ID="rfvNewFullName" runat="server" ControlToValidate="txtNewFullName" ErrorMessage="Full Name is required." Display="Dynamic" CssClass="text-danger small mt-1 d-block" ValidationGroup="CreateUserGroup" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Email Address <span class="text-danger">*</span></label>
                         <asp:TextBox ID="txtNewEmail" runat="server" CssClass="form-control rounded-3" TextMode="Email" placeholder="jane@ripaldesign.studio" />
+                        <asp:RequiredFieldValidator ID="rfvNewEmail" runat="server" ControlToValidate="txtNewEmail" ErrorMessage="Email is required." Display="Dynamic" CssClass="text-danger small mt-1 d-block" ValidationGroup="CreateUserGroup" />
+                        <asp:RegularExpressionValidator ID="revNewEmail" runat="server" ControlToValidate="txtNewEmail" ErrorMessage="Valid email address is required." Display="Dynamic" CssClass="text-danger small mt-1 d-block" ValidationExpression="^[^@\s]+@[^@\s]+\.[^@\s]+$" ValidationGroup="CreateUserGroup" />
                     </div>
                     <div class="mb-3">
                         <label class="form-label small fw-semibold">Temporary Password <span class="text-danger">*</span></label>
                         <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control rounded-3" Text="Password123" />
+                        <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" ErrorMessage="Password is required." Display="Dynamic" CssClass="text-danger small mt-1 d-block" ValidationGroup="CreateUserGroup" />
+                        <asp:RegularExpressionValidator ID="revNewPassword" runat="server" ControlToValidate="txtNewPassword" ErrorMessage="Password must be at least 8 characters." Display="Dynamic" CssClass="text-danger small mt-1 d-block" ValidationExpression="^.{8,}$" ValidationGroup="CreateUserGroup" />
                     </div>
                     <div class="row g-2 mb-3">
                         <div class="col-6">
@@ -213,7 +226,7 @@
                 </div>
                 <div class="modal-footer border-0 pt-0">
                     <button type="button" class="btn btn-light rounded-3 px-3" data-bs-dismiss="modal">Cancel</button>
-                    <asp:Button ID="btnCreateUser" runat="server" Text="Create User" CssClass="btn text-white rounded-3 px-3 fw-semibold" style="background:#0F172A;" OnClick="btnCreateUser_Click" />
+                    <asp:Button ID="btnCreateUser" runat="server" Text="Create User" CssClass="btn text-white rounded-3 px-3 fw-semibold" style="background:#0F172A;" OnClick="btnCreateUser_Click" ValidationGroup="CreateUserGroup" />
                 </div>
             </div>
         </div>

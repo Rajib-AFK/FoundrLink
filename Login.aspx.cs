@@ -53,7 +53,7 @@ namespace FoundrLink
                         SecurityHelper.SetUserSession(userId, fullName, userEmail, role, avatar);
 
                         string returnUrl = Request.QueryString["returnUrl"];
-                        if (!string.IsNullOrEmpty(returnUrl) && !returnUrl.Contains("://"))
+                        if (SecurityHelper.IsLocalUrl(returnUrl))
                         {
                             Response.Redirect(returnUrl);
                         }
@@ -69,7 +69,8 @@ namespace FoundrLink
             }
             catch (Exception ex)
             {
-                ShowError("A database connection error occurred: " + ex.Message);
+                System.Diagnostics.Trace.TraceError("Login error: " + ex);
+                ShowError("An unexpected error occurred while signing in. Please try again.");
             }
         }
 

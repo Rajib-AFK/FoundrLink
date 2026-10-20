@@ -149,6 +149,7 @@
                         <label class="form-label small fw-semibold text-dark mb-1">Password</label>
                         <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" style="height: 44px;" />
                         <asp:RequiredFieldValidator ID="rfvPassword" runat="server" ControlToValidate="txtPassword" ErrorMessage="Password required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
+                        <asp:RegularExpressionValidator ID="revPassword" runat="server" ControlToValidate="txtPassword" ValidationExpression=".{8,}" ErrorMessage="Must be at least 8 characters." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgRegister" />
                     </div>
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-dark mb-1">Confirm Password</label>
