@@ -2,116 +2,137 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
-        .fl-admin-table th {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            color: #64748B;
+        .fl-admin-th {
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #1E293B;
+            background: #F8FAFC !important;
+            border-bottom: 1px solid #E2E8F0;
+            padding: 14px 16px;
+        }
+        .fl-admin-td {
+            padding: 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #F1F5F9;
+        }
+        .fl-page-btn {
+            width: 32px;
+            height: 32px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            border: 1px solid #E2E8F0;
+            background: #FFFFFF;
+            color: #475569;
+            font-size: 0.82rem;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.15s ease;
+        }
+        .fl-page-btn:hover {
             background: #F8FAFC;
+            color: #0F172A;
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold fs-3 text-dark mb-1">Reports & Moderation</h2>
-            <p class="text-muted">Review incoming platform flags, suspicious activity, and support tickets requiring administrative intervention.</p>
+    <!-- Header Row -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h1 class="fw-bold fs-2 text-dark mb-0" style="letter-spacing: -0.02em;">Reports & Categories</h1>
+        <div class="d-flex align-items-center gap-2">
+            <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80" class="rounded-circle border" width="38" height="38" style="object-fit:cover;" />
         </div>
     </div>
 
-    <asp:Panel ID="pnlAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show" role="alert">
-        <asp:Literal ID="litAlertMsg" runat="server" />
+    <asp:Panel ID="pnlAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
+        <div class="d-flex align-items-center gap-2">
+            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            <div><asp:Literal ID="litAlertMsg" runat="server" /></div>
+        </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </asp:Panel>
 
-    <!-- Filter Bar -->
-    <div class="card border-0 shadow-sm rounded-4 p-3 mb-4">
-        <div class="row g-2 align-items-center">
-            <div class="col-md-5">
-                <div class="input-group">
-                    <span class="input-group-text bg-white border-end-0 text-muted"><i class="bi bi-search"></i></span>
-                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control border-start-0 ps-0" placeholder="Search ticket code, reporter, or subject..." />
-                </div>
+    <!-- Navigation / Tab Bar Card -->
+    <div class="card border-0 shadow-sm rounded-4 mb-4 px-4 bg-white" style="border: 1px solid #E2E8F0 !important;">
+        <div class="d-flex align-items-center gap-2 py-3 border-bottom border-3 text-teal fw-bold small" style="border-color: #008C75 !important; color: #008C75; width: fit-content; margin-bottom: -1px;">
+            <i class="bi bi-flag"></i> Moderation Queue
+        </div>
+    </div>
+
+    <!-- Pending Reports Card -->
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid #E2E8F0 !important;">
+        <div class="d-flex justify-content-between align-items-center p-4 border-bottom flex-wrap gap-3">
+            <div>
+                <h5 class="fw-bold text-dark mb-1 fs-5">Pending Reports</h5>
+                <p class="text-muted mb-0 small" style="font-size: 0.8rem;">Review and action user-submitted reports.</p>
             </div>
-            <div class="col-md-3">
-                <asp:DropDownList ID="ddlStatusFilter" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="All Statuses" Value="" />
-                    <asp:ListItem Text="Pending Review" Value="Pending" />
-                    <asp:ListItem Text="Resolved" Value="Resolved" />
-                    <asp:ListItem Text="Dismissed" Value="Dismissed" />
-                </asp:DropDownList>
-            </div>
-            <div class="col-md-2">
-                <asp:DropDownList ID="ddlPriorityFilter" runat="server" CssClass="form-select">
-                    <asp:ListItem Text="All Priorities" Value="" />
+            <div class="d-flex align-items-center gap-2">
+                <asp:DropDownList ID="ddlPriorityFilter" runat="server" CssClass="form-select form-select-sm rounded-3 shadow-none text-muted" AutoPostBack="true" OnSelectedIndexChanged="btnFilter_Click" style="width: auto; min-width: 130px; font-size: 0.82rem;">
+                    <asp:ListItem Text="All Types" Value="" />
                     <asp:ListItem Text="Urgent" Value="Urgent" />
                     <asp:ListItem Text="High" Value="High" />
                     <asp:ListItem Text="Normal" Value="Normal" />
                 </asp:DropDownList>
-            </div>
-            <div class="col-md-2 d-flex gap-2">
-                <asp:Button ID="btnFilter" runat="server" Text="Filter" CssClass="btn btn-dark w-100" OnClick="btnFilter_Click" />
-                <asp:Button ID="btnReset" runat="server" Text="Reset" CssClass="btn btn-outline-secondary" OnClick="btnReset_Click" />
+
+                <!-- Hidden designer elements kept for server compatibility -->
+                <div class="d-none">
+                    <asp:TextBox ID="txtSearch" runat="server" />
+                    <asp:DropDownList ID="ddlStatusFilter" runat="server">
+                        <asp:ListItem Text="" Value="" />
+                        <asp:ListItem Text="Pending" Value="Pending" />
+                    </asp:DropDownList>
+                    <asp:Button ID="btnFilter" runat="server" OnClick="btnFilter_Click" />
+                    <asp:Button ID="btnReset" runat="server" OnClick="btnReset_Click" />
+                </div>
             </div>
         </div>
-    </div>
 
-    <!-- Reports Table Card -->
-    <div class="card border-0 shadow-sm rounded-4 p-0 overflow-hidden">
         <div class="table-responsive">
             <asp:Repeater ID="rptReports" runat="server" OnItemCommand="rptReports_ItemCommand">
                 <HeaderTemplate>
-                    <table class="table align-middle table-hover mb-0 fl-admin-table">
+                    <table class="table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="ps-4">Ticket</th>
-                                <th>Reporter</th>
-                                <th>Category & Details</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Date</th>
-                                <th class="text-end pe-4">Actions</th>
+                                <th class="fl-admin-th ps-4">ID</th>
+                                <th class="fl-admin-th">Reporter</th>
+                                <th class="fl-admin-th">Reported Item</th>
+                                <th class="fl-admin-th">Type</th>
+                                <th class="fl-admin-th">Status</th>
+                                <th class="fl-admin-th text-end pe-4">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                 </HeaderTemplate>
                 <ItemTemplate>
-                    <tr>
-                        <td class="ps-4 fw-bold text-dark font-monospace small">
+                    <tr class="hover-bg-light">
+                        <td class="fl-admin-td ps-4 text-muted small" style="font-size:0.8rem;">
                             <%# Eval("ReportCode") %>
                         </td>
-                        <td class="small">
-                            <div class="fw-semibold text-dark"><%# Eval("ReporterEmail") %></div>
+                        <td class="fl-admin-td text-dark small" style="font-size:0.82rem;">
+                            <%# Eval("ReporterEmail") %>
                         </td>
-                        <td>
-                            <div class="fw-bold small text-dark"><%# Eval("ReportedItem") %></div>
-                            <div class="text-muted small text-truncate" style="max-width: 280px;" title='<%# Eval("Details") %>'><%# Eval("Details") %></div>
-                        </td>
-                        <td>
-                            <span class='<%# GetPriorityBadgeClass(Eval("Priority").ToString()) %>'>
-                                <%# Eval("Priority") %>
+                        <td class="fl-admin-td">
+                            <span class="text-teal fw-semibold small" style="color: #008C75;">
+                                <%# Eval("ReportedItem") %>
                             </span>
                         </td>
-                        <td>
-                            <span class='<%# Eval("Status").ToString() == "Pending" ? "badge bg-warning-subtle text-warning" : (Eval("Status").ToString() == "Resolved" ? "badge bg-success-subtle text-success" : "badge bg-secondary-subtle text-secondary") %>'>
+                        <td class="fl-admin-td">
+                            <span class="badge rounded-2 px-2 py-1 small fw-semibold" style="background:#FEE2E2; color:#DC2626; font-size: 0.72rem;">
+                                <%# Eval("ReportType") != null && !string.IsNullOrEmpty(Eval("ReportType").ToString()) ? Eval("ReportType") : "Spam" %>
+                            </span>
+                        </td>
+                        <td class="fl-admin-td">
+                            <span class="badge rounded-2 px-2 py-1 small fw-semibold" style="background:#F1F5F9; color:#475569; font-size: 0.72rem;">
                                 <%# Eval("Status") %>
                             </span>
                         </td>
-                        <td class="small text-muted">
-                            <%# Convert.ToDateTime(Eval("CreatedAt")).ToString("MMM dd, yyyy") %>
-                        </td>
-                        <td class="text-end pe-4">
-                            <%# Eval("Status").ToString() == "Pending" ? @"
-                                <asp:LinkButton runat='server' CommandName='Resolve' CommandArgument='" + Eval("ReportId") + @"' CssClass='btn btn-sm btn-outline-success me-1' title='Resolve Ticket'>
-                                    <i class='bi bi-check-circle'></i> Resolve
-                                </asp:LinkButton>
-                                <asp:LinkButton runat='server' CommandName='Dismiss' CommandArgument='" + Eval("ReportId") + @"' CssClass='btn btn-sm btn-outline-secondary' title='Dismiss Ticket'>
-                                    <i class='bi bi-slash-circle'></i> Dismiss
-                                </asp:LinkButton>
-                            " : @"
-                                <span class='text-muted small'><i class='bi bi-check2 text-success me-1'></i>Done</span>
-                            " %>
+                        <td class="fl-admin-td text-end pe-4">
+                            <asp:LinkButton ID="btnResolve" runat="server" CommandName="Resolve" CommandArgument='<%# Eval("ReportId") %>' CssClass="btn btn-sm bg-white rounded-3 px-3 py-1 fw-semibold small shadow-none" style="border: 1px solid #00A884; color: #00A884; font-size: 0.8rem;" title="Resolve Ticket">
+                                Resolve
+                            </asp:LinkButton>
                         </td>
                     </tr>
                 </ItemTemplate>
@@ -120,6 +141,15 @@
                     </table>
                 </FooterTemplate>
             </asp:Repeater>
+        </div>
+
+        <!-- Table Footer / Pagination -->
+        <div class="d-flex justify-content-between align-items-center p-3 px-4 bg-white border-top flex-wrap gap-2">
+            <span class="text-muted small" style="font-size: 0.8rem;">Showing 1 of 2 entries</span>
+            <div class="d-flex align-items-center gap-1">
+                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-left"></i></a>
+                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-right"></i></a>
+            </div>
         </div>
     </div>
 </asp:Content>

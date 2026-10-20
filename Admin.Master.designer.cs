@@ -14,7 +14,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.LinkButton btnAdminLogout;
         protected global::System.Web.UI.WebControls.Image imgAdminTopAvatar;
         protected global::System.Web.UI.WebControls.Literal litAdminTopName;
-        protected global::System.Web.UI.WebControls.ContentPlaceHolder AdminContent;
+        protected global::System.Web.UI.WebControls.ContentPlaceHolder MainContent;
         protected global::System.Web.UI.WebControls.ContentPlaceHolder ScriptsContent;
     }
 }

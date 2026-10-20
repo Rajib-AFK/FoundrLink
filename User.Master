@@ -23,8 +23,8 @@
             <div>
                 <!-- Brand Header -->
                 <a class="fl-brand" runat="server" href="~/Dashboard.aspx">
-                    <div class="fl-brand-logo">
-                        <i class="bi bi-hexagon-fill text-teal"></i>
+                    <div class="fl-brand-logo" style="width: 36px; height: 36px; background: #0F172A; border-radius: 9px;">
+                        <i class="bi bi-hexagon-fill" style="color: #6DF5E1; font-size: 1.15rem;"></i>
                     </div>
                     <div>
                         <h1 class="fl-brand-title">FoundrLink</h1>
@@ -32,7 +32,7 @@
                     </div>
                 </a>
 
-                <!-- Primary Nav -->
+                <!-- Primary Navigation -->
                 <ul class="fl-nav-list mt-3">
                     <li class="fl-nav-item">
                         <a id="navDashboard" runat="server" href="~/Dashboard.aspx" class="fl-nav-link">
@@ -78,9 +78,9 @@
                     </li>
                 </ul>
 
-                <!-- User profile badge at bottom -->
+                <!-- User Profile Badge at bottom -->
                 <div class="fl-user-badge d-flex align-items-center justify-content-between">
-                    <a runat="server" href="~/Profile.aspx" class="d-flex align-items-center gap-2 text-decoration-none text-dark flex-grow-1">
+                    <a runat="server" href="~/Profile.aspx" class="d-flex align-items-center gap-2 text-decoration-none text-dark flex-grow-1 overflow-hidden">
                         <asp:Image ID="imgSidebarAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="~/Images/default-avatar.png" />
                         <div class="overflow-hidden">
                             <div class="fw-bold text-truncate small">
@@ -116,12 +116,12 @@
 
                     <!-- Messages -->
                     <a runat="server" href="~/Messages.aspx" class="fl-icon-btn" title="Messages">
-                        <i class="bi bi-chat-text fs-5"></i>
+                        <i class="bi bi-chat-left-text fs-5"></i>
                         <asp:Panel ID="pnlUnreadMsg" runat="server" CssClass="fl-unread-dot" Visible="false" />
                     </a>
 
                     <!-- Create Startup Button -->
-                    <a runat="server" href="~/ManageStartup.aspx" class="btn btn-fl-primary">
+                    <a runat="server" href="~/ManageStartup.aspx" class="btn-fl-dark text-nowrap" style="height: 38px; padding: 0 16px; font-size: 0.85rem;">
                         <i class="bi bi-plus-lg"></i>
                         <span>Create Startup</span>
                     </a>

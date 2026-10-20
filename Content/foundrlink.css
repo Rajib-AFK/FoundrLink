@@ -1,18 +1,29 @@
-/* FoundrLink Core Stylesheet - Matching Figma Design */
+/* FoundrLink Core Stylesheet - Pixel-Perfect Figma Reference System */
 @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
 
 :root {
-    --fl-primary-dark: #0F172A;
-    --fl-primary-navy: #0B132B;
-    --fl-accent-teal: #4EE8C4;
-    --fl-accent-teal-dark: #10B981;
+    --fl-primary-dark: #0B132B;
+    --fl-primary-navy: #0F172A;
+    --fl-primary-teal: #006591;
+    --fl-accent-teal: #6DF5E1;
+    --fl-accent-teal-dark: #006591;
+    --fl-accent-cyan: #4EE8C4;
+    --fl-accent-emerald: #10B981;
     --fl-accent-blue: #0284C7;
-    --fl-bg-main: #F8FAFC;
+    --fl-bg-main: #F7F9FB;
     --fl-bg-card: #FFFFFF;
     --fl-border-color: #E2E8F0;
+    --fl-border-subtle: #F1F5F9;
     --fl-text-main: #0F172A;
+    --fl-text-secondary: #334155;
     --fl-text-muted: #64748B;
     --fl-sidebar-width: 250px;
+    --fl-radius-card: 14px;
+    --fl-radius-btn: 8px;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
 }
 
 body {
@@ -22,16 +33,27 @@ body {
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 /* Base Typography & Helpers */
 h1, h2, h3, h4, h5, h6 {
     font-weight: 700;
     color: var(--fl-text-main);
+    letter-spacing: -0.02em;
 }
 
 .text-teal {
-    color: var(--fl-accent-teal-dark) !important;
+    color: var(--fl-primary-teal) !important;
+}
+
+.text-cyan {
+    color: #4EE8C4 !important;
+}
+
+.text-emerald {
+    color: #10B981 !important;
 }
 
 .bg-teal-subtle {
@@ -70,15 +92,19 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fl-brand-logo {
-    width: 36px;
-    height: 36px;
+    width: 38px;
+    height: 38px;
     background: #0F172A;
-    border-radius: 8px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
     justify-content: center;
     color: #FFFFFF;
     font-size: 20px;
+}
+
+.fl-brand-logo i {
+    color: #6DF5E1;
 }
 
 .fl-brand-title {
@@ -87,12 +113,14 @@ h1, h2, h3, h4, h5, h6 {
     color: #0F172A;
     line-height: 1.1;
     margin: 0;
+    letter-spacing: -0.03em;
 }
 
 .fl-brand-subtitle {
     font-size: 0.75rem;
     color: var(--fl-text-muted);
-    margin: 0;
+    margin: 2px 0 0 0;
+    font-weight: 500;
 }
 
 .fl-nav-list {
@@ -101,7 +129,7 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 4px;
 }
 
 .fl-nav-item {
@@ -113,12 +141,12 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     gap: 14px;
     padding: 10px 14px;
-    border-radius: 10px;
-    font-size: 0.95rem;
+    border-radius: 8px;
+    font-size: 0.92rem;
     font-weight: 500;
     color: #475569;
     text-decoration: none;
-    transition: all 0.2s ease;
+    transition: all 0.15s ease;
 }
 
 .fl-nav-link i {
@@ -131,9 +159,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .fl-nav-link.active {
-    background-color: var(--fl-accent-teal);
-    color: #0F172A;
-    font-weight: 700;
+    background-color: #6DF5E1 !important;
+    color: #0F172A !important;
+    font-weight: 700 !important;
 }
 
 .fl-sidebar-footer {
@@ -148,9 +176,10 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     gap: 12px;
-    padding: 8px;
+    padding: 8px 12px;
     border-radius: 10px;
     background-color: #F8FAFC;
+    border: 1px solid var(--fl-border-color);
 }
 
 .fl-avatar-sm {
@@ -196,18 +225,20 @@ h1, h2, h3, h4, h5, h6 {
 
 .fl-search-box input {
     width: 100%;
-    padding: 8px 16px 8px 40px;
+    padding: 9px 16px 9px 40px;
     border-radius: 8px;
     border: 1px solid var(--fl-border-color);
     background-color: #F8FAFC;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     outline: none;
-    transition: border-color 0.2s;
+    transition: all 0.2s ease;
+    color: #0F172A;
 }
 
 .fl-search-box input:focus {
     border-color: #94A3B8;
     background-color: #FFFFFF;
+    box-shadow: 0 0 0 2px rgba(109, 245, 225, 0.4);
 }
 
 .fl-search-box i {
@@ -238,6 +269,7 @@ h1, h2, h3, h4, h5, h6 {
     position: relative;
     cursor: pointer;
     text-decoration: none;
+    transition: background-color 0.15s;
 }
 
 .fl-icon-btn:hover {
@@ -265,9 +297,9 @@ h1, h2, h3, h4, h5, h6 {
 .fl-card {
     background-color: #FFFFFF;
     border: 1px solid var(--fl-border-color);
-    border-radius: 14px;
+    border-radius: var(--fl-radius-card);
     padding: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
     margin-bottom: 24px;
 }
 
@@ -275,34 +307,36 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 16px;
+    margin-bottom: 20px;
 }
 
 .fl-stat-card {
     background-color: #FFFFFF;
     border: 1px solid var(--fl-border-color);
-    border-radius: 14px;
+    border-radius: var(--fl-radius-card);
     padding: 20px 24px;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.02);
 }
 
 .fl-stat-title {
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.75rem;
+    font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.05em;
     color: var(--fl-text-muted);
-    margin-bottom: 4px;
+    margin-bottom: 6px;
 }
 
 .fl-stat-value {
-    font-size: 1.85rem;
+    font-size: 2rem;
     font-weight: 800;
     color: #0F172A;
     margin: 0;
+    line-height: 1.1;
+    letter-spacing: -0.03em;
 }
 
 .fl-stat-icon-wrapper {
@@ -317,58 +351,82 @@ h1, h2, h3, h4, h5, h6 {
 
 /* Buttons */
 .btn-fl-primary {
-    background-color: #0F172A;
+    background-color: #006591;
     color: #FFFFFF;
     border: none;
-    border-radius: 8px;
-    padding: 8px 18px;
+    border-radius: var(--fl-radius-btn);
+    padding: 9px 18px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    transition: background-color 0.2s;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
 }
 
 .btn-fl-primary:hover {
+    background-color: #005073;
+    color: #FFFFFF;
+}
+
+.btn-fl-dark {
+    background-color: #0F172A;
+    color: #FFFFFF;
+    border: none;
+    border-radius: var(--fl-radius-btn);
+    padding: 9px 18px;
+    font-weight: 600;
+    font-size: 0.88rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+    cursor: pointer;
+}
+
+.btn-fl-dark:hover {
     background-color: #1E293B;
     color: #FFFFFF;
 }
 
 .btn-fl-teal {
-    background-color: #0D9488;
+    background-color: #006591;
     color: #FFFFFF;
     border: none;
-    border-radius: 8px;
-    padding: 8px 18px;
+    border-radius: var(--fl-radius-btn);
+    padding: 9px 18px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    transition: opacity 0.2s;
+    transition: opacity 0.15s ease;
+    cursor: pointer;
 }
 
 .btn-fl-teal:hover {
-    background-color: #0F766E;
+    background-color: #005073;
     color: #FFFFFF;
 }
 
 .btn-fl-outline {
     background-color: #FFFFFF;
-    color: #334155;
+    color: #0F172A;
     border: 1px solid var(--fl-border-color);
-    border-radius: 8px;
+    border-radius: var(--fl-radius-btn);
     padding: 8px 16px;
     font-weight: 600;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
     display: inline-flex;
     align-items: center;
     gap: 8px;
     text-decoration: none;
-    transition: all 0.2s;
+    transition: all 0.15s ease;
+    cursor: pointer;
 }
 
 .btn-fl-outline:hover {
@@ -391,36 +449,52 @@ h1, h2, h3, h4, h5, h6 {
 .fl-badge-active {
     background-color: #ECFDF5;
     color: #059669;
+    border: 1px solid #A7F3D0;
 }
 
-.fl-badge-pending {
-    background-color: #FEF3C7;
-    color: #D97706;
-}
-
-.fl-badge-draft {
+.fl-badge-pending, .fl-badge-draft {
     background-color: #F1F5F9;
     color: #64748B;
+    border: 1px solid #E2E8F0;
 }
 
 .fl-badge-rejected {
     background-color: #FEE2E2;
     color: #DC2626;
+    border: 1px solid #FECACA;
 }
 
-.fl-badge-role-founder {
-    background-color: #EEF2FF;
-    color: #4F46E5;
+/* Skill Pills */
+.fl-pill-blue {
+    background-color: #E0F2FE;
+    color: #0284C7;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    letter-spacing: 0.03em;
 }
 
-.fl-badge-role-investor {
-    background-color: #F0FDF4;
-    color: #16A34A;
-}
-
-.fl-badge-role-technical {
+.fl-pill-gray {
     background-color: #F1F5F9;
     color: #475569;
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 4px;
+    display: inline-block;
+    letter-spacing: 0.03em;
+}
+
+.fl-pill-purple {
+    background-color: #EEF2FF;
+    color: #4F46E5;
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    display: inline-block;
 }
 
 /* Tables */
@@ -447,20 +521,78 @@ h1, h2, h3, h4, h5, h6 {
     padding: 16px;
     vertical-align: middle;
     border-bottom: 1px solid #F1F5F9;
-    font-size: 0.9rem;
+    font-size: 0.88rem;
 }
 
 .fl-table tr:hover td {
     background-color: #FAFAFA;
 }
 
+/* Forms */
+.form-control, .form-select {
+    border: 1px solid var(--fl-border-color);
+    border-radius: var(--fl-radius-btn);
+    font-size: 0.88rem;
+    padding: 9px 14px;
+    color: #0F172A;
+    transition: all 0.15s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #94A3B8;
+    box-shadow: 0 0 0 2px rgba(109, 245, 225, 0.4);
+    outline: none;
+}
+
+.form-label {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+/* Pagination */
+.fl-pagination {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.fl-page-btn {
+    min-width: 34px;
+    height: 34px;
+    padding: 0 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid var(--fl-border-color);
+    background: #FFFFFF;
+    color: #475569;
+    font-size: 0.85rem;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.fl-page-btn.active {
+    background: #0F172A;
+    color: #FFFFFF;
+    border-color: #0F172A;
+    font-weight: 700;
+}
+
+.fl-page-btn:hover:not(.active) {
+    background: #F1F5F9;
+    color: #0F172A;
+}
+
 /* Public & Landing Page Styles */
 .fl-landing-hero {
     background-color: #000000;
     color: #FFFFFF;
-    padding: 120px 24px 80px;
+    padding: 130px 24px 80px;
     text-align: center;
-    background-image: radial-gradient(circle at 50% 20%, rgba(16, 185, 129, 0.15), transparent 70%);
+    background-image: radial-gradient(circle at 50% 25%, rgba(16, 185, 129, 0.18), transparent 65%);
 }
 
 .fl-landing-badge {
@@ -469,32 +601,73 @@ h1, h2, h3, h4, h5, h6 {
     gap: 8px;
     padding: 6px 16px;
     border-radius: 30px;
-    background: rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.08);
     border: 1px solid rgba(255, 255, 255, 0.15);
-    font-size: 0.8rem;
+    font-size: 0.78rem;
     font-weight: 600;
     color: #FFFFFF;
-    margin-bottom: 24px;
+    margin-bottom: 28px;
+    letter-spacing: 0.04em;
 }
 
 .fl-landing-title {
-    font-size: 3.5rem;
+    font-size: 3.8rem;
     font-weight: 800;
-    line-height: 1.15;
-    max-width: 850px;
+    line-height: 1.12;
+    max-width: 880px;
     margin: 0 auto 24px;
+    letter-spacing: -0.03em;
 }
 
 .fl-landing-highlight {
-    color: #34D399;
+    color: #4EE8C4;
 }
 
 .fl-landing-subtitle {
     font-size: 1.15rem;
     color: #94A3B8;
-    max-width: 650px;
-    margin: 0 auto 36px;
+    max-width: 660px;
+    margin: 0 auto 40px;
     line-height: 1.6;
+}
+
+.btn-landing-founder {
+    background-color: #006591;
+    color: #FFFFFF;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.btn-landing-founder:hover {
+    background-color: #005073;
+    color: #FFFFFF;
+}
+
+.btn-landing-portal {
+    background-color: #161B22;
+    color: #FFFFFF;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+}
+
+.btn-landing-portal:hover {
+    background-color: #21262D;
+    color: #FFFFFF;
 }
 
 /* Chat & Messaging UI */
@@ -503,7 +676,7 @@ h1, h2, h3, h4, h5, h6 {
     height: calc(100vh - 140px);
     background: #FFFFFF;
     border: 1px solid var(--fl-border-color);
-    border-radius: 14px;
+    border-radius: var(--fl-radius-card);
     overflow: hidden;
 }
 
@@ -532,7 +705,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .fl-chat-thread-item:hover, .fl-chat-thread-item.active {
     background-color: #F8FAFC;
-    border-left: 3px solid var(--fl-accent-teal);
+    border-left: 3px solid #006591;
 }
 
 .fl-chat-window {
@@ -561,10 +734,11 @@ h1, h2, h3, h4, h5, h6 {
 .fl-bubble-received {
     align-self: flex-start;
     max-width: 60%;
-    background-color: #F1F5F9;
+    background-color: #FFFFFF;
+    border: 1px solid var(--fl-border-color);
     color: #0F172A;
-    padding: 12px 16px;
-    border-radius: 14px 14px 14px 2px;
+    padding: 12px 18px;
+    border-radius: 12px;
     font-size: 0.92rem;
     line-height: 1.5;
 }
@@ -574,8 +748,8 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 60%;
     background-color: #0F172A;
     color: #FFFFFF;
-    padding: 12px 16px;
-    border-radius: 14px 14px 2px 14px;
+    padding: 12px 18px;
+    border-radius: 12px;
     font-size: 0.92rem;
     line-height: 1.5;
 }

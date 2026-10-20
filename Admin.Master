@@ -95,28 +95,14 @@
 
         <!-- Admin Main Content -->
         <div class="fl-main-area">
-            <header class="fl-topbar">
-                <div class="d-flex align-items-center gap-2">
-                    <span class="badge bg-success-subtle text-success border border-success border-opacity-25 rounded-pill px-3 py-2 fw-semibold">
-                        <i class="bi bi-circle-fill me-1" style="font-size: 0.5rem;"></i> System Status: Optimal
-                    </span>
-                </div>
-
-                <div class="d-flex align-items-center gap-3">
-                    <a runat="server" href="~/Dashboard.aspx" class="btn btn-sm btn-fl-outline">
-                        <i class="bi bi-arrow-up-right"></i> Switch to Founder View
-                    </a>
-                    <div class="d-flex align-items-center gap-2">
-                        <asp:Image ID="imgAdminTopAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80" />
-                        <span class="fw-bold small d-none d-md-inline">
-                            <asp:Literal ID="litAdminTopName" runat="server" Text="System Admin" />
-                        </span>
-                    </div>
-                </div>
-            </header>
+            <!-- Hidden admin topbar controls kept for server-side code-behind compatibility -->
+            <div class="d-none">
+                <asp:Image ID="imgAdminTopAvatar" runat="server" />
+                <asp:Literal ID="litAdminTopName" runat="server" />
+            </div>
 
             <main class="fl-content-container">
-                <asp:ContentPlaceHolder ID="AdminContent" runat="server">
+                <asp:ContentPlaceHolder ID="MainContent" runat="server">
                 </asp:ContentPlaceHolder>
             </main>
         </div>

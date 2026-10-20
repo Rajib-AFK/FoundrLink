@@ -2,28 +2,71 @@
 
 <asp:Content ID="Content1" ContentPlaceHolderID="HeadContent" runat="server">
     <style>
+        .fl-settings-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px 16px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #475569;
+            text-decoration: none;
+            transition: all 0.15s ease;
+        }
+        .fl-settings-tab-btn:hover {
+            background-color: #F1F5F9;
+            color: #0F172A;
+        }
+        .fl-settings-tab-btn.active {
+            background-color: #E2E8F0;
+            color: #0F172A;
+            font-weight: 600;
+        }
         .fl-settings-card {
             background: #FFFFFF;
             border: 1px solid var(--fl-border-color);
-            border-radius: 14px;
+            border-radius: var(--fl-radius-card);
             padding: 32px;
-            margin-bottom: 28px;
+            margin-bottom: 24px;
         }
         .fl-danger-card {
-            background: #FFF5F5;
-            border: 1px solid #FED7D7;
-            border-radius: 14px;
+            background: #FFFFFF;
+            border: 1px solid #FECACA;
+            border-radius: var(--fl-radius-card);
             padding: 32px;
+        }
+        .fl-deactivate-inner-box {
+            background-color: #FEF2F2;
+            border: 1px solid #FEE2E2;
+            border-radius: 8px;
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .btn-fl-danger {
+            background-color: #B91C1C;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-size: 0.88rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.15s ease;
+        }
+        .btn-fl-danger:hover {
+            background-color: #991B1B;
+            color: #FFFFFF;
         }
     </style>
 </asp:Content>
 
 <asp:Content ID="Content2" ContentPlaceHolderID="MainContent" runat="server">
-    <div class="row mb-4">
-        <div class="col-12">
-            <h2 class="fw-bold fs-3 text-dark mb-1">Account Settings</h2>
-            <p class="text-muted">Manage your personal credentials, profile information, and platform security.</p>
-        </div>
+    <div class="mb-4">
+        <h2 class="fw-bold fs-3 text-dark mb-1" style="font-size: 2rem; letter-spacing: -0.02em;">Settings</h2>
+        <p class="text-muted small mb-0">Manage your account preferences and security settings.</p>
     </div>
 
     <!-- Feedback Messages -->
@@ -39,137 +82,136 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </asp:Panel>
 
-    <div class="row">
-        <div class="col-lg-8">
-            <!-- Profile Info Section -->
+    <div class="row g-4">
+        <!-- Left Tab Navigation -->
+        <div class="col-lg-3">
+            <div class="d-flex flex-column gap-1">
+                <a href="#account" class="fl-settings-tab-btn active">
+                    <i class="bi bi-person fs-5"></i>
+                    <span>Account</span>
+                </a>
+                <a href="Notifications.aspx" class="fl-settings-tab-btn">
+                    <i class="bi bi-bell fs-5"></i>
+                    <span>Notifications</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Right Content Area -->
+        <div class="col-lg-9">
+            <!-- 1. Profile Information Card -->
             <div class="fl-settings-card">
-                <h4 class="fw-bold fs-5 text-dark mb-1">Profile Information</h4>
-                <p class="text-muted small mb-4">Update your basic identity and public contact details.</p>
+                <h4 class="fw-bold text-dark mb-4" style="font-size: 1.25rem;">Profile Information</h4>
 
-                <div class="d-flex align-items-center gap-4 mb-4">
-                    <asp:Image ID="imgAvatarPreview" runat="server" CssClass="rounded-circle border" Width="80" Height="80" style="object-fit:cover;" />
-                    <div>
-                        <label class="form-label fw-semibold small mb-1">Profile Picture URL</label>
-                        <asp:TextBox ID="txtAvatarUrl" runat="server" CssClass="form-control form-control-sm" style="max-width: 380px;" placeholder="https://..." />
-                        <div class="text-muted small mt-1" style="font-size: 0.75rem;">Enter a valid image URL for your public avatar.</div>
+                <div class="row g-3 mb-3">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">First Name</label>
+                        <input type="text" id="txtFirstName" class="form-control" style="height: 44px;" oninput="syncFullName()" />
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Last Name</label>
+                        <input type="text" id="txtLastName" class="form-control" style="height: 44px;" oninput="syncFullName()" />
                     </div>
                 </div>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Full Name <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtFullName" runat="server" CssClass="form-control" />
-                        <asp:RequiredFieldValidator ID="rfvFullName" runat="server" ControlToValidate="txtFullName" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Full Name is required." ValidationGroup="ProfileGroup" />
-                    </div>
+                <!-- Hidden / Synced server controls -->
+                <asp:TextBox ID="txtFullName" runat="server" style="display:none;" />
+                <asp:RequiredFieldValidator ID="rfvFullName" runat="server" ControlToValidate="txtFullName" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Full Name is required." ValidationGroup="ProfileGroup" />
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Email Address <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" TextMode="Email" />
-                        <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Email is required." ValidationGroup="ProfileGroup" />
-                        <asp:RegularExpressionValidator ID="revEmail" runat="server" ControlToValidate="txtEmail" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Invalid email address format." ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="ProfileGroup" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Professional Title</label>
-                        <asp:TextBox ID="txtTitle" runat="server" CssClass="form-control" placeholder="e.g. Co-Founder & CTO" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Company / Startup</label>
-                        <asp:TextBox ID="txtCompany" runat="server" CssClass="form-control" placeholder="e.g. HealthPulse" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Location</label>
-                        <asp:TextBox ID="txtLocation" runat="server" CssClass="form-control" placeholder="e.g. San Francisco, CA" />
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Role</label>
-                        <asp:DropDownList ID="ddlRole" runat="server" CssClass="form-select">
-                            <asp:ListItem Text="Founder" Value="Founder" />
-                            <asp:ListItem Text="Co-Founder" Value="Co-Founder" />
-                            <asp:ListItem Text="Investor" Value="Investor" />
-                            <asp:ListItem Text="Advisor" Value="Advisor" />
-                        </asp:DropDownList>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label fw-semibold small">Bio</label>
-                        <asp:TextBox ID="txtBio" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="Brief summary of your background, experience, and passions..." />
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1">Email Address</label>
+                    <asp:TextBox ID="txtEmail" runat="server" CssClass="form-control" TextMode="Email" style="height: 44px;" />
+                    <asp:RequiredFieldValidator ID="rfvEmail" runat="server" ControlToValidate="txtEmail" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Email is required." ValidationGroup="ProfileGroup" />
+                    <asp:RegularExpressionValidator ID="revEmail" runat="server" ControlToValidate="txtEmail" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Invalid email address format." ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="ProfileGroup" />
                 </div>
 
-                <div class="mt-4 pt-3 border-top d-flex justify-content-end">
-                    <asp:Button ID="btnSaveProfile" runat="server" Text="Save Changes" CssClass="btn btn-fl-teal px-4" ValidationGroup="ProfileGroup" OnClick="btnSaveProfile_Click" />
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold text-dark mb-1">Company / Startup Name</label>
+                    <asp:TextBox ID="txtCompany" runat="server" CssClass="form-control" placeholder="Acme Corp" style="height: 44px;" />
+                </div>
+
+                <!-- Optional metadata controls hidden to preserve code-behind -->
+                <div style="display:none;">
+                    <asp:Image ID="imgAvatarPreview" runat="server" />
+                    <asp:TextBox ID="txtAvatarUrl" runat="server" />
+                    <asp:TextBox ID="txtTitle" runat="server" />
+                    <asp:TextBox ID="txtLocation" runat="server" />
+                    <asp:DropDownList ID="ddlRole" runat="server">
+                        <asp:ListItem Text="Founder" Value="Founder" />
+                        <asp:ListItem Text="Co-Founder" Value="Co-Founder" />
+                        <asp:ListItem Text="Investor" Value="Investor" />
+                        <asp:ListItem Text="Advisor" Value="Advisor" />
+                    </asp:DropDownList>
+                    <asp:TextBox ID="txtBio" runat="server" />
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <asp:Button ID="btnSaveProfile" runat="server" Text="Save Changes" CssClass="btn-fl-dark px-4" ValidationGroup="ProfileGroup" OnClick="btnSaveProfile_Click" />
                 </div>
             </div>
 
-            <!-- Password & Security Section -->
+            <!-- 2. Change Password Card -->
             <div class="fl-settings-card">
-                <h4 class="fw-bold fs-5 text-dark mb-1">Security & Password</h4>
-                <p class="text-muted small mb-4">Ensure your account is using a strong and unique password.</p>
+                <h4 class="fw-bold text-dark mb-4" style="font-size: 1.25rem;">Change Password</h4>
 
-                <div class="row g-3">
-                    <div class="col-12">
-                        <label class="form-label fw-semibold small">Current Password <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="form-control" TextMode="Password" />
-                        <asp:RequiredFieldValidator ID="rfvCurrentPassword" runat="server" ControlToValidate="txtCurrentPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Current password is required." ValidationGroup="PasswordGroup" />
-                    </div>
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1">Current Password</label>
+                    <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
+                    <asp:RequiredFieldValidator ID="rfvCurrentPassword" runat="server" ControlToValidate="txtCurrentPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Current password is required." ValidationGroup="PasswordGroup" />
+                </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">New Password <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" />
+                <div class="row g-3 mb-4">
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">New Password</label>
+                        <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
                         <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="New password is required." ValidationGroup="PasswordGroup" />
                     </div>
 
-                    <div class="col-md-6">
-                        <label class="form-label fw-semibold small">Confirm New Password <span class="text-danger">*</span></label>
-                        <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" />
-                        <asp:RequiredFieldValidator ID="rfvConfirmPassword" runat="server" ControlToValidate="txtConfirmPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Please confirm your new password." ValidationGroup="PasswordGroup" />
+                    <div class="col-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Confirm New Password</label>
+                        <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
+                        <asp:RequiredFieldValidator ID="rfvConfirmPassword" runat="server" ControlToValidate="txtConfirmPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Please confirm new password." ValidationGroup="PasswordGroup" />
                         <asp:CompareValidator ID="cvPasswords" runat="server" ControlToCompare="txtNewPassword" ControlToValidate="txtConfirmPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Passwords do not match." ValidationGroup="PasswordGroup" />
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-top d-flex justify-content-end">
-                    <asp:Button ID="btnUpdatePassword" runat="server" Text="Update Password" CssClass="btn btn-dark px-4" ValidationGroup="PasswordGroup" OnClick="btnUpdatePassword_Click" />
+                <div class="d-flex justify-content-end">
+                    <asp:Button ID="btnUpdatePassword" runat="server" Text="Update Password" CssClass="btn-fl-outline px-4" ValidationGroup="PasswordGroup" OnClick="btnUpdatePassword_Click" />
                 </div>
             </div>
 
-            <!-- Danger Zone -->
+            <!-- 3. Delete Account Card -->
             <div class="fl-danger-card">
-                <h4 class="fw-bold fs-5 text-danger mb-1">Danger Zone</h4>
-                <p class="text-muted small mb-3">Once you deactivate your account, your profile and active startups will no longer be visible to others.</p>
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <div class="fw-bold text-dark small">Deactivate Account</div>
-                        <div class="text-muted small">Disable all connection invites and hide from startup discovery.</div>
-                    </div>
-                    <asp:Button ID="btnDeactivate" runat="server" Text="Deactivate Account" CssClass="btn btn-outline-danger btn-sm" OnClientClick="return confirm('Are you sure you want to deactivate your account?');" OnClick="btnDeactivate_Click" />
-                </div>
-            </div>
-        </div>
+                <h4 class="fw-bold text-danger mb-1" style="font-size: 1.25rem;">Delete Account</h4>
+                <p class="text-muted small mb-4">Once you delete your account, there is no going back. Please be certain.</p>
 
-        <!-- Sidebar Tips -->
-        <div class="col-lg-4">
-            <div class="fl-settings-card">
-                <h5 class="fw-bold text-dark mb-3">Profile Visibility</h5>
-                <p class="text-muted small mb-4">A complete profile with a verified company and clear bio increases response rates by up to <strong>3.5x</strong>.</p>
-                <div class="p-3 bg-light rounded-3 border mb-3">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <i class="bi bi-shield-check text-success fs-5"></i>
-                        <span class="fw-bold small text-dark">Identity Verification</span>
+                <div class="fl-deactivate-inner-box">
+                    <div>
+                        <div class="fw-bold text-dark small" style="font-size: 0.9rem;">Deactivate Account</div>
+                        <div class="text-muted small" style="font-size: 0.8rem;">Temporarily remove your data from FoundrLink.</div>
                     </div>
-                    <p class="text-muted small mb-0" style="font-size: 0.8rem;">Your account is officially verified on FoundrLink.</p>
-                </div>
-                <div class="p-3 bg-light rounded-3 border">
-                    <div class="d-flex align-items-center gap-2 mb-1">
-                        <i class="bi bi-bell text-teal fs-5"></i>
-                        <span class="fw-bold small text-dark">Instant Notifications</span>
-                    </div>
-                    <p class="text-muted small mb-0" style="font-size: 0.8rem;">Enabled for collaboration requests and direct investor messages.</p>
+                    <asp:Button ID="btnDeactivate" runat="server" Text="Delete Account" CssClass="btn-fl-danger" OnClientClick="return confirm('Are you sure you want to deactivate your account?');" OnClick="btnDeactivate_Click" />
                 </div>
             </div>
         </div>
     </div>
+</asp:Content>
+
+<asp:Content ID="Content3" ContentPlaceHolderID="ScriptsContent" runat="server">
+    <script>
+        function initNames() {
+            var full = document.getElementById('<%= txtFullName.ClientID %>').value || '';
+            var parts = full.trim().split(/\s+/);
+            if (parts.length > 0 && parts[0]) {
+                document.getElementById('txtFirstName').value = parts[0];
+                document.getElementById('txtLastName').value = parts.slice(1).join(' ');
+            }
+        }
+        function syncFullName() {
+            var fn = document.getElementById('txtFirstName').value.trim();
+            var ln = document.getElementById('txtLastName').value.trim();
+            document.getElementById('<%= txtFullName.ClientID %>').value = (fn + ' ' + ln).trim();
+        }
+        document.addEventListener('DOMContentLoaded', initNames);
+    </script>
 </asp:Content>
