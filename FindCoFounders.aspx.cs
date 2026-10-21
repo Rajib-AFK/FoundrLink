@@ -183,5 +183,20 @@ namespace FoundrLink
             }
             return sb.ToString();
         }
+
+        protected int CalculateMatchScore(object skills)
+        {
+            if (skills == null || skills == DBNull.Value) return 75;
+            string s = skills.ToString().ToLowerInvariant();
+            int score = 70;
+            string[] keywords = { "react", "python", "typescript", "architecture", "c#", "node", "figma", "ai", "cloud" };
+            int matches = 0;
+            foreach (var kw in keywords)
+            {
+                if (s.Contains(kw)) matches++;
+            }
+            score += Math.Min(matches * 6, 28);
+            return Math.Min(score, 98);
+        }
     }
 }

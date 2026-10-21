@@ -23,7 +23,7 @@ namespace FoundrLink
                     SELECT TOP 3 StartupId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, 
                                  FundingRaised, FundingGoal, Status
                     FROM dbo.Startups 
-                    WHERE Status IN ('Active', 'Approved')
+                    WHERE Status IN ('Active', 'Approved', 'Published')
                     ORDER BY StartupId ASC";
 
                 DataTable dt = DbHelper.ExecuteDataTable(query);

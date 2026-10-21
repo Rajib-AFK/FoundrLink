@@ -57,7 +57,7 @@ namespace FoundrLink
                         pnlUnreadNotif.Visible = true;
                     }
 
-                    object msgCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Messages WHERE ReceiverUserId = @u AND IsRead = 0",
+                    object msgCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Messages WHERE ReceiverId = @u AND IsRead = 0",
                         DbHelper.CreateParam("@u", System.Data.SqlDbType.Int, userId.Value));
                     if (msgCount != null && Convert.ToInt32(msgCount) > 0)
                     {

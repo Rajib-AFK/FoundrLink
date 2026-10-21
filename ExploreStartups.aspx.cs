@@ -32,7 +32,7 @@ namespace FoundrLink
                            u.FullName AS FounderName, u.Title AS FounderTitle, u.AvatarUrl AS FounderAvatar
                     FROM dbo.Startups s
                     JOIN dbo.Users u ON s.FounderId = u.UserId
-                    WHERE s.Status IN ('Active', 'Approved')");
+                    WHERE s.Status IN ('Active', 'Approved', 'Published')");
 
                 var parameters = new List<SqlParameter>();
 

@@ -34,7 +34,7 @@ namespace FoundrLink.Admin
             litTotalUsers.Text = userCount != null ? Convert.ToInt32(userCount).ToString("N0") : "0";
 
             // Active Startups
-            object startupCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Startups WHERE Status = 'Published'");
+            object startupCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Startups WHERE Status IN ('Active', 'Approved', 'Published')");
             litActiveStartups.Text = startupCount != null ? Convert.ToInt32(startupCount).ToString("N0") : "0";
 
             // Pending Reports
