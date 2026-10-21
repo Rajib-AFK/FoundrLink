@@ -1,12 +1,25 @@
 using System;
-using System.Data;
 using System.Web.UI;
 using FoundrLink.Helpers;
+using FoundrLink.Services;
+using FoundrLink.Services.Interfaces;
 
 namespace FoundrLink
 {
     public partial class Login : Page
     {
+        private readonly IUserService _userService;
+
+        public Login()
+        {
+            _userService = new UserService();
+        }
+
+        public Login(IUserService userService)
+        {
+            _userService = userService ?? new UserService();
+        }
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -27,45 +40,26 @@ namespace FoundrLink
 
             try
             {
-                string query = "SELECT UserId, FullName, Email, PasswordHash, Role, AvatarUrl, Status FROM dbo.Users WHERE Email = @Email";
-                DataTable dt = DbHelper.ExecuteDataTable(query, DbHelper.CreateParam("@Email", SqlDbType.NVarChar, email));
+                var authResult = _userService.Authenticate(email, password);
 
-                if (dt.Rows.Count > 0)
+                if (authResult.Success && authResult.Data != null)
                 {
-                    DataRow row = dt.Rows[0];
-                    string status = row["Status"]?.ToString() ?? "Active";
+                    var user = authResult.Data;
+                    SecurityHelper.SetUserSession(user.UserId, user.FullName, user.Email, user.Role, user.AvatarUrl);
 
-                    if (string.Equals(status, "Inactive", StringComparison.OrdinalIgnoreCase))
+                    string returnUrl = Request.QueryString["returnUrl"];
+                    if (SecurityHelper.IsLocalUrl(returnUrl))
                     {
-                        ShowError("Your account has been deactivated. Please contact support.");
-                        return;
+                        Response.Redirect(returnUrl);
                     }
-
-                    string storedHash = row["PasswordHash"]?.ToString();
-                    if (SecurityHelper.VerifyPassword(password, storedHash))
+                    else
                     {
-                        int userId = Convert.ToInt32(row["UserId"]);
-                        string fullName = row["FullName"]?.ToString();
-                        string userEmail = row["Email"]?.ToString();
-                        string role = row["Role"]?.ToString();
-                        string avatar = row["AvatarUrl"]?.ToString();
-
-                        SecurityHelper.SetUserSession(userId, fullName, userEmail, role, avatar);
-
-                        string returnUrl = Request.QueryString["returnUrl"];
-                        if (SecurityHelper.IsLocalUrl(returnUrl))
-                        {
-                            Response.Redirect(returnUrl);
-                        }
-                        else
-                        {
-                            RedirectByRole();
-                        }
-                        return;
+                        RedirectByRole();
                     }
+                    return;
                 }
 
-                ShowError("Invalid email address or password. Please try again.");
+                ShowError(authResult.Message ?? "Invalid email address or password. Please try again.");
             }
             catch (Exception ex)
             {

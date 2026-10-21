@@ -127,6 +127,49 @@ namespace FoundrLink.Services
             }
         }
 
+        public ServiceResult<int> CreateUserByAdmin(string fullName, string email, string password, string role, bool isVerified)
+        {
+            if (string.IsNullOrWhiteSpace(fullName) || string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password) || password.Length < 8)
+            {
+                return ServiceResult<int>.Fail("Please enter valid information. Password must be at least 8 characters.");
+            }
+
+            try
+            {
+                if (EmailExists(email))
+                {
+                    return ServiceResult<int>.Fail("A user with this email address already exists.");
+                }
+
+                string passHash = SecurityHelper.HashPassword(password);
+                string insertSql = @"
+                    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, IsVerified, Status, AvatarUrl, CreatedAt, UpdatedAt)
+                    OUTPUT INSERTED.UserId
+                    VALUES (@FullName, @Email, @Hash, @Role, @Verified, 'Active', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', SYSUTCDATETIME(), SYSUTCDATETIME());";
+
+                SqlParameter[] p = new SqlParameter[]
+                {
+                    new SqlParameter("@FullName", fullName.Trim()),
+                    new SqlParameter("@Email", email.Trim()),
+                    new SqlParameter("@Hash", passHash),
+                    new SqlParameter("@Role", role.Trim()),
+                    new SqlParameter("@Verified", isVerified ? 1 : 0)
+                };
+
+                object newId = DbHelper.ExecuteScalar(insertSql, p);
+                if (newId != null && int.TryParse(newId.ToString(), out int userId))
+                {
+                    return ServiceResult<int>.Ok(userId, $"User <strong>{fullName}</strong> created successfully.");
+                }
+                return ServiceResult<int>.Fail("Failed to create user record.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("CreateUserByAdmin error: " + ex);
+                return ServiceResult<int>.Fail("Error creating user: " + ex.Message);
+            }
+        }
+
         public bool EmailExists(string email)
         {
             if (string.IsNullOrWhiteSpace(email)) return false;
@@ -178,9 +221,66 @@ namespace FoundrLink.Services
             }
         }
 
+        public ServiceResult ToggleStatus(int userId)
+        {
+            if (userId <= 0) return ServiceResult.Fail("Invalid user identifier.");
+
+            try
+            {
+                string sql = "UPDATE dbo.Users SET Status = CASE WHEN Status = 'Active' THEN 'Inactive' ELSE 'Active' END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
+                int rows = DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
+                return rows > 0 ? ServiceResult.Ok("User active status updated.") : ServiceResult.Fail("User not found.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("ToggleStatus error: " + ex);
+                return ServiceResult.Fail("Error toggling user status: " + ex.Message);
+            }
+        }
+
+        public ServiceResult ToggleVerification(int userId)
+        {
+            if (userId <= 0) return ServiceResult.Fail("Invalid user identifier.");
+
+            try
+            {
+                string sql = "UPDATE dbo.Users SET IsVerified = CASE WHEN IsVerified = 1 THEN 0 ELSE 1 END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
+                int rows = DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
+                return rows > 0 ? ServiceResult.Ok("User verification status updated.") : ServiceResult.Fail("User not found.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("ToggleVerification error: " + ex);
+                return ServiceResult.Fail("Error toggling user verification: " + ex.Message);
+            }
+        }
+
+        public ServiceResult UpdateUserRole(int userId, string newRole)
+        {
+            if (userId <= 0) return ServiceResult.Fail("Invalid user identifier.");
+            if (string.IsNullOrWhiteSpace(newRole)) return ServiceResult.Fail("Role cannot be empty.");
+
+            try
+            {
+                string sql = "UPDATE dbo.Users SET Role = @Role, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
+                int rows = DbHelper.ExecuteNonQuery(sql,
+                    new SqlParameter("@Role", newRole.Trim()),
+                    new SqlParameter("@Id", userId));
+
+                return rows > 0 
+                    ? ServiceResult.Ok($"User role updated to {newRole}.") 
+                    : ServiceResult.Fail("User not found.");
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("UpdateUserRole error: " + ex);
+                return ServiceResult.Fail("Error updating user role: " + ex.Message);
+            }
+        }
+
         public DataTable GetAllUsersDataTable(string search = null, string role = null, string status = null)
         {
-            string sql = "SELECT UserId, FullName, Email, Role, Title, Location, Company, IsVerified, Status, CreatedAt FROM dbo.Users WHERE 1=1";
+            string sql = "SELECT UserId, FullName, Email, Role, Title, Company, AvatarUrl, IsVerified, Status, CreatedAt FROM dbo.Users WHERE 1=1";
             var paramList = new List<SqlParameter>();
 
             if (!string.IsNullOrWhiteSpace(search))
