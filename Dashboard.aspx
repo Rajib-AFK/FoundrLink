@@ -253,9 +253,14 @@
                                         <div class="text-muted" style="font-size: 0.74rem;"><%# Eval("Role") %></div>
                                     </div>
                                 </div>
-                                <asp:LinkButton ID="btnConnect" runat="server" CommandName="Connect" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-outline-secondary rounded-circle" style="width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; padding:0;" ToolTip="Connect">
-                                    <i class="bi bi-person-plus"></i>
-                                </asp:LinkButton>
+                                <div class="d-flex align-items-center gap-2">
+                                    <span class="badge rounded-pill px-2 py-1 fw-bold" style="background-color: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; font-size: 0.68rem;">
+                                        <i class="bi bi-stars"></i> <%# GetMatchPercent(Container.ItemIndex) %>% Match
+                                    </span>
+                                    <asp:LinkButton ID="btnConnect" runat="server" CommandName="Connect" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-outline-secondary rounded-circle" style="width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; padding:0;" ToolTip="Connect">
+                                        <i class="bi bi-person-plus"></i>
+                                    </asp:LinkButton>
+                                </div>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>
