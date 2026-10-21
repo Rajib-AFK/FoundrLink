@@ -2,7 +2,7 @@
 -- FoundrLink Database Schema & Comprehensive Seed Data Script
 -- Microsoft SQL Server 2016+ / LocalDB
 -- All sample emails strictly conform to @ripaldesign.studio convention
--- Populates all 20 tables with rich, production-like data for real graphs
+-- Populates all tables with rich, production-like data for real graphs
 -- ====================================================================
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = N'FoundrLinkDB')
@@ -22,7 +22,7 @@ BEGIN
         FullName NVARCHAR(200) NOT NULL,
         Email NVARCHAR(300) NOT NULL UNIQUE,
         PasswordHash NVARCHAR(512) NOT NULL,
-        Role NVARCHAR(100) NOT NULL DEFAULT 'Founder', -- Founder, Investor, Co-Founder, Admin
+        Role NVARCHAR(100) NOT NULL DEFAULT 'Founder', -- Founder, Investor, Co-Founder, Technical, Admin, Marketing
         Title NVARCHAR(200) NULL,
         Location NVARCHAR(200) NULL,
         Bio NVARCHAR(MAX) NULL,
@@ -104,7 +104,7 @@ BEGIN
         Location NVARCHAR(200) NULL,
         WebsiteUrl NVARCHAR(300) NULL,
         Commitment NVARCHAR(100) NULL DEFAULT 'Part-time / Equity',
-        FoundedYear INT NULL DEFAULT 2023,
+        FoundedYear INT NULL DEFAULT 2024,
         FundingRaised DECIMAL(18,2) NOT NULL DEFAULT 0,
         FundingGoal DECIMAL(18,2) NOT NULL DEFAULT 0,
         MRR DECIMAL(18,2) NOT NULL DEFAULT 0,
@@ -253,15 +253,15 @@ IF OBJECT_ID('dbo.Reports', 'U') IS NULL
 BEGIN
     CREATE TABLE dbo.Reports (
         ReportId INT IDENTITY(1,1) PRIMARY KEY,
-        ReporterUserId INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
+        ReporterUserId INT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         ReporterEmail NVARCHAR(300) NOT NULL,
         ReportedItemType NVARCHAR(100) NOT NULL,
         ReportedItemId INT NOT NULL,
-        ReportedItemTitle NVARCHAR(200) NOT NULL,
-        ReportType NVARCHAR(100) NOT NULL,
+        ReportedItemTitle NVARCHAR(400) NOT NULL,
+        ReportType NVARCHAR(100) NOT NULL DEFAULT 'Spam',
         Details NVARCHAR(MAX) NULL,
         Status NVARCHAR(100) NOT NULL DEFAULT 'Pending',
-        CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
 GO
@@ -290,8 +290,8 @@ BEGIN
         ReceiverUserId INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         StartupId INT NOT NULL FOREIGN KEY REFERENCES dbo.Startups(StartupId),
         Message NVARCHAR(MAX) NULL,
-        Status NVARCHAR(100) NOT NULL DEFAULT 'Pending',
-        CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+        Status NVARCHAR(100) NOT NULL DEFAULT 'Pending', -- Pending, Accepted, Declined
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
 GO
@@ -303,8 +303,8 @@ BEGIN
         ConnectionId INT IDENTITY(1,1) PRIMARY KEY,
         RequesterUserId INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
         ReceiverUserId INT NOT NULL FOREIGN KEY REFERENCES dbo.Users(UserId),
-        Status NVARCHAR(100) NOT NULL DEFAULT 'Accepted',
-        CreatedAt DATETIME NOT NULL DEFAULT GETDATE()
+        Status NVARCHAR(100) NOT NULL DEFAULT 'Connected', -- Connected, Blocked
+        CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME()
     );
 END
 GO
@@ -375,25 +375,62 @@ DECLARE @DefaultPwd NVARCHAR(512) = '008c70392e3abfbd0fa47bbc2ed96aa99bd49e15972
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'admin@ripaldesign.studio')
 BEGIN
     INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
-    VALUES ('Platform Admin', 'admin@ripaldesign.studio', @DefaultPwd, 'Admin', 'Platform Administrator', 'Mumbai, India', 'FoundrLink Head System Administrator & Moderation Lead.', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150', 'FoundrLink HQ', 1, 'Active');
+    VALUES ('Platform Admin', 'admin@ripaldesign.studio', @DefaultPwd, 'Admin', 'Platform Administrator', 'Mumbai, India', 'FoundrLink Head System Administrator & Moderation Lead.', 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80', 'FoundrLink HQ', 1, 'Active');
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'founder@ripaldesign.studio')
 BEGIN
     INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
-    VALUES ('Demo Founder', 'founder@ripaldesign.studio', @DefaultPwd, 'Founder', 'Startup Founder & CEO', 'Bengaluru, India', 'Serial entrepreneur building next-generation autonomous AI developer agents.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150', 'TechNovate Labs', 1, 'Active');
+    VALUES ('Startup Founder', 'founder@ripaldesign.studio', @DefaultPwd, 'Founder', 'Startup Founder & CEO', 'Bengaluru, India', 'Serial entrepreneur with a passion for building scalable infrastructure that empowers creators and small businesses.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', 'TechNovate Labs', 1, 'Active');
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'cofounder@ripaldesign.studio')
 BEGIN
     INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
-    VALUES ('Demo Co-Founder', 'cofounder@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'Lead Systems & Full-Stack Architect', 'Hyderabad, India', 'Systems architect specialized in distributed cloud systems, real-time telemetry, and LLM orchestration.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150', 'TechNovate Labs', 1, 'Active');
+    VALUES ('Technical Co-Founder', 'cofounder@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'Technical Co-founder & Lead Backend', 'Bengaluru, India', 'Full-stack builder specializing in distributed systems, high throughput APIs, React, and Node microservices.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
 END
 
 IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'investor@ripaldesign.studio')
 BEGIN
     INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
-    VALUES ('Demo Investor', 'investor@ripaldesign.studio', @DefaultPwd, 'Investor', 'Managing Partner & Angel Backer', 'Mumbai, India', 'Early-stage angel backer focused on B2B SaaS, developer tooling, and applied machine learning.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150', 'Apex Capital', 1, 'Active');
+    VALUES ('Angel Investor', 'investor@ripaldesign.studio', @DefaultPwd, 'Investor', 'Managing Partner & Angel Investor', 'Mumbai, India', 'Early-stage angel and seed investor focused on B2B SaaS, AI, and developer tools.', 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80', 'Apex Capital', 1, 'Active');
+END
+
+-- Extended Team Accounts
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'yash@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Yash Vinchhi', 'yash@ripaldesign.studio', @DefaultPwd, 'Founder', 'Founder & Systems Architect', 'Mumbai, India', 'Serial entrepreneur focused on building scalable infrastructure that empowers creators.', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80', 'NeuroSync', 1, 'Active');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'rachit@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Rachit Agrawal', 'rachit@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'Full Stack & Cloud Lead', 'Bengaluru, India', 'Specializing in high throughput APIs, distributed microservices, and React.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'chirag@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Chirag K F', 'chirag@ripaldesign.studio', @DefaultPwd, 'Founder', 'Aspiring Founder & Developer', 'Bengaluru, India', 'Passionate developer building next-gen scalable products for startup ecosystems.', 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=150&auto=format&fit=crop&q=80', 'FoundrLink', 1, 'Active');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'ananya@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Ananya Iyer', 'ananya@ripaldesign.studio', @DefaultPwd, 'Marketing', 'Head of Growth & Community', 'Hyderabad, India', 'Obsessed with product-led growth, virality loops, and zero-to-one B2B inbound marketing funnels.', 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80', 'GrowthLoop', 1, 'Active');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'manoj@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Manoj Tiwari', 'manoj@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'Lead Product Designer (UI/UX)', 'Delhi, India', 'Designing clean, human-centered SaaS tools. Ex-agency design lead focused on Figma systems.', 'https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=150&auto=format&fit=crop&q=80', 'Apex Studio', 1, 'Active');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Users WHERE Email = 'shreya@ripaldesign.studio')
+BEGIN
+    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, Title, Location, Bio, AvatarUrl, Company, IsVerified, Status)
+    VALUES ('Shreya Joshi', 'shreya@ripaldesign.studio', @DefaultPwd, 'Co-Founder', 'AI & Machine Learning Architect', 'Pune, India', 'Building fine-tuned LLM agents, vector retrieval pipelines, and AI copilot systems.', 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80', 'NeuroSync', 1, 'Active');
 END
 
 -- Ensure all accounts use @ripaldesign.studio and @DefaultPwd
@@ -480,6 +517,39 @@ BEGIN
      'Published', 
      SYSUTCDATETIME(), 
      SYSUTCDATETIME());
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Startups WHERE Name = 'NeuroSync')
+BEGIN
+    INSERT INTO dbo.Startups (FounderId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, FullDescription, Problem, Solution, TeamSize, RequiredSkills, Location, WebsiteUrl, Commitment, FoundedYear, FundingRaised, FundingGoal, MRR, Status)
+    VALUES (@FounderUserId, 'NeuroSync', 'AI-powered workflow automation and predictive intelligence', 'Artificial Intelligence', 'Seed Stage', 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200&auto=format&fit=crop&q=80',
+    'Automating enterprise decision workflows with proprietary real-time LLM agents.',
+    'NeuroSync is building the next-generation operating system for enterprise productivity.',
+    'Enterprises drown in siloed data across hundreds of SaaS tools without unified intelligence.',
+    'A unified agentic workflow orchestrator that connects CRM, ERP, and databases seamlessly.',
+    4, 'React, Python, LangChain, Vector DBs, UI/UX', 'Remote / Mumbai', 'https://neurosync.ripaldesign.studio', 'Full-time', 2024, 2500000, 5000000, 42000, 'Published');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Startups WHERE Name = 'EcoTrack')
+BEGIN
+    INSERT INTO dbo.Startups (FounderId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, FullDescription, Problem, Solution, TeamSize, RequiredSkills, Location, WebsiteUrl, Commitment, FoundedYear, FundingRaised, FundingGoal, MRR, Status)
+    VALUES (@FounderUserId, 'EcoTrack', 'Automated API-driven carbon auditing & sustainability compliance', 'CleanTech', 'MVP', 'https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?w=200&auto=format&fit=crop&q=80',
+    'Helping mid-market companies achieve ESG compliance with zero-overhead sensor integrations.',
+    'EcoTrack automates the entire scope 1, 2, and 3 emissions reporting pipeline for manufacturing and logistics firms.',
+    'ESG reporting regulations are rapidly tightening globally.',
+    'A real-time continuous auditing SaaS that produces audit-ready compliance certificates in minutes.',
+    3, 'Python, Data Engineering, IoT, Angular', 'Bengaluru, India', 'https://ecotrack.ripaldesign.studio', 'Part-time / Equity', 2023, 800000, 2000000, 18000, 'Published');
+END
+
+IF NOT EXISTS (SELECT 1 FROM dbo.Startups WHERE Name = 'FoundrLink')
+BEGIN
+    INSERT INTO dbo.Startups (FounderId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, FullDescription, Problem, Solution, TeamSize, RequiredSkills, Location, WebsiteUrl, Commitment, FoundedYear, FundingRaised, FundingGoal, MRR, Status)
+    VALUES (@FounderUserId, 'FoundrLink', 'Smart co-founder discovery and startup team assembly platform', 'EdTech & Productivity', 'Seed Stage', 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=200&auto=format&fit=crop&q=80',
+    'Connecting ambitious students and founders with verified developer, designer, and marketer talent.',
+    'FoundrLink eliminates the friction of finding co-founders through transparent skill compatibility.',
+    'People have ideas and skills, but lack a focused platform connecting them for equity projects.',
+    'A dedicated matching hub where founders post project needs and skilled builders collaborate.',
+    3, 'C#, React, SQL, Product Design, Growth Marketing', 'Bengaluru, India', 'https://foundrlink.ripaldesign.studio', 'Full-time / Equity', 2024, 1500000, 3000000, 25000, 'Published');
 END
 GO
 

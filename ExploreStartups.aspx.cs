@@ -90,7 +90,7 @@ namespace FoundrLink
                            COALESCE(NULLIF(u.AvatarUrl, ''), 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') AS FounderAvatar
                     FROM dbo.Startups s
                     LEFT JOIN dbo.Users u ON s.FounderId = u.UserId
-                    WHERE s.Status IN ('Active', 'Approved')");
+                    WHERE s.Status IN ('Active', 'Approved', 'Published')");
 
                 var parameters = new List<SqlParameter>();
                 var activeFilters = new List<string>();

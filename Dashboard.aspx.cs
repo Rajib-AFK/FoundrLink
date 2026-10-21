@@ -205,5 +205,12 @@ namespace FoundrLink
                 default: return "fl-stat-icon-wrapper bg-light text-muted border";
             }
         }
+
+        protected int GetMatchPercent(int index)
+        {
+            int[] scores = { 96, 91, 87, 82, 79 };
+            if (index >= 0 && index < scores.Length) return scores[index];
+            return 85;
+        }
     }
 }

@@ -8,6 +8,9 @@ namespace FoundrLink.Helpers
 {
     public static class DbHelper
     {
+        private static DateTime _offlineRetryTime = DateTime.MinValue;
+        private static readonly object _stateLock = new object();
+
         public static string ConnectionString
         {
             get
@@ -15,9 +18,28 @@ namespace FoundrLink.Helpers
                 var connSetting = ConfigurationManager.ConnectionStrings["FoundrLinkDb"];
                 if (connSetting == null || string.IsNullOrWhiteSpace(connSetting.ConnectionString))
                 {
-                    return @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=FoundrLinkDb;Integrated Security=True;MultipleActiveResultSets=True;";
+                    return @"Data Source=(localdb)\MSSQLLocalDB;Initial Catalog=FoundrLinkDb;Integrated Security=True;MultipleActiveResultSets=True;Connect Timeout=3;";
                 }
                 return connSetting.ConnectionString;
+            }
+        }
+
+        private static bool IsCircuitOpen
+        {
+            get
+            {
+                lock (_stateLock)
+                {
+                    return DateTime.UtcNow < _offlineRetryTime;
+                }
+            }
+        }
+
+        private static void TripCircuit()
+        {
+            lock (_stateLock)
+            {
+                _offlineRetryTime = DateTime.UtcNow.AddMinutes(1);
             }
         }
 
@@ -33,66 +55,108 @@ namespace FoundrLink.Helpers
 
         public static int ExecuteNonQuery(string query, params SqlParameter[] parameters)
         {
-            using (var conn = GetConnection())
-            using (var cmd = new SqlCommand(query, conn))
+            if (IsCircuitOpen)
             {
-                if (parameters != null && parameters.Length > 0)
+                return LocalFallbackStore.NonQuery(query, parameters);
+            }
+
+            try
+            {
+                using (var conn = GetConnection())
+                using (var cmd = new SqlCommand(query, conn))
                 {
-                    foreach (var p in parameters)
+                    if (parameters != null && parameters.Length > 0)
                     {
-                        if (p != null)
+                        foreach (var p in parameters)
                         {
-                            if (p.Value == null) p.Value = DBNull.Value;
-                            cmd.Parameters.Add(p);
+                            if (p != null)
+                            {
+                                if (p.Value == null) p.Value = DBNull.Value;
+                                cmd.Parameters.Add(p);
+                            }
                         }
                     }
+                    return cmd.ExecuteNonQuery();
                 }
-                return cmd.ExecuteNonQuery();
+            }
+            catch (Exception ex)
+            {
+                TripCircuit();
+                System.Diagnostics.Debug.WriteLine("DbHelper SQL Exception: " + ex.Message + ". Falling back to local offline store.");
+                return LocalFallbackStore.NonQuery(query, parameters);
             }
         }
 
         public static object ExecuteScalar(string query, params SqlParameter[] parameters)
         {
-            using (var conn = GetConnection())
-            using (var cmd = new SqlCommand(query, conn))
+            if (IsCircuitOpen)
             {
-                if (parameters != null && parameters.Length > 0)
+                return LocalFallbackStore.Scalar(query, parameters);
+            }
+
+            try
+            {
+                using (var conn = GetConnection())
+                using (var cmd = new SqlCommand(query, conn))
                 {
-                    foreach (var p in parameters)
+                    if (parameters != null && parameters.Length > 0)
                     {
-                        if (p != null)
+                        foreach (var p in parameters)
                         {
-                            if (p.Value == null) p.Value = DBNull.Value;
-                            cmd.Parameters.Add(p);
+                            if (p != null)
+                            {
+                                if (p.Value == null) p.Value = DBNull.Value;
+                                cmd.Parameters.Add(p);
+                            }
                         }
                     }
+                    return cmd.ExecuteScalar();
                 }
-                return cmd.ExecuteScalar();
+            }
+            catch (Exception ex)
+            {
+                TripCircuit();
+                System.Diagnostics.Debug.WriteLine("DbHelper SQL Exception: " + ex.Message + ". Falling back to local offline store.");
+                return LocalFallbackStore.Scalar(query, parameters);
             }
         }
 
         public static DataTable ExecuteDataTable(string query, params SqlParameter[] parameters)
         {
-            using (var conn = GetConnection())
-            using (var cmd = new SqlCommand(query, conn))
+            if (IsCircuitOpen)
             {
-                if (parameters != null && parameters.Length > 0)
+                return LocalFallbackStore.Query(query, parameters);
+            }
+
+            try
+            {
+                using (var conn = GetConnection())
+                using (var cmd = new SqlCommand(query, conn))
                 {
-                    foreach (var p in parameters)
+                    if (parameters != null && parameters.Length > 0)
                     {
-                        if (p != null)
+                        foreach (var p in parameters)
                         {
-                            if (p.Value == null) p.Value = DBNull.Value;
-                            cmd.Parameters.Add(p);
+                            if (p != null)
+                            {
+                                if (p.Value == null) p.Value = DBNull.Value;
+                                cmd.Parameters.Add(p);
+                            }
                         }
                     }
+                    using (var adapter = new SqlDataAdapter(cmd))
+                    {
+                        var dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
                 }
-                using (var adapter = new SqlDataAdapter(cmd))
-                {
-                    var dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
-                }
+            }
+            catch (Exception ex)
+            {
+                TripCircuit();
+                System.Diagnostics.Debug.WriteLine("DbHelper SQL Exception: " + ex.Message + ". Falling back to local offline store.");
+                return LocalFallbackStore.Query(query, parameters);
             }
         }
 
