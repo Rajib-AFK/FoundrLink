@@ -19,10 +19,25 @@ namespace FoundrLink.Helpers
         {
             get
             {
-                string path = HttpContext.Current != null
-                    ? HttpContext.Current.Server.MapPath("~/App_Data/foundrlink_local_db.json")
-                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "foundrlink_local_db.json");
-                return path;
+                if (HttpContext.Current != null)
+                {
+                    return HttpContext.Current.Server.MapPath("~/App_Data/foundrlink_local_db.json");
+                }
+
+                string candidateCurrent = Path.Combine(Environment.CurrentDirectory, "App_Data", "foundrlink_local_db.json");
+                if (File.Exists(candidateCurrent)) return candidateCurrent;
+
+                string candidateBase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "foundrlink_local_db.json");
+                if (File.Exists(candidateBase)) return candidateBase;
+
+                string asmDir = Path.GetDirectoryName(typeof(LocalFallbackStore).Assembly.Location);
+                if (!string.IsNullOrEmpty(asmDir))
+                {
+                    string candidateAsmParent = Path.Combine(asmDir, "..", "App_Data", "foundrlink_local_db.json");
+                    if (File.Exists(candidateAsmParent)) return Path.GetFullPath(candidateAsmParent);
+                }
+
+                return candidateCurrent;
             }
         }
 

@@ -110,6 +110,9 @@
     <Compile Include="Services\UserService.cs" />
     <Compile Include="Services\Interfaces\IStartupService.cs" />
     <Compile Include="Services\StartupService.cs" />
+    <Compile Include="Services\Interfaces\IValidationService.cs" />
+    <Compile Include="Services\ValidationService.cs" />
+    <Compile Include="Tests\TestRunner.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
