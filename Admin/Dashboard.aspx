@@ -274,7 +274,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             var ctx = document.getElementById('adminActivityChart');
-            if (ctx) {
+            if (ctx && typeof Chart !== 'undefined') {
                 var gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 260);
                 gradient.addColorStop(0, 'rgba(16, 185, 129, 0.25)');
                 gradient.addColorStop(1, 'rgba(16, 185, 129, 0.0)');

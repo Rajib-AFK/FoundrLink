@@ -123,7 +123,7 @@
         </footer>
     </form>
 
-    <script src="~/Scripts/bootstrap.bundle.min.js"></script>
+    <script src='<%= ResolveClientUrl("~/Scripts/bootstrap.bundle.min.js") %>'></script>
     <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
     </asp:ContentPlaceHolder>
 </body>
