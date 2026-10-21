@@ -62,6 +62,7 @@ namespace FoundrLink
                     {
                         CompletionPercentage = Convert.ToInt32(r["ProfileCompletionPercentage"]);
                         litCompletionPct.Text = CompletionPercentage + "%";
+                        divProgressBar.Style["width"] = CompletionPercentage + "%";
                     }
                 }
 

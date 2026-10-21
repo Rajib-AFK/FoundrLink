@@ -6,6 +6,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Literal litUserName;
         protected global::System.Web.UI.WebControls.Literal litUserHeadline;
         protected global::System.Web.UI.WebControls.Literal litCompletionPct;
+        protected global::System.Web.UI.HtmlControls.HtmlGenericControl divProgressBar;
         protected global::System.Web.UI.WebControls.Literal litProfileViews;
         protected global::System.Web.UI.WebControls.Literal litActiveMessages;
         protected global::System.Web.UI.WebControls.Literal litTeamsJoined;

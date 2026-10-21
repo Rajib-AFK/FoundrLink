@@ -147,5 +147,16 @@ namespace FoundrLink
                 litAlertMessage.Text = "An error occurred while submitting your request. Please try again.";
             }
         }
+        protected void btnContactFounder_Click(object sender, EventArgs e)
+        {
+            if (_founderId > 0)
+            {
+                Response.Redirect("~/Messages.aspx?partnerId=" + _founderId);
+            }
+            else
+            {
+                Response.Redirect("~/Messages.aspx");
+            }
+        }
     }
 }

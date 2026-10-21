@@ -111,7 +111,7 @@
                 <span class="small fw-bold" style="color: #10B981;"><asp:Literal ID="litCompletionPct" runat="server" Text="85%" /></span>
             </div>
             <div class="progress mb-2" style="height: 6px; background-color: #E2E8F0; border-radius: 4px;">
-                <div class="progress-bar" style='<%= "width: " + CompletionPercentage + "%; background-color: #10B981; border-radius: 4px;" %>'></div>
+                <div id="divProgressBar" runat="server" class="progress-bar" style="width: 85%; background-color: #10B981; border-radius: 4px;"></div>
             </div>
             <div class="text-muted" style="font-size: 0.72rem;">
                 Add your pitch deck to reach 100%
