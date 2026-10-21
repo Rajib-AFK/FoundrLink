@@ -30,7 +30,7 @@
             overflow: hidden;
             flex-shrink: 0;
         }
-        .fl-skill-pill {
+        .fl-skill-pill, .fl-skill-chip {
             background-color: #EEF2FF;
             color: #4F46E5;
             font-size: 0.74rem;
@@ -60,10 +60,19 @@
             top: 50%;
             transform: translateY(-50%);
             color: #94A3B8;
+            pointer-events: none;
         }
         .fl-search-input-wrapper input {
             padding-left: 42px !important;
             height: 44px;
+        }
+        .fl-page-btn.disabled {
+            opacity: 0.45;
+            pointer-events: none;
+            cursor: not-allowed;
+            background: #F8FAFC !important;
+            color: #94A3B8 !important;
+            border-color: #E2E8F0 !important;
         }
     </style>
 </asp:Content>
@@ -75,30 +84,39 @@
     </div>
 
     <!-- Filter Card -->
-    <div class="fl-card mb-4 p-4">
-        <div class="mb-3">
-            <div class="fl-search-input-wrapper">
-                <i class="bi bi-search"></i>
-                <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Search startups, industries or skills..." />
+    <asp:Panel ID="pnlFilterCard" runat="server" DefaultButton="btnApply" CssClass="fl-card mb-4 p-4">
+        <div class="row g-2 align-items-center mb-3">
+            <div class="col">
+                <div class="fl-search-input-wrapper">
+                    <i class="bi bi-search"></i>
+                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control" placeholder="Search startups, industries, skills, founders or locations..." />
+                </div>
+            </div>
+            <div class="col-auto">
+                <asp:LinkButton ID="btnSearch" runat="server" CssClass="btn-fl-dark d-flex align-items-center gap-2" style="height: 44px; padding: 0 20px;" OnClick="btnApply_Click">
+                    <i class="bi bi-search"></i>
+                    <span class="d-none d-sm-inline">Search</span>
+                </asp:LinkButton>
             </div>
         </div>
 
         <div class="row g-3 mb-4">
             <div class="col-md-3">
                 <asp:DropDownList ID="ddlIndustry" runat="server" CssClass="form-select" style="height: 42px;">
-                    <asp:ListItem Value="" Text="Industry" />
+                    <asp:ListItem Value="" Text="All Industries" />
                     <asp:ListItem Value="AI/ML" Text="AI/ML" />
                     <asp:ListItem Value="FinTech" Text="FinTech" />
                     <asp:ListItem Value="PropTech" Text="PropTech" />
                     <asp:ListItem Value="HealthTech" Text="HealthTech" />
                     <asp:ListItem Value="Climate Tech" Text="Climate Tech" />
                     <asp:ListItem Value="Sustainability" Text="Sustainability" />
+                    <asp:ListItem Value="Logistics" Text="Logistics" />
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-3">
                 <asp:DropDownList ID="ddlSkill" runat="server" CssClass="form-select" style="height: 42px;">
-                    <asp:ListItem Value="" Text="Required Skill" />
+                    <asp:ListItem Value="" Text="All Required Skills" />
                     <asp:ListItem Value="Full Stack" Text="Full Stack Dev" />
                     <asp:ListItem Value="Product Manager" Text="Product Manager" />
                     <asp:ListItem Value="Smart Contract" Text="Smart Contract Dev" />
@@ -106,12 +124,13 @@
                     <asp:ListItem Value="Data Scientist" Text="Data Scientist" />
                     <asp:ListItem Value="Python" Text="Python" />
                     <asp:ListItem Value="React" Text="React" />
+                    <asp:ListItem Value="Kubernetes" Text="Kubernetes" />
                 </asp:DropDownList>
             </div>
 
             <div class="col-md-3">
                 <asp:DropDownList ID="ddlStage" runat="server" CssClass="form-select" style="height: 42px;">
-                    <asp:ListItem Value="" Text="Startup Stage" />
+                    <asp:ListItem Value="" Text="All Stages" />
                     <asp:ListItem Value="Pre-Seed" Text="Pre-Seed" />
                     <asp:ListItem Value="Seed Stage" Text="Seed Stage" />
                     <asp:ListItem Value="Series A" Text="Series A" />
@@ -121,24 +140,30 @@
 
             <div class="col-md-3">
                 <asp:DropDownList ID="ddlTeamSize" runat="server" CssClass="form-select" style="height: 42px;">
-                    <asp:ListItem Value="" Text="Team Size" />
-                    <asp:ListItem Value="1-5" Text="1-5" />
-                    <asp:ListItem Value="6-15" Text="6-15" />
-                    <asp:ListItem Value="16-50" Text="16-50" />
+                    <asp:ListItem Value="" Text="All Team Sizes" />
+                    <asp:ListItem Value="1-5" Text="1-5 members" />
+                    <asp:ListItem Value="6-15" Text="6-15 members" />
+                    <asp:ListItem Value="16-50" Text="16-50 members" />
+                    <asp:ListItem Value="50+" Text="50+ members" />
                 </asp:DropDownList>
             </div>
         </div>
 
-        <div class="d-flex justify-content-end gap-2">
-            <asp:Button ID="btnClear" runat="server" Text="Clear Filters" CssClass="btn-fl-outline" OnClick="btnClear_Click" />
-            <asp:Button ID="btnApply" runat="server" Text="Apply Filters" CssClass="btn-fl-dark" OnClick="btnApply_Click" />
+        <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+            <div class="small text-muted">
+                <asp:Literal ID="litActiveFilterSummary" runat="server" />
+            </div>
+            <div class="d-flex gap-2">
+                <asp:Button ID="btnClear" runat="server" Text="Clear Filters" CssClass="btn-fl-outline" OnClick="btnClear_Click" />
+                <asp:Button ID="btnApply" runat="server" Text="Apply Filters" CssClass="btn-fl-dark" OnClick="btnApply_Click" />
+            </div>
         </div>
-    </div>
+    </asp:Panel>
 
     <!-- Results Subheader -->
     <div class="d-flex flex-wrap justify-content-between align-items-center mb-3">
         <div class="small text-muted">
-            Showing <strong class="text-dark"><asp:Literal ID="litMatchCount" runat="server" Text="24" /></strong> startups matching your profile
+            <asp:Literal ID="litMatchCount" runat="server" />
         </div>
         <div class="d-flex align-items-center gap-2">
             <span class="small text-muted" style="font-size: 0.75rem; font-weight: 700;">SORT BY</span>
@@ -146,9 +171,26 @@
                 <asp:ListItem Value="match" Text="Best Match" />
                 <asp:ListItem Value="newest" Text="Newest First" />
                 <asp:ListItem Value="size" Text="Team Size" />
+                <asp:ListItem Value="name" Text="Name (A-Z)" />
             </asp:DropDownList>
         </div>
     </div>
+
+    <!-- Empty State -->
+    <asp:Panel ID="pnlEmptyState" runat="server" Visible="false" CssClass="fl-card text-center p-5 mb-4">
+        <div class="mb-3">
+            <div style="width: 64px; height: 64px; border-radius: 50%; background: #F1F5F9; display: inline-flex; align-items: center; justify-content: center;">
+                <i class="bi bi-search text-muted" style="font-size: 1.8rem;"></i>
+            </div>
+        </div>
+        <h4 class="fw-bold text-dark mb-2">No startups found</h4>
+        <p class="text-muted mb-4" style="max-width: 480px; margin: 0 auto;">
+            We couldn't find any startups matching your search query or filters. Try adjusting your search term or clearing some filters.
+        </p>
+        <div>
+            <asp:Button ID="btnResetEmpty" runat="server" Text="Clear All Filters" CssClass="btn-fl-dark px-4" OnClick="btnClear_Click" />
+        </div>
+    </asp:Panel>
 
     <!-- Startups Grid -->
     <div class="row g-4 mb-4">
@@ -164,7 +206,7 @@
                                 <div class="flex-grow-1">
                                     <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;"><%# Eval("Name") %></h5>
                                     <div class="text-muted small" style="font-size: 0.78rem;">
-                                        <i class="bi bi-geo-alt"></i> <%# Eval("Location") %>
+                                        <i class="bi bi-geo-alt"></i> <%# FormatLocation(Eval("Location")) %>
                                     </div>
                                 </div>
                             </div>
@@ -176,12 +218,12 @@
                             <div class="d-flex flex-wrap gap-2 mb-3">
                                 <span class="fl-meta-tag"><%# Eval("Industry") %></span>
                                 <span class="fl-meta-tag"><%# Eval("Stage") %></span>
-                                <span class="fl-meta-tag"><i class="bi bi-people"></i> <%# Eval("TeamSize") %></span>
+                                <span class="fl-meta-tag"><i class="bi bi-people"></i> <%# Eval("TeamSize") %> members</span>
                             </div>
 
                             <div class="mb-3">
                                 <div class="text-uppercase text-muted" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 6px;">
-                                    <i class="bi bi-geo-alt me-1"></i><%# Eval("Location").ToString().ToUpper() %>
+                                    <i class="bi bi-geo-alt me-1"></i><%# FormatLocation(Eval("Location")).ToUpper() %>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2">
                                     <%# FormatSkills(Eval("RequiredSkills")) %>
@@ -193,7 +235,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <img src='<%# Eval("FounderAvatar") %>' class="rounded-circle" width="34" height="34" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                 <div>
-                                    <div class="fw-bold text-dark small" style="font-size: 0.82rem;"><%# Eval("FounderName") %>, CEO</div>
+                                    <div class="fw-bold text-dark small" style="font-size: 0.82rem;"><%# Eval("FounderName") %>, <%# Eval("FounderTitle") %></div>
                                 </div>
                             </div>
 
@@ -208,15 +250,25 @@
     </div>
 
     <!-- Pagination -->
-    <div class="d-flex justify-content-center mt-4">
+    <asp:Panel ID="pnlPagination" runat="server" CssClass="d-flex justify-content-center align-items-center mt-4">
         <div class="fl-pagination">
-            <a href="#" class="fl-page-btn"><i class="bi bi-chevron-left"></i></a>
-            <a href="#" class="fl-page-btn active">1</a>
-            <a href="#" class="fl-page-btn">2</a>
-            <a href="#" class="fl-page-btn">3</a>
-            <span class="px-2 text-muted">...</span>
-            <a href="#" class="fl-page-btn">8</a>
-            <a href="#" class="fl-page-btn"><i class="bi bi-chevron-right"></i></a>
+            <asp:LinkButton ID="btnPrevPage" runat="server" CssClass="fl-page-btn" OnClick="btnPrevPage_Click" ToolTip="Previous Page">
+                <i class="bi bi-chevron-left"></i>
+            </asp:LinkButton>
+            
+            <asp:Repeater ID="rptPager" runat="server" OnItemCommand="rptPager_ItemCommand">
+                <ItemTemplate>
+                    <asp:LinkButton ID="btnPage" runat="server" 
+                        CommandName="Page" 
+                        CommandArgument='<%# Eval("PageIndex") %>'
+                        CssClass='<%# Convert.ToBoolean(Eval("IsActive")) ? "fl-page-btn active" : "fl-page-btn" %>'
+                        Text='<%# Eval("PageText") %>' />
+                </ItemTemplate>
+            </asp:Repeater>
+
+            <asp:LinkButton ID="btnNextPage" runat="server" CssClass="fl-page-btn" OnClick="btnNextPage_Click" ToolTip="Next Page">
+                <i class="bi bi-chevron-right"></i>
+            </asp:LinkButton>
         </div>
-    </div>
+    </asp:Panel>
 </asp:Content>
