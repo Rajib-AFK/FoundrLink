@@ -105,6 +105,19 @@
     <Compile Include="Helpers\DbHelper.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
     <Compile Include="Helpers\LocalFallbackStore.cs" />
+    <Compile Include="Models\ServiceResult.cs" />
+    <Compile Include="Models\User.cs" />
+    <Compile Include="Models\ModerationReport.cs" />
+    <Compile Include="Models\Startup.cs" />
+    <Compile Include="Services\Interfaces\IModerationService.cs" />
+    <Compile Include="Services\ModerationService.cs" />
+    <Compile Include="Services\Interfaces\IUserService.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\Interfaces\IStartupService.cs" />
+    <Compile Include="Services\StartupService.cs" />
+    <Compile Include="Services\Interfaces\IValidationService.cs" />
+    <Compile Include="Services\ValidationService.cs" />
+    <Compile Include="Tests\TestRunner.cs" />
     <Compile Include="Site.Master.cs">
       <DependentUpon>Site.Master</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>

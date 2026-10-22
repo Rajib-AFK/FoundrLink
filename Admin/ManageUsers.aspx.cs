@@ -4,11 +4,25 @@ using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using FoundrLink.Helpers;
+using FoundrLink.Services;
+using FoundrLink.Services.Interfaces;
 
 namespace FoundrLink.Admin
 {
     public partial class ManageUsers : Page
     {
+        private readonly IUserService _userService;
+
+        public ManageUsers()
+        {
+            _userService = new UserService();
+        }
+
+        public ManageUsers(IUserService userService)
+        {
+            _userService = userService ?? new UserService();
+        }
+
         private int PageIndex
         {
             get { return ViewState["UserPageIndex"] != null ? (int)ViewState["UserPageIndex"] : 0; }
@@ -158,13 +172,18 @@ namespace FoundrLink.Admin
 
             try
             {
-                string sql = "UPDATE dbo.Users SET Role = @Role, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
-                DbHelper.ExecuteNonQuery(sql,
-                    new SqlParameter("@Role", newRole),
-                    new SqlParameter("@Id", userId));
+                var result = _userService.UpdateUserRole(userId, newRole);
+                if (result.Success)
+                {
+                    litAlertMsg.Text = $"User role updated to <strong>{Server.HtmlEncode(newRole)}</strong>.";
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                }
+                else
+                {
+                    litAlertMsg.Text = Server.HtmlEncode(result.Message);
+                    pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                }
 
-                litAlertMsg.Text = $"User role updated to <strong>{Server.HtmlEncode(newRole)}</strong>.";
-                pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
                 pnlAlert.Visible = true;
                 LoadUsers();
             }
@@ -222,11 +241,17 @@ namespace FoundrLink.Admin
             {
                 if (e.CommandName == "ToggleVerify")
                 {
-                    string sql = "UPDATE dbo.Users SET IsVerified = CASE WHEN IsVerified = 1 THEN 0 ELSE 1 END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
-                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
-
-                    litAlertMsg.Text = "User verification status updated.";
-                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    var result = _userService.ToggleVerification(userId);
+                    if (result.Success)
+                    {
+                        litAlertMsg.Text = "User verification status updated.";
+                        pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    }
+                    else
+                    {
+                        litAlertMsg.Text = Server.HtmlEncode(result.Message);
+                        pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                    }
                     pnlAlert.Visible = true;
                     LoadUsers();
                 }
@@ -240,11 +265,17 @@ namespace FoundrLink.Admin
                         return;
                     }
 
-                    string sql = "UPDATE dbo.Users SET Status = CASE WHEN Status = 'Active' THEN 'Inactive' ELSE 'Active' END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
-                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
-
-                    litAlertMsg.Text = "User active status updated.";
-                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    var result = _userService.ToggleStatus(userId);
+                    if (result.Success)
+                    {
+                        litAlertMsg.Text = "User active status updated.";
+                        pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    }
+                    else
+                    {
+                        litAlertMsg.Text = Server.HtmlEncode(result.Message);
+                        pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                    }
                     pnlAlert.Visible = true;
                     LoadUsers();
                 }
@@ -266,10 +297,7 @@ namespace FoundrLink.Admin
                 return;
             }
 
-            if (!Page.IsValid)
-            {
-                return;
-            }
+            if (!Page.IsValid) return;
 
             string fullName = txtNewFullName.Text.Trim();
             string email = txtNewEmail.Text.Trim();
@@ -287,58 +315,45 @@ namespace FoundrLink.Admin
 
             try
             {
-                // Check if email exists
-                string checkSql = "SELECT COUNT(1) FROM dbo.Users WHERE Email = @Email";
-                int exists = Convert.ToInt32(DbHelper.ExecuteScalar(checkSql, new SqlParameter("@Email", email)));
-                if (exists > 0)
+                var result = _userService.CreateUserByAdmin(fullName, email, password, role, isVerified);
+                if (result.Success)
                 {
-                    litAlertMsg.Text = "A user with this email address already exists.";
+                    litAlertMsg.Text = result.Message;
+                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
+                    pnlAlert.Visible = true;
+
+                    // Clear fields
+                    txtNewFullName.Text = "";
+                    txtNewEmail.Text = "";
+                    txtNewPassword.Text = "Password123";
+                    ddlNewRole.SelectedIndex = 0;
+
+                    PageIndex = 0;
+                    LoadUsers();
+                }
+                else
+                {
+                    litAlertMsg.Text = result.Message;
                     pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
                     pnlAlert.Visible = true;
-                    return;
                 }
-
-                string passHash = SecurityHelper.HashPassword(password);
-                string insertSql = @"
-                    INSERT INTO dbo.Users (FullName, Email, PasswordHash, Role, IsVerified, Status, AvatarUrl, CreatedAt)
-                    VALUES (@FullName, @Email, @Hash, @Role, @Verified, 'Active', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100', SYSUTCDATETIME());
-                ";
-
-                SqlParameter[] p = new SqlParameter[]
-                {
-                    new SqlParameter("@FullName", fullName),
-                    new SqlParameter("@Email", email),
-                    new SqlParameter("@Hash", passHash),
-                    new SqlParameter("@Role", role),
-                    new SqlParameter("@Verified", isVerified)
-                };
-
-                DbHelper.ExecuteNonQuery(insertSql, p);
-
-                litAlertMsg.Text = $"User <strong>{Server.HtmlEncode(fullName)}</strong> created successfully.";
-                pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
-                pnlAlert.Visible = true;
-
-                txtNewFullName.Text = string.Empty;
-                txtNewEmail.Text = string.Empty;
-                txtNewPassword.Text = "Password123";
-
-                LoadUsers();
-            }
-            catch (SqlException ex) when (ex.Number == 2601 || ex.Number == 2627)
-            {
-                System.Diagnostics.Trace.TraceError("CreateUser duplicate key error: " + ex);
-                litAlertMsg.Text = "A user with this email address already exists.";
-                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
-                pnlAlert.Visible = true;
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Trace.TraceError("CreateUser error: " + ex);
+                System.Diagnostics.Trace.TraceError("btnCreateUser_Click error: " + ex);
                 litAlertMsg.Text = "An unexpected error occurred while creating the user.";
                 pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
                 pnlAlert.Visible = true;
             }
+        }
+
+        public string GetAvatarUrl(object avatarUrlObj, object nameObj)
+        {
+            string url = avatarUrlObj?.ToString();
+            if (!string.IsNullOrEmpty(url)) return ResolveUrl(url);
+
+            string name = nameObj?.ToString() ?? "User";
+            return $"https://ui-avatars.com/api/?name={Server.UrlEncode(name)}&background=0F172A&color=fff";
         }
     }
 }

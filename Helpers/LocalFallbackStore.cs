@@ -19,10 +19,25 @@ namespace FoundrLink.Helpers
         {
             get
             {
-                string path = HttpContext.Current != null
-                    ? HttpContext.Current.Server.MapPath("~/App_Data/foundrlink_local_db.json")
-                    : Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "foundrlink_local_db.json");
-                return path;
+                if (HttpContext.Current != null)
+                {
+                    return HttpContext.Current.Server.MapPath("~/App_Data/foundrlink_local_db.json");
+                }
+
+                string candidateCurrent = Path.Combine(Environment.CurrentDirectory, "App_Data", "foundrlink_local_db.json");
+                if (File.Exists(candidateCurrent)) return candidateCurrent;
+
+                string candidateBase = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "App_Data", "foundrlink_local_db.json");
+                if (File.Exists(candidateBase)) return candidateBase;
+
+                string asmDir = Path.GetDirectoryName(typeof(LocalFallbackStore).Assembly.Location);
+                if (!string.IsNullOrEmpty(asmDir))
+                {
+                    string candidateAsmParent = Path.Combine(asmDir, "..", "App_Data", "foundrlink_local_db.json");
+                    if (File.Exists(candidateAsmParent)) return Path.GetFullPath(candidateAsmParent);
+                }
+
+                return candidateCurrent;
             }
         }
 
@@ -35,7 +50,17 @@ namespace FoundrLink.Helpers
             {
                 if (!File.Exists(JsonFilePath))
                 {
-                    _cache = new Dictionary<string, object>();
+                    _cache = CreateDefaultFallbackCache();
+                    try
+                    {
+                        string dir = Path.GetDirectoryName(JsonFilePath);
+                        if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
+                            Directory.CreateDirectory(dir);
+                        var serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
+                        File.WriteAllText(JsonFilePath, serializer.Serialize(_cache));
+                    }
+                    catch { }
+                    _lastLoaded = DateTime.UtcNow;
                     return;
                 }
 
@@ -43,14 +68,96 @@ namespace FoundrLink.Helpers
                 {
                     string json = File.ReadAllText(JsonFilePath);
                     var serializer = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
-                    _cache = serializer.Deserialize<Dictionary<string, object>>(json) ?? new Dictionary<string, object>();
+                    _cache = serializer.Deserialize<Dictionary<string, object>>(json) ?? CreateDefaultFallbackCache();
                     _lastLoaded = DateTime.UtcNow;
                 }
                 catch
                 {
-                    _cache = new Dictionary<string, object>();
+                    _cache = CreateDefaultFallbackCache();
                 }
             }
+        }
+
+        private static Dictionary<string, object> CreateDefaultFallbackCache()
+        {
+            var users = new System.Collections.ArrayList
+            {
+                new Dictionary<string, object>
+                {
+                    { "UserId", 1 },
+                    { "FullName", "Platform Admin" },
+                    { "Email", "admin@ripaldesign.studio" },
+                    { "Role", "Admin" },
+                    { "Title", "Platform Administrator" },
+                    { "Location", "Mumbai, India" },
+                    { "Bio", "Platform administrator managing system integrity and verification." },
+                    { "AvatarUrl", "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" },
+                    { "Status", "Active" },
+                    { "IsVerified", true }
+                },
+                new Dictionary<string, object>
+                {
+                    { "UserId", 2 },
+                    { "FullName", "Startup Founder" },
+                    { "Email", "founder@ripaldesign.studio" },
+                    { "Role", "Founder" },
+                    { "Title", "Founder & CEO" },
+                    { "Location", "Bangalore, India" },
+                    { "Bio", "Building next-generation B2B SaaS platform." },
+                    { "AvatarUrl", "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100" },
+                    { "Status", "Active" },
+                    { "IsVerified", true }
+                },
+                new Dictionary<string, object>
+                {
+                    { "UserId", 3 },
+                    { "FullName", "Technical Co-Founder" },
+                    { "Email", "cofounder@ripaldesign.studio" },
+                    { "Role", "Technical" },
+                    { "Title", "Chief Technology Officer" },
+                    { "Location", "San Francisco, CA" },
+                    { "Bio", "Full-stack cloud architect specializing in distributed microservices." },
+                    { "AvatarUrl", "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100" },
+                    { "Status", "Active" },
+                    { "IsVerified", true }
+                },
+                new Dictionary<string, object>
+                {
+                    { "UserId", 4 },
+                    { "FullName", "Angel Investor" },
+                    { "Email", "investor@ripaldesign.studio" },
+                    { "Role", "Investor" },
+                    { "Title", "Angel Investor & Mentor" },
+                    { "Location", "Singapore" },
+                    { "Bio", "Early-stage angel investor backing ambitious fintech and enterprise AI founders." },
+                    { "AvatarUrl", "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100" },
+                    { "Status", "Active" },
+                    { "IsVerified", true }
+                }
+            };
+
+            var startups = new System.Collections.ArrayList
+            {
+                new Dictionary<string, object>
+                {
+                    { "StartupId", 1 },
+                    { "FounderId", 2 },
+                    { "Name", "FoundrLink Enterprise" },
+                    { "Tagline", "Intelligent co-founder matching infrastructure" },
+                    { "Industry", "SaaS" },
+                    { "Stage", "Seed Stage" },
+                    { "Location", "Bangalore, India" },
+                    { "Status", "Published" },
+                    { "RequiredSkills", "React, ASP.NET, SQL Server" }
+                }
+            };
+
+            return new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase)
+            {
+                { "Users", users },
+                { "Startups", startups },
+                { "FounderProfiles", new System.Collections.ArrayList() }
+            };
         }
 
         private static List<Dictionary<string, object>> GetTable(string tableName)

@@ -48,6 +48,8 @@
 | PBKDF2 Cryptographic Security & Session State | Chirag Fofandi | Yash Vinchhi | `Helpers/SecurityHelper.cs` | ✅ IMPLEMENTED |
 | Co-Founder Matchmaking & Startup Directory | Yash Vinchhi | Rajibul Sheikh | `FindCoFounders.aspx`, `ExploreStartups.aspx` | ✅ IMPLEMENTED |
 | Admin Console & Moderation Ticketing | Chirag Fofandi | Rajibul Sheikh | `Admin/` directory | ✅ IMPLEMENTED |
+| Multi-Tier Service Architecture & Decoupled BLL | Chirag Fofandi | Yash Vinchhi | `Services/`, `Models/` | ✅ IMPLEMENTED |
+| Automated Regression Test Suite (15 Test Cases) | Chirag Fofandi | Yash Vinchhi | `Tests/TestRunner.cs`, `run-tests.ps1` | ✅ VERIFIED |
 | Cloud Deployment Guide & Azure Setup | Yash Vinchhi | Chirag Fofandi | `server.md` & Azure VM | ✅ VERIFIED |
 | GitHub Wiki Documentation & Version Control | Team | Team | GitHub Wiki & `wiki/` | ✅ PUBLISHED |
 

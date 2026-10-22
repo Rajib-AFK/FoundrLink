@@ -4,11 +4,25 @@ using System.Data.SqlClient;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using FoundrLink.Helpers;
+using FoundrLink.Services;
+using FoundrLink.Services.Interfaces;
 
 namespace FoundrLink.Admin
 {
     public partial class Reports : Page
     {
+        private readonly IModerationService _moderationService;
+
+        public Reports()
+        {
+            _moderationService = new ModerationService();
+        }
+
+        public Reports(IModerationService moderationService)
+        {
+            _moderationService = moderationService ?? new ModerationService();
+        }
+
         private int PageIndex
         {
             get { return ViewState["ReportPageIndex"] != null ? (int)ViewState["ReportPageIndex"] : 0; }
