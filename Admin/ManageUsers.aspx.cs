@@ -9,6 +9,14 @@ namespace FoundrLink.Admin
 {
     public partial class ManageUsers : Page
     {
+        private int PageIndex
+        {
+            get { return ViewState["UserPageIndex"] != null ? (int)ViewState["UserPageIndex"] : 0; }
+            set { ViewState["UserPageIndex"] = value; }
+        }
+
+        private const int PageSize = 10;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
@@ -33,35 +41,66 @@ namespace FoundrLink.Admin
                 string role = ddlRoleFilter.SelectedValue;
                 string status = ddlStatusFilter.SelectedValue;
 
-                string sql = "SELECT UserId, FullName, Email, Role, Title, Company, AvatarUrl, IsVerified, Status FROM dbo.Users WHERE 1=1";
+                string countSql = "SELECT COUNT(1) FROM dbo.Users WHERE 1=1";
+                string sql = "SELECT UserId, FullName, Email, Role, Title, Company, AvatarUrl, IsVerified, Status, CreatedAt FROM dbo.Users WHERE 1=1";
 
+                string filterSql = "";
                 if (!string.IsNullOrEmpty(search))
                 {
-                    sql += " AND (FullName LIKE '%' + @Search + '%' OR Email LIKE '%' + @Search + '%' OR Company LIKE '%' + @Search + '%')";
+                    filterSql += " AND (FullName LIKE '%' + @Search + '%' OR Email LIKE '%' + @Search + '%' OR Company LIKE '%' + @Search + '%')";
                 }
 
                 if (!string.IsNullOrEmpty(role))
                 {
-                    sql += " AND Role = @Role";
+                    filterSql += " AND Role = @Role";
                 }
 
                 if (!string.IsNullOrEmpty(status))
                 {
-                    sql += " AND Status = @Status";
+                    filterSql += " AND Status = @Status";
                 }
 
-                sql += " ORDER BY UserId DESC";
+                countSql += filterSql;
+                sql += filterSql + " ORDER BY UserId DESC OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY";
 
-                SqlParameter[] p = new SqlParameter[]
+                int offset = PageIndex * PageSize;
+
+                SqlParameter[] countParams = new SqlParameter[]
                 {
                     new SqlParameter("@Search", search),
                     new SqlParameter("@Role", role),
                     new SqlParameter("@Status", status)
                 };
 
+                int totalCount = Convert.ToInt32(DbHelper.ExecuteScalar(countSql, countParams));
+
+                SqlParameter[] p = new SqlParameter[]
+                {
+                    new SqlParameter("@Search", search),
+                    new SqlParameter("@Role", role),
+                    new SqlParameter("@Status", status),
+                    new SqlParameter("@Offset", offset),
+                    new SqlParameter("@PageSize", PageSize)
+                };
+
                 DataTable dt = DbHelper.ExecuteDataTable(sql, p);
                 rptUsers.DataSource = dt;
                 rptUsers.DataBind();
+
+                pnlNoUsers.Visible = (totalCount == 0);
+                rptUsers.Visible = (totalCount > 0);
+
+                int startEntry = totalCount == 0 ? 0 : offset + 1;
+                int endEntry = Math.Min(offset + PageSize, totalCount);
+                litPaginationInfo.Text = $"Showing {startEntry} to {endEntry} of {totalCount} entries";
+
+                btnPrevPage.Enabled = (PageIndex > 0);
+                btnPrevPage.CssClass = PageIndex > 0 ? "fl-page-btn-dark" : "fl-page-btn-dark text-muted opacity-50";
+
+                int maxPage = (int)Math.Ceiling((double)totalCount / PageSize) - 1;
+                if (maxPage < 0) maxPage = 0;
+                btnNextPage.Enabled = (PageIndex < maxPage);
+                btnNextPage.CssClass = PageIndex < maxPage ? "fl-page-btn-dark" : "fl-page-btn-dark text-muted opacity-50";
             }
             catch (Exception ex)
             {
@@ -90,7 +129,7 @@ namespace FoundrLink.Admin
 
         protected void ddlRoleChange_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (!SecurityHelper.IsUserAdmin())
+            if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
             {
                 Response.Redirect("~/Login.aspx");
                 return;
@@ -106,10 +145,20 @@ namespace FoundrLink.Admin
             if (hf == null || !int.TryParse(hf.Value, out int userId)) return;
 
             string newRole = ddl.SelectedValue;
+            int currentAdminId = SecurityHelper.GetCurrentUserId().Value;
+
+            if (userId == currentAdminId && newRole != "Admin")
+            {
+                litAlertMsg.Text = "You cannot remove the administrator role from your own active session.";
+                pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                pnlAlert.Visible = true;
+                LoadUsers();
+                return;
+            }
 
             try
             {
-                string sql = "UPDATE dbo.Users SET Role = @Role WHERE UserId = @Id";
+                string sql = "UPDATE dbo.Users SET Role = @Role, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
                 DbHelper.ExecuteNonQuery(sql,
                     new SqlParameter("@Role", newRole),
                     new SqlParameter("@Id", userId));
@@ -130,32 +179,50 @@ namespace FoundrLink.Admin
 
         protected void btnFilter_Click(object sender, EventArgs e)
         {
+            PageIndex = 0;
             LoadUsers();
         }
 
         protected void btnReset_Click(object sender, EventArgs e)
         {
+            PageIndex = 0;
             txtSearch.Text = string.Empty;
             ddlRoleFilter.SelectedIndex = 0;
             ddlStatusFilter.SelectedIndex = 0;
             LoadUsers();
         }
 
+        protected void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            if (PageIndex > 0)
+            {
+                PageIndex--;
+                LoadUsers();
+            }
+        }
+
+        protected void btnNextPage_Click(object sender, EventArgs e)
+        {
+            PageIndex++;
+            LoadUsers();
+        }
+
         protected void rptUsers_ItemCommand(object source, RepeaterCommandEventArgs e)
         {
-            if (!SecurityHelper.IsUserAdmin())
+            if (!SecurityHelper.IsUserLoggedIn() || !SecurityHelper.IsUserAdmin())
             {
                 Response.Redirect("~/Login.aspx");
                 return;
             }
 
             int userId = Convert.ToInt32(e.CommandArgument);
+            int currentAdminId = SecurityHelper.GetCurrentUserId().Value;
 
             try
             {
                 if (e.CommandName == "ToggleVerify")
                 {
-                    string sql = "UPDATE dbo.Users SET IsVerified = CASE WHEN IsVerified = 1 THEN 0 ELSE 1 END WHERE UserId = @Id";
+                    string sql = "UPDATE dbo.Users SET IsVerified = CASE WHEN IsVerified = 1 THEN 0 ELSE 1 END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
 
                     litAlertMsg.Text = "User verification status updated.";
@@ -165,7 +232,15 @@ namespace FoundrLink.Admin
                 }
                 else if (e.CommandName == "ToggleStatus")
                 {
-                    string sql = "UPDATE dbo.Users SET Status = CASE WHEN Status = 'Active' THEN 'Inactive' ELSE 'Active' END WHERE UserId = @Id";
+                    if (userId == currentAdminId)
+                    {
+                        litAlertMsg.Text = "You cannot deactivate your own active administrator account.";
+                        pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
+                        pnlAlert.Visible = true;
+                        return;
+                    }
+
+                    string sql = "UPDATE dbo.Users SET Status = CASE WHEN Status = 'Active' THEN 'Inactive' ELSE 'Active' END, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", userId));
 
                     litAlertMsg.Text = "User active status updated.";

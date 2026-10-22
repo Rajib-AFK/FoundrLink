@@ -124,13 +124,13 @@
         <div class="col-md-4">
             <div class="fl-stat-card">
                 <div>
-                    <div class="fl-stat-title">Profile Views</div>
+                    <div class="fl-stat-title">Active Connections</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litProfileViews" runat="server" Text="894" />
+                        <asp:Literal ID="litProfileViews" runat="server" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #6DF5E1; color: #0F172A;">
-                    <i class="bi bi-eye"></i>
+                    <i class="bi bi-people-fill"></i>
                 </div>
             </div>
         </div>
@@ -140,7 +140,7 @@
                 <div>
                     <div class="fl-stat-title">Active Messages</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litActiveMessages" runat="server" Text="12" />
+                        <asp:Literal ID="litActiveMessages" runat="server" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #0F172A; color: #FFFFFF;">
@@ -154,11 +154,11 @@
                 <div>
                     <div class="fl-stat-title">Teams Joined</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litTeamsJoined" runat="server" Text="2" />
+                        <asp:Literal ID="litTeamsJoined" runat="server" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #F1F5F9; color: #475569;">
-                    <i class="bi bi-people-fill"></i>
+                    <i class="bi bi-diagram-3-fill"></i>
                 </div>
             </div>
         </div>
@@ -202,7 +202,7 @@
                 </div>
 
                 <div class="pt-3 border-top text-center" style="border-color: #F1F5F9 !important;">
-                    <a href="#" class="fw-bold small text-decoration-none" style="color: #006591;">View All Activity</a>
+                    <a href="Notifications.aspx?filter=Activity" class="fw-bold small text-decoration-none" style="color: #006591;">View All Activity</a>
                 </div>
             </div>
         </div>
@@ -255,7 +255,7 @@
                                 </div>
                                 <div class="d-flex align-items-center gap-2">
                                     <span class="badge rounded-pill px-2 py-1 fw-bold" style="background-color: #ECFDF5; color: #059669; border: 1px solid #A7F3D0; font-size: 0.68rem;">
-                                        <i class="bi bi-stars"></i> <%# GetMatchPercent(Container.ItemIndex) %>% Match
+                                        <i class="bi bi-stars"></i> <%# GetMatchPercent(Eval("Role")) %>% Match
                                     </span>
                                     <asp:LinkButton ID="btnConnect" runat="server" CommandName="Connect" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-outline-secondary rounded-circle" style="width: 32px; height: 32px; display:flex; align-items:center; justify-content:center; padding:0;" ToolTip="Connect">
                                         <i class="bi bi-person-plus"></i>
@@ -270,8 +270,8 @@
     </div>
 
     <!-- Hidden field holding serialized chart data for Chart.js -->
-    <asp:HiddenField ID="hfChartLabels" runat="server" Value="['May', 'Jun', 'Jul', 'Aug', 'Sep']" />
-    <asp:HiddenField ID="hfChartData" runat="server" Value="[14, 28, 24, 46, 68]" />
+    <asp:HiddenField ID="hfChartLabels" runat="server" Value="[]" />
+    <asp:HiddenField ID="hfChartData" runat="server" Value="[]" />
 </asp:Content>
 
 <asp:Content ID="Content3" ContentPlaceHolderID="ScriptsContent" runat="server">
@@ -279,15 +279,15 @@
         document.addEventListener('DOMContentLoaded', function () {
             var ctx = document.getElementById('connectionGrowthChart');
             if (ctx && typeof Chart !== 'undefined') {
-                var labels = ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'];
-                var dataVals = [14, 28, 45, 62, 88, 124];
+                var labels = [];
+                var dataVals = [];
                 try {
                     var rawLabels = document.getElementById('<%= hfChartLabels.ClientID %>').value;
                     var rawData = document.getElementById('<%= hfChartData.ClientID %>').value;
                     if (rawLabels) labels = JSON.parse(rawLabels.replace(/&#39;/g, '"').replace(/'/g, '"'));
                     if (rawData) dataVals = JSON.parse(rawData);
                 } catch (e) {
-                    console.warn('Using default chart dataset', e);
+                    console.warn('Chart dataset parse error', e);
                 }
 
                 var gradient = ctx.getContext('2d').createLinearGradient(0, 0, 0, 240);

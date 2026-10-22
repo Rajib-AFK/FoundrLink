@@ -9,6 +9,8 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Literal litIndustry;
         protected global::System.Web.UI.WebControls.Literal litFounder;
         protected global::System.Web.UI.WebControls.Button btnRequestJoin;
+        protected global::System.Web.UI.WebControls.Button btnWithdrawJoin;
+        protected global::System.Web.UI.WebControls.Panel pnlTeamMemberBadge;
         protected global::System.Web.UI.WebControls.Button btnContactFounder;
         protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkTeamDetails;
         protected global::System.Web.UI.WebControls.Panel pnlAlert;
@@ -22,5 +24,11 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Literal litMetaTeamSize;
         protected global::System.Web.UI.WebControls.Literal litMetaLocation;
         protected global::System.Web.UI.WebControls.Literal litMetaCommitment;
+        protected global::System.Web.UI.WebControls.LinkButton btnOpenReport;
+        protected global::System.Web.UI.WebControls.Panel pnlReportStartup;
+        protected global::System.Web.UI.WebControls.DropDownList ddlReportCategory;
+        protected global::System.Web.UI.WebControls.TextBox txtReportDetails;
+        protected global::System.Web.UI.WebControls.Button btnSubmitReport;
+        protected global::System.Web.UI.WebControls.Button btnCancelReport;
     }
 }

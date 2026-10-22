@@ -106,11 +106,13 @@ namespace FoundrLink
                         ? r["AvatarUrl"].ToString() 
                         : "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100";
                     lnkViewProfile.HRef = "Profile.aspx?id=" + ActivePartnerId;
+                    lnkViewProfile.Visible = true;
                 }
                 else
                 {
                     litActivePartnerName.Text = "Team Member";
                     litActivePartnerRole.Text = "FoundrLink Member";
+                    lnkViewProfile.Visible = false;
                 }
             }
             catch (Exception ex)

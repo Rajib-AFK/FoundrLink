@@ -16,6 +16,10 @@ namespace FoundrLink.Admin
         protected global::System.Web.UI.WebControls.Button btnFilter;
         protected global::System.Web.UI.WebControls.Button btnReset;
         protected global::System.Web.UI.WebControls.Repeater rptUsers;
+        protected global::System.Web.UI.WebControls.Panel pnlNoUsers;
+        protected global::System.Web.UI.WebControls.Literal litPaginationInfo;
+        protected global::System.Web.UI.WebControls.LinkButton btnPrevPage;
+        protected global::System.Web.UI.WebControls.LinkButton btnNextPage;
         protected global::System.Web.UI.WebControls.TextBox txtNewFullName;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNewFullName;
         protected global::System.Web.UI.WebControls.TextBox txtNewEmail;

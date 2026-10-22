@@ -94,20 +94,20 @@
                     <div class="col-6 col-md-2">
                         <h6 class="fw-bold text-uppercase mb-3 text-white" style="font-size: 0.75rem; letter-spacing: 0.08em;">RESOURCES</h6>
                         <ul class="list-unstyled small d-flex flex-column gap-2" style="color: #94A3B8;">
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Deal Flow Reports</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Term Sheet Templates</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Due Diligence Checklist</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Success Stories</a></li>
+                            <li><a href="ExploreStartups.aspx" class="text-decoration-none" style="color: #94A3B8;">Deal Flow Reports</a></li>
+                            <li><a href="Support.aspx" class="text-decoration-none" style="color: #94A3B8;">Term Sheet Templates</a></li>
+                            <li><a href="Support.aspx" class="text-decoration-none" style="color: #94A3B8;">Due Diligence Checklist</a></li>
+                            <li><a href="ExploreStartups.aspx" class="text-decoration-none" style="color: #94A3B8;">Success Stories</a></li>
                         </ul>
                     </div>
 
                     <div class="col-6 col-md-2">
                         <h6 class="fw-bold text-uppercase mb-3 text-white" style="font-size: 0.75rem; letter-spacing: 0.08em;">COMPANY</h6>
                         <ul class="list-unstyled small d-flex flex-column gap-2" style="color: #94A3B8;">
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">About Us</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Careers</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Privacy Policy</a></li>
-                            <li><a href="#" class="text-decoration-none" style="color: #94A3B8;">Terms of Service</a></li>
+                            <li><a href="Default.aspx" class="text-decoration-none" style="color: #94A3B8;">About Us</a></li>
+                            <li><a href="ExploreStartups.aspx" class="text-decoration-none" style="color: #94A3B8;">Careers</a></li>
+                            <li><a href="PrivacyPolicy.aspx" class="text-decoration-none" style="color: #94A3B8;">Privacy Policy</a></li>
+                            <li><a href="Terms.aspx" class="text-decoration-none" style="color: #94A3B8;">Terms of Service</a></li>
                         </ul>
                     </div>
                 </div>
@@ -115,8 +115,8 @@
                 <div class="d-flex flex-wrap justify-content-between align-items-center pt-4 border-top text-secondary small" style="border-color: #1F2937 !important; color: #64748B !important;">
                     <p class="mb-0">&copy; 2024 FoundrLink Inc. All rights reserved.</p>
                     <div class="d-flex gap-3 fs-6">
-                        <a href="#" class="text-secondary"><i class="bi bi-share"></i></a>
-                        <a href="#" class="text-secondary"><i class="bi bi-envelope"></i></a>
+                        <a href="javascript:void(0)" onclick="if(navigator.share){navigator.share({title:'FoundrLink',url:window.location.href});}else{navigator.clipboard.writeText(window.location.href);alert('Link copied to clipboard!');}" class="text-secondary" title="Share"><i class="bi bi-share"></i></a>
+                        <a href="Support.aspx" class="text-secondary" title="Contact Support"><i class="bi bi-envelope"></i></a>
                     </div>
                 </div>
             </div>

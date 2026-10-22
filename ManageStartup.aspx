@@ -175,12 +175,9 @@
         <div class="p-3 border rounded-3" style="background-color: #FAFAFA; border-color: #E2E8F0 !important;">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <label class="form-label small fw-semibold text-dark mb-0">Open Positions</label>
-                <a href="#" class="small text-decoration-none fw-semibold" style="color: #0284C7; font-size: 0.75rem;">+ Add Role</a>
+                <span class="small text-muted" style="font-size: 0.75rem;">Add roles (separated by commas or newlines)</span>
             </div>
-            <div class="input-group">
-                <asp:TextBox ID="txtOpenRole" runat="server" CssClass="form-control" placeholder="e.g. Technical Co-Founder (CTO)" style="height: 42px;" />
-                <span class="input-group-text bg-white text-muted" style="border-color: #E2E8F0;"><i class="bi bi-trash"></i></span>
-            </div>
+            <asp:TextBox ID="txtOpenRole" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2" placeholder="e.g. Technical Co-Founder (CTO), Lead Full-Stack Engineer" />
         </div>
     </div>
 

@@ -99,10 +99,10 @@
             </div>
 
             <!-- Team Members -->
-            <div class="fl-card p-4">
+            <div id="team-members" class="fl-card p-4">
                 <div class="fl-card-header mb-3">
                     <h5 class="fw-bold mb-0 text-dark">Team Members</h5>
-                    <a href="#" class="small fw-semibold text-decoration-none" style="color: #006591;">View All</a>
+                    <a href="#team-members" class="small fw-semibold text-decoration-none" style="color: #006591;">View All</a>
                 </div>
 
                 <div class="row g-3">
@@ -129,7 +129,7 @@
         <!-- Right Column -->
         <div class="col-lg-4">
             <!-- Open Roles -->
-            <div class="fl-card mb-4 p-4">
+            <div id="open-roles" class="fl-card mb-4 p-4">
                 <div class="fl-card-header mb-3">
                     <h5 class="fw-bold mb-0 text-dark">Open Roles</h5>
                     <span class="badge bg-light text-muted border rounded-circle" style="width: 24px; height: 24px; display:inline-flex; align-items:center; justify-content:center; font-size: 0.72rem;">
@@ -150,8 +150,8 @@
                     </asp:Repeater>
                 </div>
 
-                <a href="#" class="btn-fl-outline w-100 justify-content-center">
-                    View Careers Page
+                <a id="lnkCareersPage" runat="server" href="#open-roles" class="btn-fl-outline w-100 justify-content-center">
+                    Explore Open Positions
                 </a>
             </div>
 

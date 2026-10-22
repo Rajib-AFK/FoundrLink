@@ -123,6 +123,18 @@ namespace FoundrLink
             LoadFounders();
         }
 
+        protected void btnAddSkill_Click(object sender, EventArgs e)
+        {
+            string custom = txtCustomSkill.Text.Trim();
+            if (!string.IsNullOrEmpty(custom))
+            {
+                _activeSkill = custom;
+                ViewState["ActiveSkill"] = _activeSkill;
+                txtCustomSkill.Text = string.Empty;
+                LoadFounders();
+            }
+        }
+
         protected void btnClearFilters_Click(object sender, EventArgs e)
         {
             chkRoleTech.Checked = false;
@@ -130,6 +142,7 @@ namespace FoundrLink
             chkRoleMarketing.Checked = false;
             _activeSkill = "";
             ViewState["ActiveSkill"] = "";
+            txtCustomSkill.Text = string.Empty;
             ddlIndustry.SelectedIndex = 0;
             rbAvailAll.Checked = true;
             LoadFounders();
@@ -139,28 +152,46 @@ namespace FoundrLink
         {
             if (e.CommandName == "Connect")
             {
-                int receiverId = Convert.ToInt32(e.CommandArgument);
                 int? currentUserId = SecurityHelper.GetCurrentUserId();
-                int senderId = currentUserId ?? 2;
+                if (!currentUserId.HasValue)
+                {
+                    Response.Redirect("~/Login.aspx?returnUrl=" + Server.UrlEncode(Request.RawUrl));
+                    return;
+                }
+
+                int senderId = currentUserId.Value;
+                int receiverId = Convert.ToInt32(e.CommandArgument);
+
+                if (senderId == receiverId)
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "selfConnect", "alert('You cannot connect with yourself.');", true);
+                    return;
+                }
 
                 try
                 {
                     string sql = @"
-                        IF NOT EXISTS (SELECT 1 FROM dbo.ConnectionRequests WHERE SenderId = @SenderId AND ReceiverId = @ReceiverId)
+                        IF NOT EXISTS (SELECT 1 FROM dbo.ConnectionRequests WHERE SenderId = @SenderId AND ReceiverId = @ReceiverId AND Status = 'Pending')
                         BEGIN
                             INSERT INTO dbo.ConnectionRequests (SenderId, ReceiverId, Note, Status, CreatedAt)
                             VALUES (@SenderId, @ReceiverId, 'Hi, I would love to connect with you on FoundrLink!', 'Pending', SYSUTCDATETIME());
+
+                            INSERT INTO dbo.Notifications (UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt)
+                            VALUES (@ReceiverId, 'New Connection Request', @SenderName + ' sent you a connection request.', 'Requests', 1, 0, SYSUTCDATETIME());
                         END";
 
+                    string senderName = SecurityHelper.GetCurrentUserName();
                     DbHelper.ExecuteNonQuery(sql,
                         DbHelper.CreateParam("@SenderId", SqlDbType.Int, senderId),
-                        DbHelper.CreateParam("@ReceiverId", SqlDbType.Int, receiverId));
+                        DbHelper.CreateParam("@ReceiverId", SqlDbType.Int, receiverId),
+                        DbHelper.CreateParam("@SenderName", SqlDbType.NVarChar, senderName));
 
                     ScriptManager.RegisterStartupScript(this, GetType(), "connected", "alert('Connection request sent successfully!');", true);
                 }
                 catch (Exception ex)
                 {
-                    System.Diagnostics.Debug.WriteLine("Connect error: " + ex.Message);
+                    System.Diagnostics.Trace.TraceError("Connect error: " + ex);
+                    ScriptManager.RegisterStartupScript(this, GetType(), "connectErr", "alert('Unable to send connection request. Please try again.');", true);
                 }
             }
         }

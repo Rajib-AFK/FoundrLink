@@ -200,7 +200,7 @@
                         <asp:CheckBox ID="chkRememberMe" runat="server" CssClass="form-check-input" />
                         <label class="form-check-label small text-muted" for="chkRememberMe">Remember me</label>
                     </div>
-                    <a href="#" class="small text-decoration-none fw-semibold" style="color: #0284C7;">Forgot password?</a>
+                    <a href="ForgotPassword.aspx" class="small text-decoration-none fw-semibold" style="color: #0284C7;">Forgot password?</a>
                 </div>
 
                 <asp:Button ID="btnSignIn" runat="server" Text="Sign In" CssClass="btn-fl-black mb-4" OnClick="btnSignIn_Click" ValidationGroup="vgLogin" />

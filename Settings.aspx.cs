@@ -171,6 +171,32 @@ namespace FoundrLink
 
                 DbHelper.ExecuteNonQuery(updateSql, p);
 
+                // Update or create FounderProfiles completion and base location
+                int completion = 40;
+                if (!string.IsNullOrWhiteSpace(title)) completion += 15;
+                if (!string.IsNullOrWhiteSpace(location)) completion += 15;
+                if (!string.IsNullOrWhiteSpace(bio)) completion += 15;
+                if (!string.IsNullOrWhiteSpace(avatarUrl)) completion += 15;
+
+                string syncProfileSql = @"
+                    IF EXISTS (SELECT 1 FROM dbo.FounderProfiles WHERE UserId = @UserId)
+                    BEGIN
+                        UPDATE dbo.FounderProfiles
+                        SET BaseLocation = COALESCE(@Location, BaseLocation),
+                            ProfileCompletionPercentage = @Completion
+                        WHERE UserId = @UserId;
+                    END
+                    ELSE
+                    BEGIN
+                        INSERT INTO dbo.FounderProfiles (UserId, BaseLocation, ProfileCompletionPercentage)
+                        VALUES (@UserId, @Location, @Completion);
+                    END";
+
+                DbHelper.ExecuteNonQuery(syncProfileSql,
+                    new SqlParameter("@UserId", CurrentUserId),
+                    new SqlParameter("@Location", string.IsNullOrWhiteSpace(location) ? (object)DBNull.Value : location),
+                    new SqlParameter("@Completion", completion));
+
                 // Update session cache
                 Session["FullName"] = fullName;
                 Session["Email"] = email;

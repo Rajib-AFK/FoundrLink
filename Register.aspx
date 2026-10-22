@@ -160,7 +160,7 @@
                 </div>
 
                 <p class="text-muted mb-4" style="font-size: 0.76rem;">
-                    By creating an account, you agree to the FoundrLink terms.
+                    By creating an account, you agree to the FoundrLink <a href="Terms.aspx" target="_blank" class="text-decoration-none">Terms</a> and <a href="PrivacyPolicy.aspx" target="_blank" class="text-decoration-none">Privacy Policy</a>.
                 </p>
 
                 <asp:Button ID="btnRegister" runat="server" Text="Create Account" CssClass="btn-fl-create mb-4" OnClick="btnRegister_Click" ValidationGroup="vgRegister" />
@@ -171,9 +171,9 @@
             </div>
 
             <div class="d-flex justify-content-center gap-3 mt-4 text-muted" style="font-size: 0.78rem;">
-                <a href="#" class="text-muted text-decoration-none">Terms</a>
-                <a href="#" class="text-muted text-decoration-none">Privacy</a>
-                <a href="#" class="text-muted text-decoration-none">Support</a>
+                <a href="Terms.aspx" class="text-muted text-decoration-none">Terms</a>
+                <a href="PrivacyPolicy.aspx" class="text-muted text-decoration-none">Privacy</a>
+                <a href="Support.aspx" class="text-muted text-decoration-none">Support</a>
             </div>
         </div>
     </form>

@@ -25,5 +25,17 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Literal litImpactSaved;
         protected global::System.Web.UI.WebControls.Repeater rptInterests;
         protected global::System.Web.UI.WebControls.Literal litBaseLocation;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkEditProfile;
+        protected global::System.Web.UI.WebControls.Panel pnlVisitorActions;
+        protected global::System.Web.UI.WebControls.LinkButton btnConnect;
+        protected global::System.Web.UI.WebControls.LinkButton btnMessage;
+        protected global::System.Web.UI.WebControls.LinkButton btnOpenReportProfile;
+        protected global::System.Web.UI.WebControls.Panel pnlProfileAlert;
+        protected global::System.Web.UI.WebControls.Literal litProfileAlertMessage;
+        protected global::System.Web.UI.WebControls.Panel pnlReportUser;
+        protected global::System.Web.UI.WebControls.DropDownList ddlReportUserCategory;
+        protected global::System.Web.UI.WebControls.TextBox txtReportUserDetails;
+        protected global::System.Web.UI.WebControls.Button btnSubmitReportUser;
+        protected global::System.Web.UI.WebControls.Button btnCancelReportUser;
     }
 }

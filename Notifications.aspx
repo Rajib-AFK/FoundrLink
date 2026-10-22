@@ -47,7 +47,10 @@
         <div>
             <h2 class="fw-bold fs-3 text-dark mb-0" style="font-size: 2rem; letter-spacing: -0.02em;">Notifications</h2>
         </div>
-        <div>
+        <div class="d-flex align-items-center gap-2">
+            <a href="CollaborationRequests.aspx" class="btn btn-sm btn-outline-dark fw-semibold" style="font-size: 0.82rem; padding: 7px 16px;">
+                <i class="bi bi-people me-1"></i> Collaboration Requests
+            </a>
             <asp:LinkButton ID="btnMarkAllRead" runat="server" CssClass="btn-fl-outline" OnClick="btnMarkAllRead_Click" style="font-size: 0.82rem; padding: 7px 16px;">
                 Mark all as read
             </asp:LinkButton>

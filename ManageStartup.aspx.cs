@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.IO;
@@ -81,6 +82,17 @@ namespace FoundrLink
                     litStatusBadge.Text = r["Status"]?.ToString() ?? "Draft";
 
                     ViewState["CurrentLogoUrl"] = r["LogoUrl"]?.ToString();
+
+                    // Load open positions
+                    DataTable dtRoles = DbHelper.ExecuteDataTable("SELECT Title FROM dbo.OpenPositions WHERE StartupId = @StartupId ORDER BY PositionId ASC",
+                        DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId));
+                    var roleList = new List<string>();
+                    foreach (DataRow rr in dtRoles.Rows)
+                    {
+                        if (rr["Title"] != DBNull.Value && !string.IsNullOrWhiteSpace(rr["Title"].ToString()))
+                            roleList.Add(rr["Title"].ToString().Trim());
+                    }
+                    txtOpenRole.Text = string.Join(", ", roleList);
                 }
                 else
                 {
@@ -209,6 +221,8 @@ namespace FoundrLink
                         DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId.Value)
                     );
 
+                    SaveOpenPositions(_startupId.Value, txtOpenRole.Text, location);
+
                     ViewState["CurrentLogoUrl"] = logoUrl;
                     litSuccess.Text = "Startup updated successfully!";
                     pnlSuccess.CssClass = "alert alert-success py-2 small mb-4";
@@ -242,19 +256,7 @@ namespace FoundrLink
 
                     if (newId != null && int.TryParse(newId.ToString(), out int sId))
                     {
-                        if (!string.IsNullOrEmpty(txtOpenRole.Text.Trim()))
-                        {
-                            string roleSql = @"
-                                INSERT INTO dbo.OpenPositions (StartupId, Title, Location, PositionType, CreatedAt)
-                                VALUES (@StartupId, @Title, @Location, 'Full-time', SYSUTCDATETIME());";
-
-                            DbHelper.ExecuteNonQuery(roleSql,
-                                DbHelper.CreateParam("@StartupId", SqlDbType.Int, sId),
-                                DbHelper.CreateParam("@Title", SqlDbType.NVarChar, txtOpenRole.Text.Trim()),
-                                DbHelper.CreateParam("@Location", SqlDbType.NVarChar, string.IsNullOrEmpty(location) ? "Remote" : location)
-                            );
-                        }
-
+                        SaveOpenPositions(sId, txtOpenRole.Text, location);
                         Response.Redirect("~/StartupDetails.aspx?id=" + sId);
                         return;
                     }
@@ -300,9 +302,13 @@ namespace FoundrLink
                         {
                             cmd.Transaction = trans;
                             cmd.CommandText = @"
+                                DELETE FROM dbo.CollaborationRequests WHERE StartupId = @StartupId;
                                 DELETE FROM dbo.ConnectionRequests WHERE StartupId = @StartupId;
                                 DELETE FROM dbo.TeamMembers WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.StartupMembers WHERE StartupId = @StartupId;
                                 DELETE FROM dbo.OpenPositions WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.StartupOpenRoles WHERE StartupId = @StartupId;
+                                DELETE FROM dbo.StartupUpdates WHERE StartupId = @StartupId;
                                 DELETE FROM dbo.Startups WHERE StartupId = @StartupId;";
                             cmd.Parameters.Add(new SqlParameter("@StartupId", SqlDbType.Int) { Value = _startupId.Value });
                             cmd.ExecuteNonQuery();
@@ -318,6 +324,40 @@ namespace FoundrLink
                     pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
                     pnlSuccess.Visible = true;
                 }
+            }
+        }
+
+        private void SaveOpenPositions(int startupId, string roleText, string startupLocation)
+        {
+            try
+            {
+                DbHelper.ExecuteNonQuery("DELETE FROM dbo.OpenPositions WHERE StartupId = @StartupId",
+                    DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId));
+
+                if (!string.IsNullOrWhiteSpace(roleText))
+                {
+                    var roles = roleText.Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries);
+                    foreach (var role in roles)
+                    {
+                        string trimmed = role.Trim();
+                        if (!string.IsNullOrEmpty(trimmed))
+                        {
+                            string roleSql = @"
+                                INSERT INTO dbo.OpenPositions (StartupId, Title, Location, PositionType, CreatedAt)
+                                VALUES (@StartupId, @Title, @Location, 'Full-time', SYSUTCDATETIME());";
+
+                            DbHelper.ExecuteNonQuery(roleSql,
+                                DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId),
+                                DbHelper.CreateParam("@Title", SqlDbType.NVarChar, trimmed),
+                                DbHelper.CreateParam("@Location", SqlDbType.NVarChar, string.IsNullOrEmpty(startupLocation) ? "Remote" : startupLocation)
+                            );
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("SaveOpenPositions error: " + ex);
             }
         }
     }

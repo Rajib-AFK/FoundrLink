@@ -91,7 +91,14 @@
                         <asp:LinkButton ID="btnSkillAI" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="AI/ML" style="border-radius: 20px; font-weight: 500;">AI/ML</asp:LinkButton>
                         <asp:LinkButton ID="btnSkillFintech" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="Fintech" style="border-radius: 20px; font-weight: 500;">Sales</asp:LinkButton>
                     </div>
-                    <a href="#" class="small text-muted text-decoration-none" style="font-size: 0.75rem;">+ Add skill</a>
+                    <div class="mt-2">
+                        <div class="input-group input-group-sm">
+                            <asp:TextBox ID="txtCustomSkill" runat="server" CssClass="form-control" placeholder="Add custom skill..." style="font-size: 0.75rem;" />
+                            <asp:LinkButton ID="btnAddSkill" runat="server" CssClass="btn btn-outline-secondary" OnClick="btnAddSkill_Click" ToolTip="Filter by this skill">
+                                <i class="bi bi-plus-lg"></i>
+                            </asp:LinkButton>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Industry Filter -->

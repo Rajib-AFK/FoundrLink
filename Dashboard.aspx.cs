@@ -67,16 +67,26 @@ namespace FoundrLink
                 }
 
                 // 2. Metric Counters
-                object viewsObj = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Users WHERE Role != 'Admin'");
-                litProfileViews.Text = (viewsObj != null) ? (Convert.ToInt32(viewsObj) * 64).ToString() : "894";
-
-                object msgObj = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Messages WHERE ReceiverId = @UserId",
+                object connObj = DbHelper.ExecuteScalar(
+                    @"SELECT COUNT(1) FROM dbo.Connections 
+                      WHERE (RequesterUserId = @UserId OR ReceiverUserId = @UserId) AND Status = 'Accepted'",
                     DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
-                litActiveMessages.Text = (msgObj != null && Convert.ToInt32(msgObj) > 0) ? msgObj.ToString() : "0";
+                int connectionsCount = connObj != null && connObj != DBNull.Value ? Convert.ToInt32(connObj) : 0;
+                litProfileViews.Text = connectionsCount.ToString();
 
-                object teamObj = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.TeamMembers WHERE UserId = @UserId",
+                object msgObj = DbHelper.ExecuteScalar(
+                    @"SELECT COUNT(1) FROM dbo.Messages 
+                      WHERE SenderId = @UserId OR ReceiverId = @UserId",
                     DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
-                litTeamsJoined.Text = (teamObj != null && Convert.ToInt32(teamObj) > 0) ? teamObj.ToString() : "0";
+                int activeMsgs = msgObj != null && msgObj != DBNull.Value ? Convert.ToInt32(msgObj) : 0;
+                litActiveMessages.Text = activeMsgs.ToString();
+
+                object teamObj = DbHelper.ExecuteScalar(
+                    @"SELECT COUNT(DISTINCT StartupId) FROM dbo.TeamMembers 
+                      WHERE UserId = @UserId",
+                    DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
+                int teamsJoined = teamObj != null && teamObj != DBNull.Value ? Convert.ToInt32(teamObj) : 0;
+                litTeamsJoined.Text = teamsJoined.ToString();
 
                 // 3. Chart Data from ConnectionGrowth
                 string growthQuery = @"
@@ -86,18 +96,28 @@ namespace FoundrLink
                     ORDER BY MonthOrder ASC";
 
                 DataTable dtGrowth = DbHelper.ExecuteDataTable(growthQuery, DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
+                var labels = new List<string>();
+                var values = new List<string>();
                 if (dtGrowth.Rows.Count > 0)
                 {
-                    var labels = new List<string>();
-                    var values = new List<string>();
                     foreach (DataRow row in dtGrowth.Rows)
                     {
                         labels.Add("'" + row["MonthLabel"].ToString() + "'");
                         values.Add(row["CountValue"].ToString());
                     }
-                    hfChartLabels.Value = "[" + string.Join(",", labels) + "]";
-                    hfChartData.Value = "[" + string.Join(",", values) + "]";
                 }
+                else
+                {
+                    // Real zero-state timeline for the past 6 calendar months
+                    DateTime now = DateTime.UtcNow;
+                    for (int i = 5; i >= 0; i--)
+                    {
+                        labels.Add("'" + now.AddMonths(-i).ToString("MMM") + "'");
+                        values.Add("0");
+                    }
+                }
+                hfChartLabels.Value = "[" + string.Join(",", labels) + "]";
+                hfChartData.Value = "[" + string.Join(",", values) + "]";
 
                 // 4. Recent Activity
                 string activityQuery = @"
@@ -206,11 +226,28 @@ namespace FoundrLink
             }
         }
 
-        protected int GetMatchPercent(int index)
+        protected int GetMatchPercent(object roleObj)
         {
-            int[] scores = { 96, 91, 87, 82, 79 };
-            if (index >= 0 && index < scores.Length) return scores[index];
-            return 85;
+            string otherRole = roleObj?.ToString() ?? "";
+            string currentRole = Session["Role"]?.ToString() ?? "";
+
+            if (!string.IsNullOrEmpty(currentRole) && !string.IsNullOrEmpty(otherRole))
+            {
+                if ((currentRole.IndexOf("Founder", StringComparison.OrdinalIgnoreCase) >= 0 && otherRole.IndexOf("Technical", StringComparison.OrdinalIgnoreCase) >= 0) ||
+                    (currentRole.IndexOf("Technical", StringComparison.OrdinalIgnoreCase) >= 0 && otherRole.IndexOf("Founder", StringComparison.OrdinalIgnoreCase) >= 0))
+                {
+                    return 94;
+                }
+                if (otherRole.IndexOf("Investor", StringComparison.OrdinalIgnoreCase) >= 0 || currentRole.IndexOf("Investor", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    return 88;
+                }
+                if (currentRole.Equals(otherRole, StringComparison.OrdinalIgnoreCase))
+                {
+                    return 78;
+                }
+            }
+            return 82;
         }
     }
 }

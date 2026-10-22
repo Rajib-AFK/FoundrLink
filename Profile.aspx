@@ -94,11 +94,54 @@
             <button type="button" class="btn-fl-outline" onclick="navigator.clipboard.writeText(window.location.href); alert('Profile link copied to clipboard!');">
                 <i class="bi bi-share"></i> Share
             </button>
-            <a href="Settings.aspx" class="btn-fl-dark">
+            <a id="lnkEditProfile" runat="server" href="Settings.aspx" class="btn-fl-dark">
                 <i class="bi bi-pencil"></i> Edit Profile
             </a>
+            <asp:Panel ID="pnlVisitorActions" runat="server" Visible="false" CssClass="d-inline-flex align-items-center gap-2">
+                <asp:LinkButton ID="btnConnect" runat="server" CssClass="btn-fl-primary px-3 py-2 text-decoration-none" OnClick="btnConnect_Click">
+                    <i class="bi bi-person-plus-fill me-1"></i> Connect
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnMessage" runat="server" CssClass="btn-fl-outline px-3 py-2 text-decoration-none" OnClick="btnMessage_Click">
+                    <i class="bi bi-chat-dots-fill me-1"></i> Message
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnOpenReportProfile" runat="server" CssClass="btn btn-sm btn-outline-secondary px-2 py-2" OnClick="btnOpenReportProfile_Click" ToolTip="Report this founder profile">
+                    <i class="bi bi-flag"></i>
+                </asp:LinkButton>
+            </asp:Panel>
         </div>
     </div>
+
+    <!-- Profile Action Alerts -->
+    <asp:Panel ID="pnlProfileAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
+        <asp:Literal ID="litProfileAlertMessage" runat="server" />
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </asp:Panel>
+
+    <!-- Report User Form Panel -->
+    <asp:Panel ID="pnlReportUser" runat="server" Visible="false" CssClass="card border-warning-subtle bg-light p-4 mb-4 rounded-3 shadow-sm">
+        <h6 class="fw-bold text-dark mb-1"><i class="bi bi-flag-fill text-danger me-1"></i> Report this Founder Profile</h6>
+        <p class="text-muted small mb-3">Help maintain platform integrity. Reports are strictly confidential and investigated by FoundrLink compliance officers.</p>
+        <div class="row g-3 mb-3">
+            <div class="col-md-5">
+                <label class="form-label small fw-semibold text-dark mb-1">Reason for Report <span class="text-danger">*</span></label>
+                <asp:DropDownList ID="ddlReportUserCategory" runat="server" CssClass="form-select form-select-sm">
+                    <asp:ListItem Text="Impersonation or Fake Profile" Value="Impersonation" />
+                    <asp:ListItem Text="Spam or Unsolicited Marketing" Value="Spam" />
+                    <asp:ListItem Text="Suspicious or Fraudulent Activity" Value="Suspicious Activity" />
+                    <asp:ListItem Text="Harassment or Inappropriate Behavior" Value="Inappropriate Content" />
+                    <asp:ListItem Text="Other Violation" Value="Other" />
+                </asp:DropDownList>
+            </div>
+            <div class="col-12">
+                <label class="form-label small fw-semibold text-dark mb-1">Details &amp; Explanation <span class="text-danger">*</span></label>
+                <asp:TextBox ID="txtReportUserDetails" runat="server" TextMode="MultiLine" Rows="3" MaxLength="500" CssClass="form-control form-control-sm" placeholder="Please provide specific information describing why this account should be reviewed (max 500 characters)..." />
+            </div>
+        </div>
+        <div class="d-flex gap-2">
+            <asp:Button ID="btnSubmitReportUser" runat="server" Text="Submit Report" CssClass="btn btn-sm btn-danger px-3" OnClick="btnSubmitReportUser_Click" />
+            <asp:Button ID="btnCancelReportUser" runat="server" Text="Cancel" CssClass="btn btn-sm btn-outline-secondary px-3" OnClick="btnCancelReportUser_Click" />
+        </div>
+    </asp:Panel>
 
     <!-- Main Content Grid -->
     <div class="row g-4">

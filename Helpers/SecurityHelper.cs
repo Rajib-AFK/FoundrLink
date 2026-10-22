@@ -229,6 +229,32 @@ namespace FoundrLink.Helpers
             return diff == 0;
         }
 
+        /// <summary>
+        /// Generates a cryptographically secure random token for password resets and verification.
+        /// </summary>
+        public static string GenerateSecureToken(int byteLength = 32)
+        {
+            using (var rng = new RNGCryptoServiceProvider())
+            {
+                byte[] bytes = new byte[byteLength];
+                rng.GetBytes(bytes);
+                return BitConverter.ToString(bytes).Replace("-", "").ToLowerInvariant();
+            }
+        }
+
+        /// <summary>
+        /// Hashes a token using SHA-256 for secure database storage.
+        /// </summary>
+        public static string HashToken(string token)
+        {
+            if (string.IsNullOrEmpty(token)) return string.Empty;
+            using (var sha = SHA256.Create())
+            {
+                byte[] hash = sha.ComputeHash(Encoding.UTF8.GetBytes(token));
+                return BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
+            }
+        }
+
         public static bool IsUserLoggedIn()
         {
             var ctx = HttpContext.Current;
@@ -296,6 +322,22 @@ namespace FoundrLink.Helpers
                 ctx.Session.Clear();
                 ctx.Session.Abandon();
             }
+
+            if (ctx?.Request?.Cookies["ASP.NET_SessionId"] != null)
+            {
+                var cookie = new System.Web.HttpCookie("ASP.NET_SessionId", "")
+                {
+                    Expires = DateTime.UtcNow.AddYears(-1),
+                    HttpOnly = true
+                };
+                ctx.Response.Cookies.Add(cookie);
+            }
+
+            try
+            {
+                System.Web.Security.FormsAuthentication.SignOut();
+            }
+            catch { }
         }
     }
 }

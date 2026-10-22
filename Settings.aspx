@@ -137,23 +137,36 @@
                     <asp:RegularExpressionValidator ID="revEmail" runat="server" ControlToValidate="txtEmail" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Invalid email address format." ValidationExpression="\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*" ValidationGroup="ProfileGroup" />
                 </div>
 
-                <div class="mb-4">
-                    <label class="form-label small fw-semibold text-dark mb-1">Company / Startup Name</label>
-                    <asp:TextBox ID="txtCompany" runat="server" CssClass="form-control" placeholder="Acme Corp" style="height: 44px;" />
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Professional Title</label>
+                        <asp:TextBox ID="txtTitle" runat="server" CssClass="form-control" placeholder="e.g. Technical Co-Founder & CTO" style="height: 44px;" />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Company / Startup Name</label>
+                        <asp:TextBox ID="txtCompany" runat="server" CssClass="form-control" placeholder="Acme Corp" style="height: 44px;" />
+                    </div>
                 </div>
 
-                <!-- Optional metadata controls hidden to preserve code-behind -->
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1">Location / Base of Operations</label>
+                    <asp:TextBox ID="txtLocation" runat="server" CssClass="form-control" placeholder="City, Country (e.g. Mumbai, India)" style="height: 44px;" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold text-dark mb-1">Bio &amp; Summary</label>
+                    <asp:TextBox ID="txtBio" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="Tell other founders about your journey, interests, and background..." />
+                </div>
+
+                <!-- Hidden controls kept for code-behind compatibility -->
                 <div style="display:none;">
                     <asp:TextBox ID="txtAvatarUrl" runat="server" />
-                    <asp:TextBox ID="txtTitle" runat="server" />
-                    <asp:TextBox ID="txtLocation" runat="server" />
                     <asp:DropDownList ID="ddlRole" runat="server">
                         <asp:ListItem Text="Founder" Value="Founder" />
                         <asp:ListItem Text="Co-Founder" Value="Co-Founder" />
                         <asp:ListItem Text="Investor" Value="Investor" />
                         <asp:ListItem Text="Advisor" Value="Advisor" />
                     </asp:DropDownList>
-                    <asp:TextBox ID="txtBio" runat="server" />
                 </div>
 
                 <div class="d-flex justify-content-end">

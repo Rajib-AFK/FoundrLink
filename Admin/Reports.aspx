@@ -66,27 +66,27 @@
     <div class="card border-0 shadow-sm rounded-4 overflow-hidden mb-4" style="border: 1px solid #E2E8F0 !important;">
         <div class="d-flex justify-content-between align-items-center p-4 border-bottom flex-wrap gap-3">
             <div>
-                <h5 class="fw-bold text-dark mb-1 fs-5">Pending Reports</h5>
-                <p class="text-muted mb-0 small" style="font-size: 0.8rem;">Review and action user-submitted reports.</p>
+                <h5 class="fw-bold text-dark mb-1 fs-5">Moderation &amp; Reports</h5>
+                <p class="text-muted mb-0 small" style="font-size: 0.8rem;">Review, investigate, and resolve user-submitted moderation tickets.</p>
             </div>
-            <div class="d-flex align-items-center gap-2">
-                <asp:DropDownList ID="ddlPriorityFilter" runat="server" CssClass="form-select form-select-sm rounded-3 shadow-none text-muted" AutoPostBack="true" OnSelectedIndexChanged="btnFilter_Click" style="width: auto; min-width: 130px; font-size: 0.82rem;">
-                    <asp:ListItem Text="All Types" Value="" />
+            <div class="d-flex align-items-center flex-wrap gap-2">
+                <div class="input-group input-group-sm" style="max-width: 240px;">
+                    <asp:TextBox ID="txtSearch" runat="server" CssClass="form-control rounded-start-3 shadow-none" placeholder="Search reports..." />
+                    <asp:Button ID="btnFilter" runat="server" Text="Search" CssClass="btn btn-dark btn-sm rounded-end-3" OnClick="btnFilter_Click" />
+                </div>
+                <asp:DropDownList ID="ddlStatusFilter" runat="server" CssClass="form-select form-select-sm rounded-3 shadow-none text-muted" AutoPostBack="true" OnSelectedIndexChanged="btnFilter_Click" style="width: auto; min-width: 130px; font-size: 0.82rem;">
+                    <asp:ListItem Text="All Statuses" Value="" />
+                    <asp:ListItem Text="Pending" Value="Pending" />
+                    <asp:ListItem Text="Resolved" Value="Resolved" />
+                    <asp:ListItem Text="Dismissed" Value="Dismissed" />
+                </asp:DropDownList>
+                <asp:DropDownList ID="ddlPriorityFilter" runat="server" CssClass="form-select form-select-sm rounded-3 shadow-none text-muted" AutoPostBack="true" OnSelectedIndexChanged="btnFilter_Click" style="width: auto; min-width: 120px; font-size: 0.82rem;">
+                    <asp:ListItem Text="All Priorities" Value="" />
                     <asp:ListItem Text="Urgent" Value="Urgent" />
                     <asp:ListItem Text="High" Value="High" />
                     <asp:ListItem Text="Normal" Value="Normal" />
                 </asp:DropDownList>
-
-                <!-- Hidden designer elements kept for server compatibility -->
-                <div class="d-none">
-                    <asp:TextBox ID="txtSearch" runat="server" />
-                    <asp:DropDownList ID="ddlStatusFilter" runat="server">
-                        <asp:ListItem Text="" Value="" />
-                        <asp:ListItem Text="Pending" Value="Pending" />
-                    </asp:DropDownList>
-                    <asp:Button ID="btnFilter" runat="server" OnClick="btnFilter_Click" />
-                    <asp:Button ID="btnReset" runat="server" OnClick="btnReset_Click" />
-                </div>
+                <asp:Button ID="btnReset" runat="server" Text="Reset" CssClass="btn btn-sm btn-outline-secondary rounded-3" OnClick="btnReset_Click" />
             </div>
         </div>
 
@@ -96,10 +96,11 @@
                     <table class="table align-middle mb-0">
                         <thead>
                             <tr>
-                                <th class="fl-admin-th ps-4">ID</th>
+                                <th class="fl-admin-th ps-4">Code</th>
                                 <th class="fl-admin-th">Reporter</th>
                                 <th class="fl-admin-th">Reported Item</th>
                                 <th class="fl-admin-th">Type</th>
+                                <th class="fl-admin-th">Date</th>
                                 <th class="fl-admin-th">Status</th>
                                 <th class="fl-admin-th text-end pe-4">Actions</th>
                             </tr>
@@ -108,15 +109,18 @@
                 </HeaderTemplate>
                 <ItemTemplate>
                     <tr class="hover-bg-light">
-                        <td class="fl-admin-td ps-4 text-muted small" style="font-size:0.8rem;">
+                        <td class="fl-admin-td ps-4 fw-bold text-dark small" style="font-size:0.8rem;">
                             <%# Eval("ReportCode") %>
                         </td>
                         <td class="fl-admin-td text-dark small" style="font-size:0.82rem;">
                             <%# Eval("ReporterEmail") %>
                         </td>
                         <td class="fl-admin-td">
-                            <span class="text-teal fw-semibold small" style="color: #008C75;">
+                            <span class="text-teal fw-semibold small d-block" style="color: #008C75;">
                                 <%# Eval("ReportedItem") %>
+                            </span>
+                            <span class="text-muted small" style="font-size:0.75rem;" title='<%# Eval("Details") %>'>
+                                <%# Eval("Details") != null && Eval("Details").ToString().Length > 60 ? Eval("Details").ToString().Substring(0, 60) + "..." : Eval("Details") %>
                             </span>
                         </td>
                         <td class="fl-admin-td">
@@ -124,15 +128,26 @@
                                 <%# Eval("ReportType") != null && !string.IsNullOrEmpty(Eval("ReportType").ToString()) ? Eval("ReportType") : "Spam" %>
                             </span>
                         </td>
+                        <td class="fl-admin-td text-muted small" style="font-size: 0.8rem;">
+                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
+                        </td>
                         <td class="fl-admin-td">
-                            <span class="badge rounded-2 px-2 py-1 small fw-semibold" style="background:#F1F5F9; color:#475569; font-size: 0.72rem;">
+                            <span class='<%# GetStatusBadgeClass(Eval("Status")) %>'>
                                 <%# Eval("Status") %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-end pe-4">
-                            <asp:LinkButton ID="btnResolve" runat="server" CommandName="Resolve" CommandArgument='<%# Eval("ReportId") %>' CssClass="btn btn-sm bg-white rounded-3 px-3 py-1 fw-semibold small shadow-none" style="border: 1px solid #00A884; color: #00A884; font-size: 0.8rem;" title="Resolve Ticket">
-                                Resolve
-                            </asp:LinkButton>
+                            <div class="d-flex align-items-center justify-content-end gap-1">
+                                <asp:LinkButton ID="btnResolve" runat="server" CommandName="Resolve" CommandArgument='<%# Eval("ReportId") %>' CssClass="btn btn-sm bg-white rounded-3 px-2 py-1 fw-semibold small shadow-none" style="border: 1px solid #00A884; color: #00A884; font-size: 0.78rem;" title="Mark as Resolved" Visible='<%# Eval("Status") != null && Eval("Status").ToString() == "Pending" %>'>
+                                    <i class="bi bi-check-lg"></i> Resolve
+                                </asp:LinkButton>
+                                <asp:LinkButton ID="btnDismiss" runat="server" CommandName="Dismiss" CommandArgument='<%# Eval("ReportId") %>' CssClass="btn btn-sm bg-white rounded-3 px-2 py-1 fw-semibold small shadow-none" style="border: 1px solid #94A3B8; color: #64748B; font-size: 0.78rem;" title="Dismiss Report" Visible='<%# Eval("Status") != null && Eval("Status").ToString() == "Pending" %>'>
+                                    <i class="bi bi-x-lg"></i> Dismiss
+                                </asp:LinkButton>
+                                <asp:LinkButton ID="btnReopen" runat="server" CommandName="Reopen" CommandArgument='<%# Eval("ReportId") %>' CssClass="btn btn-sm btn-outline-warning rounded-3 px-2 py-1 fw-semibold small shadow-none" style="font-size: 0.78rem;" title="Reopen Report" Visible='<%# Eval("Status") != null && Eval("Status").ToString() != "Pending" %>'>
+                                    <i class="bi bi-arrow-counterclockwise"></i> Reopen
+                                </asp:LinkButton>
+                            </div>
                         </td>
                     </tr>
                 </ItemTemplate>
@@ -143,12 +158,21 @@
             </asp:Repeater>
         </div>
 
+        <asp:Panel ID="pnlNoReports" runat="server" Visible="false" CssClass="text-center py-5 text-muted small">
+            <i class="bi bi-inbox fs-2 d-block mb-2 text-secondary"></i>
+            No moderation reports found for the selected criteria.
+        </asp:Panel>
+
         <!-- Table Footer / Pagination -->
         <div class="d-flex justify-content-between align-items-center p-3 px-4 bg-white border-top flex-wrap gap-2">
-            <span class="text-muted small" style="font-size: 0.8rem;">Showing 1 of 2 entries</span>
+            <asp:Literal ID="litPaginationInfo" runat="server" Text="Showing 0 entries" />
             <div class="d-flex align-items-center gap-1">
-                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-left"></i></a>
-                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-right"></i></a>
+                <asp:LinkButton ID="btnPrevPage" runat="server" CssClass="fl-page-btn" OnClick="btnPrevPage_Click" ToolTip="Previous Page">
+                    <i class="bi bi-chevron-left"></i>
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnNextPage" runat="server" CssClass="fl-page-btn" OnClick="btnNextPage_Click" ToolTip="Next Page">
+                    <i class="bi bi-chevron-right"></i>
+                </asp:LinkButton>
             </div>
         </div>
     </div>

@@ -89,14 +89,14 @@
             </div>
             <div class="col-md-3">
                 <label class="form-label text-dark fw-bold small mb-1" style="font-size:0.8rem;">Stage</label>
-                <select class="form-select rounded-3">
-                    <option value="">All Stages</option>
-                    <option value="Idea">Idea</option>
-                    <option value="MVP">MVP</option>
-                    <option value="Seed">Seed</option>
-                    <option value="Series A">Series A</option>
-                    <option value="Growth">Growth</option>
-                </select>
+                <asp:DropDownList ID="ddlStage" runat="server" CssClass="form-select rounded-3">
+                    <asp:ListItem Text="All Stages" Value="" />
+                    <asp:ListItem Text="Idea" Value="Idea" />
+                    <asp:ListItem Text="MVP" Value="MVP" />
+                    <asp:ListItem Text="Seed" Value="Seed" />
+                    <asp:ListItem Text="Series A" Value="Series A" />
+                    <asp:ListItem Text="Growth" Value="Growth" />
+                </asp:DropDownList>
             </div>
             <div class="col-md-3">
                 <label class="form-label text-dark fw-bold small mb-1" style="font-size:0.8rem;">Status</label>
@@ -146,7 +146,7 @@
                         </td>
                         <td class="fl-admin-td">
                             <div class="d-flex align-items-center gap-2">
-                                <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100" class="rounded-circle border flex-shrink-0" width="28" height="28" style="object-fit:cover;" />
+                                <img src='<%# Eval("FounderAvatarUrl") %>' class="rounded-circle border flex-shrink-0" width="28" height="28" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                 <div>
                                     <div class="fw-bold text-dark small"><%# Eval("FounderName") %></div>
                                     <div class="text-muted small" style="font-size:0.7rem;"><%# Eval("FounderEmail") %></div>
@@ -158,15 +158,15 @@
                             <div class="text-muted small" style="font-size:0.72rem;"><%# Eval("Stage") %></div>
                         </td>
                         <td class="fl-admin-td">
-                            <span class="fw-semibold text-dark small">12</span>
+                            <span class="fw-semibold text-dark small"><%# Eval("TeamSize") != null && Eval("TeamSize") != DBNull.Value ? Eval("TeamSize") : "1" %></span>
                         </td>
                         <td class="fl-admin-td">
-                            <span class='<%# Eval("Status").ToString() == "Published" ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# Eval("Status").ToString() == "Published" ? "background:#4EE8C4; color:#0F172A;" : "background:#E2E8F0; color:#475569;" %>'>
+                            <span class='<%# Eval("Status").ToString() == "Published" ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# Eval("Status").ToString() == "Published" ? "background:#DCFCE7; color:#15803D;" : "background:#F1F5F9; color:#475569;" %>'>
                                 <%# Eval("Status").ToString() == "Published" ? "Active" : "Draft" %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.8rem;">
-                            Oct 12, 2023
+                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
                         </td>
                         <td class="fl-admin-td text-end pe-4">
                             <a href='<%# "../StartupDetails.aspx?id=" + Eval("StartupId") %>' target="_blank" class="btn btn-sm btn-link text-muted p-1" title="View Public Page">
@@ -188,15 +188,21 @@
             </asp:Repeater>
         </div>
 
+        <asp:Panel ID="pnlNoStartups" runat="server" Visible="false" CssClass="text-center py-5 text-muted small">
+            <i class="bi bi-rocket fs-2 d-block mb-2 text-secondary"></i>
+            No startups found matching your filter criteria.
+        </asp:Panel>
+
         <!-- Table Footer / Pagination -->
         <div class="d-flex justify-content-between align-items-center p-3 px-4 bg-white border-top flex-wrap gap-2">
-            <span class="text-muted small" style="font-size: 0.8rem;">Showing 1 to 2 of 10 entries</span>
+            <asp:Literal ID="litPaginationInfo" runat="server" Text="Showing 0 entries" />
             <div class="d-flex align-items-center gap-1">
-                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-left"></i></a>
-                <a href="javascript:void(0)" class="fl-page-btn active">1</a>
-                <a href="javascript:void(0)" class="fl-page-btn">2</a>
-                <a href="javascript:void(0)" class="fl-page-btn">3</a>
-                <a href="javascript:void(0)" class="fl-page-btn"><i class="bi bi-chevron-right"></i></a>
+                <asp:LinkButton ID="btnPrevPage" runat="server" CssClass="fl-page-btn" OnClick="btnPrevPage_Click" ToolTip="Previous Page">
+                    <i class="bi bi-chevron-left"></i>
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnNextPage" runat="server" CssClass="fl-page-btn" OnClick="btnNextPage_Click" ToolTip="Next Page">
+                    <i class="bi bi-chevron-right"></i>
+                </asp:LinkButton>
             </div>
         </div>
     </div>

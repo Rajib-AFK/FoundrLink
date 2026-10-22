@@ -55,6 +55,18 @@ namespace FoundrLink
 
                     string fullDesc = sr["FullDescription"]?.ToString();
                     litAbout.Text = !string.IsNullOrEmpty(fullDesc) ? fullDesc : sr["ShortDescription"]?.ToString();
+
+                    int? currentUserId = SecurityHelper.GetCurrentUserId();
+                    if (currentUserId.HasValue && (currentUserId.Value == _founderId || SecurityHelper.IsUserAdmin()))
+                    {
+                        lnkManageTeam.HRef = "ManageStartup.aspx?id=" + _startupId;
+                        lnkManageTeam.InnerHtml = "<i class=\"bi bi-gear me-1\"></i> Manage Team";
+                    }
+                    else
+                    {
+                        lnkManageTeam.HRef = "StartupDetails.aspx?id=" + _startupId;
+                        lnkManageTeam.InnerHtml = "<i class=\"bi bi-info-circle me-1\"></i> Startup Overview";
+                    }
                 }
 
                 // 2. Team Members

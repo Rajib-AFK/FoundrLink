@@ -14,6 +14,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Repeater rptMembers;
         protected global::System.Web.UI.WebControls.Literal litRoleCount;
         protected global::System.Web.UI.WebControls.Repeater rptRoles;
+        protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkCareersPage;
         protected global::System.Web.UI.WebControls.Repeater rptUpdates;
     }
 }

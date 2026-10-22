@@ -141,7 +141,7 @@
                             <asp:HiddenField ID="hfRowUserId" runat="server" Value='<%# Eval("UserId") %>' />
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.82rem;">
-                            Oct 12, 2023
+                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
                         </td>
                         <td class="fl-admin-td">
                             <span class='<%# Eval("Status").ToString() == "Active" ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# Eval("Status").ToString() == "Active" ? "background:#DCFCE7; color:#15803D;" : "background:#F1F5F9; color:#475569;" %>'>
@@ -152,7 +152,7 @@
                             <asp:LinkButton ID="btnToggleVerify" runat="server" CommandName="ToggleVerify" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-link text-muted p-1" title="Toggle Verification">
                                 <i class="bi bi-shield-check"></i>
                             </asp:LinkButton>
-                            <asp:LinkButton ID="btnToggleStatus" runat="server" CommandName="ToggleStatus" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-link text-muted p-1" title="Toggle Active / Inactive">
+                            <asp:LinkButton ID="btnToggleStatus" runat="server" CommandName="ToggleStatus" CommandArgument='<%# Eval("UserId") %>' CssClass="btn btn-sm btn-link text-muted p-1" title="Toggle Active / Inactive" OnClientClick="return confirm('Are you sure you want to change this user active status?');">
                                 <i class="bi bi-arrow-repeat"></i>
                             </asp:LinkButton>
                         </td>
@@ -165,15 +165,21 @@
             </asp:Repeater>
         </div>
 
+        <asp:Panel ID="pnlNoUsers" runat="server" Visible="false" CssClass="text-center py-5 text-muted small">
+            <i class="bi bi-people fs-2 d-block mb-2 text-secondary"></i>
+            No platform members found matching your search criteria.
+        </asp:Panel>
+
         <!-- Table Footer / Pagination -->
         <div class="d-flex justify-content-between align-items-center p-3 px-4 bg-white border-top flex-wrap gap-2">
-            <span class="text-muted small" style="font-size: 0.8rem;">Showing 1 to 3 of 124 entries</span>
+            <asp:Literal ID="litPaginationInfo" runat="server" Text="Showing 0 entries" />
             <div class="d-flex align-items-center gap-1">
-                <a href="javascript:void(0)" class="btn btn-sm btn-light border text-muted px-3 py-1 rounded-2 fw-semibold me-1" style="font-size:0.8rem;">Prev</a>
-                <a href="javascript:void(0)" class="fl-page-btn-dark active">1</a>
-                <a href="javascript:void(0)" class="fl-page-btn-dark">2</a>
-                <a href="javascript:void(0)" class="fl-page-btn-dark">3</a>
-                <a href="javascript:void(0)" class="btn btn-sm btn-light border text-muted px-3 py-1 rounded-2 fw-semibold ms-1" style="font-size:0.8rem;">Next</a>
+                <asp:LinkButton ID="btnPrevPage" runat="server" CssClass="fl-page-btn-dark" OnClick="btnPrevPage_Click" ToolTip="Previous Page">
+                    <i class="bi bi-chevron-left"></i>
+                </asp:LinkButton>
+                <asp:LinkButton ID="btnNextPage" runat="server" CssClass="fl-page-btn-dark" OnClick="btnNextPage_Click" ToolTip="Next Page">
+                    <i class="bi bi-chevron-right"></i>
+                </asp:LinkButton>
             </div>
         </div>
     </div>

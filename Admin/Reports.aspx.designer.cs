@@ -16,5 +16,9 @@ namespace FoundrLink.Admin
         protected global::System.Web.UI.WebControls.Button btnFilter;
         protected global::System.Web.UI.WebControls.Button btnReset;
         protected global::System.Web.UI.WebControls.Repeater rptReports;
+        protected global::System.Web.UI.WebControls.Panel pnlNoReports;
+        protected global::System.Web.UI.WebControls.Literal litPaginationInfo;
+        protected global::System.Web.UI.WebControls.LinkButton btnPrevPage;
+        protected global::System.Web.UI.WebControls.LinkButton btnNextPage;
     }
 }

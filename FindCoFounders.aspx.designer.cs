@@ -10,6 +10,8 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.LinkButton btnSkillPython;
         protected global::System.Web.UI.WebControls.LinkButton btnSkillAI;
         protected global::System.Web.UI.WebControls.LinkButton btnSkillFintech;
+        protected global::System.Web.UI.WebControls.TextBox txtCustomSkill;
+        protected global::System.Web.UI.WebControls.LinkButton btnAddSkill;
         protected global::System.Web.UI.WebControls.DropDownList ddlIndustry;
         protected global::System.Web.UI.WebControls.RadioButton rbAvailAll;
         protected global::System.Web.UI.WebControls.RadioButton rbAvailFull;

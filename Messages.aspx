@@ -188,7 +188,7 @@
                 <asp:Repeater ID="rptMessages" runat="server">
                     <ItemTemplate>
                         <div class='<%# Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "fl-msg-sent" : "fl-msg-received" %>'>
-                            <div><%# Eval("Content") %></div>
+                            <div><%# Server.HtmlEncode(Eval("Content")?.ToString() ?? "").Replace("\n", "<br/>") %></div>
                             <div class='<%# "text-end mt-1 " + (Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "text-light text-opacity-75" : "text-muted") %>' style="font-size: 0.68rem;">
                                 <%# Eval("TimeText") %>
                                 <%# Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "<i class='bi bi-check2-all ms-1' style='color:#10B981;'></i>" : "" %>

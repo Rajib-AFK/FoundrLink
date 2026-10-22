@@ -56,16 +56,49 @@
                     </div>
                 </div>
 
-                <div class="pt-4 border-top d-flex gap-3 align-items-center" style="border-color: #F1F5F9 !important;">
+                <div class="pt-4 border-top d-flex flex-wrap gap-3 align-items-center" style="border-color: #F1F5F9 !important;">
                     <asp:Button ID="btnRequestJoin" runat="server" Text="Request to Join" CssClass="btn-fl-primary px-4" OnClick="btnRequestJoin_Click" />
+                    <asp:Button ID="btnWithdrawJoin" runat="server" Text="Withdraw Request" CssClass="btn btn-outline-danger px-3" OnClick="btnWithdrawJoin_Click" Visible="false" />
+                    <asp:Panel ID="pnlTeamMemberBadge" runat="server" Visible="false" CssClass="badge bg-success-subtle text-success border border-success-subtle px-3 py-2 fs-6">
+                        <i class="bi bi-check-circle-fill me-1"></i> You are a Team Member
+                    </asp:Panel>
                     <asp:Button ID="btnContactFounder" runat="server" Text="Contact Founder" CssClass="btn-fl-outline px-4" OnClick="btnContactFounder_Click" />
-                    <a id="lnkTeamDetails" runat="server" href="#" class="btn-fl-outline ms-auto" style="display:none;">
+                    <a id="lnkTeamDetails" runat="server" href="#" class="btn-fl-outline ms-auto">
                         <i class="bi bi-people me-1"></i> View Team &amp; Careers
                     </a>
+                    <asp:LinkButton ID="btnOpenReport" runat="server" CssClass="text-muted small text-decoration-none ms-2" OnClick="btnOpenReport_Click" ToolTip="Report this startup listing">
+                        <i class="bi bi-flag"></i> Report
+                    </asp:LinkButton>
                 </div>
 
                 <asp:Panel ID="pnlAlert" runat="server" Visible="false" CssClass="alert alert-success mt-3 py-2 small">
                     <asp:Literal ID="litAlertMessage" runat="server" />
+                </asp:Panel>
+
+                <!-- User-Facing Report Panel -->
+                <asp:Panel ID="pnlReportStartup" runat="server" Visible="false" CssClass="card border-warning-subtle bg-light p-3 mt-3 rounded-3">
+                    <h6 class="fw-bold text-dark mb-1"><i class="bi bi-flag-fill text-danger me-1"></i> Report this Startup Listing</h6>
+                    <p class="text-muted small mb-2" style="font-size:0.8rem;">Reports are confidential and reviewed directly by FoundrLink platform operations within 24 hours.</p>
+                    <div class="row g-2 mb-2">
+                        <div class="col-md-6">
+                            <label class="form-label small fw-semibold text-dark mb-1">Reason for Report <span class="text-danger">*</span></label>
+                            <asp:DropDownList ID="ddlReportCategory" runat="server" CssClass="form-select form-select-sm">
+                                <asp:ListItem Text="Spam or Misleading Information" Value="Spam" />
+                                <asp:ListItem Text="Suspicious or Fraudulent Activity" Value="Suspicious Activity" />
+                                <asp:ListItem Text="Intellectual Property / Copyright" Value="Content Violation" />
+                                <asp:ListItem Text="Inappropriate Content" Value="Inappropriate Content" />
+                                <asp:ListItem Text="Other Terms Violation" Value="Other" />
+                            </asp:DropDownList>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label small fw-semibold text-dark mb-1">Explanation <span class="text-danger">*</span></label>
+                            <asp:TextBox ID="txtReportDetails" runat="server" TextMode="MultiLine" Rows="3" MaxLength="500" CssClass="form-control form-control-sm" placeholder="Please provide specific details explaining the violation (max 500 characters)..." />
+                        </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <asp:Button ID="btnSubmitReport" runat="server" Text="Submit Report" CssClass="btn btn-sm btn-danger px-3" OnClick="btnSubmitReport_Click" />
+                        <asp:Button ID="btnCancelReport" runat="server" Text="Cancel" CssClass="btn btn-sm btn-outline-secondary px-3" OnClick="btnCancelReport_Click" />
+                    </div>
                 </asp:Panel>
             </div>
 

@@ -12,9 +12,14 @@ namespace FoundrLink.Admin
         protected global::System.Web.UI.WebControls.Literal litAlertMsg;
         protected global::System.Web.UI.WebControls.TextBox txtSearch;
         protected global::System.Web.UI.WebControls.DropDownList ddlIndustry;
+        protected global::System.Web.UI.WebControls.DropDownList ddlStage;
         protected global::System.Web.UI.WebControls.DropDownList ddlStatus;
         protected global::System.Web.UI.WebControls.Button btnFilter;
         protected global::System.Web.UI.WebControls.Button btnReset;
         protected global::System.Web.UI.WebControls.Repeater rptStartups;
+        protected global::System.Web.UI.WebControls.Panel pnlNoStartups;
+        protected global::System.Web.UI.WebControls.Literal litPaginationInfo;
+        protected global::System.Web.UI.WebControls.LinkButton btnPrevPage;
+        protected global::System.Web.UI.WebControls.LinkButton btnNextPage;
     }
 }
