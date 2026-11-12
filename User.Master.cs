@@ -6,14 +6,6 @@ namespace FoundrLink
 {
     public partial class UserMaster : MasterPage
     {
-        protected void Page_Init(object sender, EventArgs e)
-        {
-            if (Session != null && !string.IsNullOrEmpty(Session.SessionID))
-            {
-                Page.ViewStateUserKey = Session.SessionID;
-            }
-        }
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!SecurityHelper.IsUserLoggedIn())
@@ -65,16 +57,16 @@ namespace FoundrLink
                         pnlUnreadNotif.Visible = true;
                     }
 
-                    object msgCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM Messages WHERE ReceiverId = @u AND IsRead = 0",
+                    object msgCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Messages WHERE ReceiverId = @u AND IsRead = 0",
                         DbHelper.CreateParam("@u", System.Data.SqlDbType.Int, userId.Value));
                     if (msgCount != null && Convert.ToInt32(msgCount) > 0)
                     {
                         pnlUnreadMsg.Visible = true;
                     }
                 }
-                catch
+                catch (Exception ex)
                 {
-                    // DB might not be initialized yet
+                    System.Diagnostics.Debug.WriteLine("Error loading unread badge counts: " + ex.Message);
                 }
             }
         }

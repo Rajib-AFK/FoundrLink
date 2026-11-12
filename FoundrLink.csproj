@@ -99,8 +99,32 @@
     <Content Include="Admin\ManageUsers.aspx" />
     <Content Include="Admin\ManageStartups.aspx" />
     <Content Include="Admin\Reports.aspx" />
+    <Content Include="Global.asax" />
+    <Content Include="Images\.gitkeep" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Global.asax.cs">
+      <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Core\Events\EntityEvents.cs" />
+    <Compile Include="Core\Exceptions\CustomExceptions.cs" />
+    <Compile Include="Core\Interfaces\IRepositories.cs" />
+    <Compile Include="Core\Models\BaseEntity.cs" />
+    <Compile Include="Core\Models\BaseUser.cs" />
+    <Compile Include="Core\Models\Enums.cs" />
+    <Compile Include="Core\Models\FounderProfile.cs" />
+    <Compile Include="Core\Models\SpecializedUsers.cs" />
+    <Compile Include="Core\Models\Startup.cs" />
+    <Compile Include="Core\Models\SupportingEntities.cs" />
+    <Compile Include="Core\Services\MatchmakingEngine.cs" />
+    <Compile Include="Core\State\SessionManager.cs" />
+    <Compile Include="Core\Threading\BackgroundSyncWorker.cs" />
+    <Compile Include="DataAccess\AdminRepository.cs" />
+    <Compile Include="DataAccess\DbConnectionFactory.cs" />
+    <Compile Include="DataAccess\DisconnectedReportsRepository.cs" />
+    <Compile Include="DataAccess\MessagingAndNotificationRepositories.cs" />
+    <Compile Include="DataAccess\StartupRepository.cs" />
+    <Compile Include="DataAccess\UserRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\DbHelper.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />

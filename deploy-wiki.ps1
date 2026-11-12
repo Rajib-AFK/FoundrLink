@@ -74,7 +74,7 @@ try {
     # 4. Push to GitHub Wiki
     Write-Host "[3/4] Testing remote connection and pushing to GitHub Wiki..." -ForegroundColor Yellow
     
-    $pushOutput = git push -u origin master 2>&1
+    $pushOutput = git push --force -u origin master 2>&1
     if ($LASTEXITCODE -eq 0) {
         Write-Host ""
         Write-Host "==============================================================" -ForegroundColor Green
