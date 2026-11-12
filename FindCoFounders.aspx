@@ -164,12 +164,12 @@
                                         <div class="d-flex align-items-center gap-3">
                                             <img src='<%# Eval("AvatarUrl") %>' class="rounded-circle" width="52" height="52" style="object-fit:cover; flex-shrink: 0;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                             <div>
-                                                <h6 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;"><%# Eval("FullName") %></h6>
+                                                <h6 class="fw-bold mb-0 text-dark" style="font-size: 1.05rem;"><%#: Eval("FullName") %></h6>
                                                 <div class="text-uppercase tracking-wider fw-bold" style="font-size: 0.68rem; margin-top: 2px; color: #0284C7; letter-spacing: 0.05em;">
-                                                    <%# Eval("Title") %>
+                                                    <%#: Eval("Title") %>
                                                 </div>
                                                 <div class="text-muted small" style="font-size: 0.75rem;">
-                                                    <i class="bi bi-geo-alt"></i> <%# Eval("Location") %>
+                                                    <i class="bi bi-geo-alt"></i> <%#: Eval("Location") %>
                                                 </div>
                                             </div>
                                         </div>
@@ -179,7 +179,7 @@
                                     </div>
 
                                     <p class="text-muted small mb-3 lh-base" style="min-height: 48px; font-size: 0.82rem;">
-                                        <%# Eval("Bio") %>
+                                        <%#: Eval("Bio") %>
                                     </p>
 
                                     <div class="d-flex flex-wrap gap-1 mb-4">

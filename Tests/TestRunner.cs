@@ -147,6 +147,19 @@ namespace FoundrLink.Tests
                 if (!ok) throw new Exception($"Expected registration validation to pass. Error: {err}");
             }, results);
 
+            ExecuteTest("Validation: Registration privilege escalation with 'Admin' role is rejected", () =>
+            {
+                bool ok = validator.ValidateRegistration(
+                    "Attacker User",
+                    "alex@ripaldesign.studio",
+                    "Admin",
+                    "SecretPass123!",
+                    "SecretPass123!",
+                    out string err);
+
+                if (ok) throw new Exception("Expected registration with Admin role to be rejected.");
+            }, results);
+
             ExecuteTest("Validation: Password under 8 characters is rejected", () =>
             {
                 bool ok = validator.ValidatePassword("Short1!", out string err);

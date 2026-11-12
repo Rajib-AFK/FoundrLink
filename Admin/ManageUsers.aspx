@@ -123,11 +123,11 @@
                         <td class="fl-admin-td ps-4">
                             <div class="d-flex align-items-center gap-3">
                                 <img src='<%# Eval("AvatarUrl") %>' class="rounded-circle border flex-shrink-0" width="34" height="34" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
-                                <div class="fw-bold text-dark small"><%# Eval("FullName") %></div>
+                                <div class="fw-bold text-dark small"><%#: Eval("FullName") %></div>
                             </div>
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.82rem;">
-                            <%# Eval("Email") %>
+                            <%#: Eval("Email") %>
                         </td>
                         <td class="fl-admin-td text-dark small">
                             <asp:DropDownList ID="ddlRoleChange" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlRoleChange_SelectedIndexChanged" CssClass="form-select form-select-sm py-0 px-2 d-inline-block" style="font-size: 0.8rem; height: 28px; width: auto; max-width: 125px;">
@@ -141,11 +141,11 @@
                             <asp:HiddenField ID="hfRowUserId" runat="server" Value='<%# Eval("UserId") %>' />
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.82rem;">
-                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
+                            <%#: Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
                         </td>
                         <td class="fl-admin-td">
                             <span class='<%# Eval("Status").ToString() == "Active" ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# Eval("Status").ToString() == "Active" ? "background:#DCFCE7; color:#15803D;" : "background:#F1F5F9; color:#475569;" %>'>
-                                <%# Eval("Status") %>
+                                <%#: Eval("Status") %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-end pe-4">

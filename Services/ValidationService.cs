@@ -101,6 +101,16 @@ namespace FoundrLink.Services
                 return false;
             }
 
+            // ASVS V2.2 & V8.1: Enforce role whitelist; strictly disallow Admin or unauthorized roles during registration
+            string trimmedRole = role.Trim();
+            if (!string.Equals(trimmedRole, "Founder", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(trimmedRole, "Investor", StringComparison.OrdinalIgnoreCase) &&
+                !string.Equals(trimmedRole, "Technical", StringComparison.OrdinalIgnoreCase))
+            {
+                errorMessage = "Invalid account role. Only Founder, Investor, or Technical roles can be registered.";
+                return false;
+            }
+
             if (!ValidatePassword(password, out errorMessage))
             {
                 return false;
@@ -121,10 +131,14 @@ namespace FoundrLink.Services
 
             // Strip potentially dangerous executable markup tags while preserving standard punctuation
             string cleaned = Regex.Replace(input, @"<script[\s\S]*?>[\s\S]*?<\/script>", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"<style[\s\S]*?>[\s\S]*?<\/style>", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"<iframe[\s\S]*?>[\s\S]*?<\/iframe>", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"<object[\s\S]*?>[\s\S]*?<\/object>", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"<embed[\s\S]*?>[\s\S]*?<\/embed>", string.Empty, RegexOptions.IgnoreCase);
             cleaned = Regex.Replace(cleaned, @"javascript:", string.Empty, RegexOptions.IgnoreCase);
             cleaned = Regex.Replace(cleaned, @"vbscript:", string.Empty, RegexOptions.IgnoreCase);
-            cleaned = Regex.Replace(cleaned, @"onload\s*=", string.Empty, RegexOptions.IgnoreCase);
-            cleaned = Regex.Replace(cleaned, @"onerror\s*=", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"data:text\/html", string.Empty, RegexOptions.IgnoreCase);
+            cleaned = Regex.Replace(cleaned, @"on\w+\s*=", string.Empty, RegexOptions.IgnoreCase);
 
             return cleaned.Trim();
         }

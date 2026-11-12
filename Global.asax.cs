@@ -36,10 +36,13 @@ namespace FoundrLink
 
         protected void Application_Error(object sender, EventArgs e)
         {
+            // ASVS V15: Structured security and exception logging
             Exception ex = Server.GetLastError();
             if (ex != null)
             {
-                System.Diagnostics.Debug.WriteLine("Application error: " + ex.Message);
+                string ip = Request.UserHostAddress ?? "Unknown";
+                string url = Request.RawUrl ?? "Unknown";
+                System.Diagnostics.Trace.TraceError($"[{DateTime.UtcNow:O}] [IP:{ip}] [URL:{url}] Application Error: {ex}");
             }
         }
     }

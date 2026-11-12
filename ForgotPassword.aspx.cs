@@ -71,18 +71,16 @@ namespace FoundrLink
                         string smtpHost = ConfigurationManager.AppSettings["SmtpHost"];
                         bool smtpConfigured = !string.IsNullOrWhiteSpace(smtpHost) && smtpHost != "localhost";
 
+                        // ASVS V6.4 & V12.4: Never expose raw reset links/tokens on the public webpage
+                        pnlDevResetLink.Visible = false;
                         if (smtpConfigured)
                         {
-                            // In production with real SMTP configured
                             System.Diagnostics.Trace.TraceInformation("Password reset token generated and sent to " + email);
                         }
                         else
                         {
-                            // In development mode, provide explicit local test link without claiming fake delivery
-                            pnlDevResetLink.Visible = true;
-                            lnkDevReset.NavigateUrl = resetUrl;
-                            lnkDevReset.Text = resetUrl;
-                            System.Diagnostics.Trace.TraceInformation("FoundrLink Dev Password Reset URL: " + resetUrl);
+                            // In development environments without active SMTP, write strictly to server diagnostic trace
+                            System.Diagnostics.Trace.TraceInformation("FoundrLink Server Diagnostic - Password Reset URL: " + resetUrl);
                         }
                     }
                 }

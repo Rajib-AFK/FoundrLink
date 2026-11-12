@@ -204,26 +204,26 @@
                                     <img src='<%# Eval("LogoUrl") %>' alt='<%# Eval("Name") %>' width="44" height="44" style="object-fit:cover; border-radius:8px;" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100';" />
                                 </div>
                                 <div class="flex-grow-1">
-                                    <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;"><%# Eval("Name") %></h5>
+                                    <h5 class="fw-bold mb-0 text-dark" style="font-size: 1.15rem;"><%#: Eval("Name") %></h5>
                                     <div class="text-muted small" style="font-size: 0.78rem;">
-                                        <i class="bi bi-geo-alt"></i> <%# FormatLocation(Eval("Location")) %>
+                                        <i class="bi bi-geo-alt"></i> <%#: FormatLocation(Eval("Location")) %>
                                     </div>
                                 </div>
                             </div>
 
                             <p class="text-muted small mb-3 lh-base" style="min-height: 42px;">
-                                <%# Eval("ShortDescription") %>
+                                <%#: Eval("ShortDescription") %>
                             </p>
 
                             <div class="d-flex flex-wrap gap-2 mb-3">
-                                <span class="fl-meta-tag"><%# Eval("Industry") %></span>
-                                <span class="fl-meta-tag"><%# Eval("Stage") %></span>
-                                <span class="fl-meta-tag"><i class="bi bi-people"></i> <%# Eval("TeamSize") %> members</span>
+                                <span class="fl-meta-tag"><%#: Eval("Industry") %></span>
+                                <span class="fl-meta-tag"><%#: Eval("Stage") %></span>
+                                <span class="fl-meta-tag"><i class="bi bi-people"></i> <%#: Eval("TeamSize") %> members</span>
                             </div>
 
                             <div class="mb-3">
                                 <div class="text-uppercase text-muted" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em; margin-bottom: 6px;">
-                                    <i class="bi bi-geo-alt me-1"></i><%# FormatLocation(Eval("Location")).ToUpper() %>
+                                    <i class="bi bi-geo-alt me-1"></i><%#: FormatLocation(Eval("Location")).ToUpper() %>
                                 </div>
                                 <div class="d-flex flex-wrap gap-2">
                                     <%# FormatSkills(Eval("RequiredSkills")) %>
@@ -235,7 +235,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <img src='<%# Eval("FounderAvatar") %>' class="rounded-circle" width="34" height="34" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                 <div>
-                                    <div class="fw-bold text-dark small" style="font-size: 0.82rem;"><%# Eval("FounderName") %>, <%# Eval("FounderTitle") %></div>
+                                    <div class="fw-bold text-dark small" style="font-size: 0.82rem;"><%#: Eval("FounderName") %>, <%#: Eval("FounderTitle") %></div>
                                 </div>
                             </div>
 

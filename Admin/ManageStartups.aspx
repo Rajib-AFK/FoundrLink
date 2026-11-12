@@ -139,8 +139,8 @@
                             <div class="d-flex align-items-center gap-3">
                                 <img src='<%# Eval("LogoUrl") %>' class="rounded-3 border flex-shrink-0" width="38" height="38" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100';" />
                                 <div>
-                                    <div class="fw-bold text-dark small"><%# Eval("Name") %></div>
-                                    <div class="text-muted small" style="font-size:0.72rem;"><%# Eval("Tagline") %></div>
+                                    <div class="fw-bold text-dark small"><%#: Eval("Name") %></div>
+                                    <div class="text-muted small" style="font-size:0.72rem;"><%#: Eval("Tagline") %></div>
                                 </div>
                             </div>
                         </td>
@@ -148,25 +148,25 @@
                             <div class="d-flex align-items-center gap-2">
                                 <img src='<%# Eval("FounderAvatarUrl") %>' class="rounded-circle border flex-shrink-0" width="28" height="28" style="object-fit:cover;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                 <div>
-                                    <div class="fw-bold text-dark small"><%# Eval("FounderName") %></div>
-                                    <div class="text-muted small" style="font-size:0.7rem;"><%# Eval("FounderEmail") %></div>
+                                    <div class="fw-bold text-dark small"><%#: Eval("FounderName") %></div>
+                                    <div class="text-muted small" style="font-size:0.7rem;"><%#: Eval("FounderEmail") %></div>
                                 </div>
                             </div>
                         </td>
                         <td class="fl-admin-td">
-                            <div class="fw-bold text-dark small"><%# Eval("Industry") %></div>
-                            <div class="text-muted small" style="font-size:0.72rem;"><%# Eval("Stage") %></div>
+                            <div class="fw-bold text-dark small"><%#: Eval("Industry") %></div>
+                            <div class="text-muted small" style="font-size:0.72rem;"><%#: Eval("Stage") %></div>
                         </td>
                         <td class="fl-admin-td">
-                            <span class="fw-semibold text-dark small"><%# Eval("TeamSize") != null && Eval("TeamSize") != DBNull.Value ? Eval("TeamSize") : "1" %></span>
+                            <span class="fw-semibold text-dark small"><%#: Eval("TeamSize") != null && Eval("TeamSize") != DBNull.Value ? Eval("TeamSize") : "1" %></span>
                         </td>
                         <td class="fl-admin-td">
-                            <span class='<%# Eval("Status").ToString() == "Published" ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# Eval("Status").ToString() == "Published" ? "background:#DCFCE7; color:#15803D;" : "background:#F1F5F9; color:#475569;" %>'>
-                                <%# Eval("Status").ToString() == "Published" ? "Active" : "Draft" %>
+                            <span class='<%# (Eval("Status").ToString() == "Published" || Eval("Status").ToString() == "Active") ? "badge rounded-pill px-3 py-1 fw-semibold small" : "badge rounded-pill px-3 py-1 fw-semibold small" %>' style='<%# (Eval("Status").ToString() == "Published" || Eval("Status").ToString() == "Active") ? "background:#DCFCE7; color:#15803D;" : "background:#F1F5F9; color:#475569;" %>'>
+                                <%# (Eval("Status").ToString() == "Published" || Eval("Status").ToString() == "Active") ? "Active" : "Draft" %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size:0.8rem;">
-                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
+                            <%#: Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
                         </td>
                         <td class="fl-admin-td text-end pe-4">
                             <a href='<%# "../StartupDetails.aspx?id=" + Eval("StartupId") %>' target="_blank" class="btn btn-sm btn-link text-muted p-1" title="View Public Page">

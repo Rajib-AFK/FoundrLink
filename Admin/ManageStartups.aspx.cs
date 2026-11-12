@@ -186,7 +186,7 @@ namespace FoundrLink.Admin
             {
                 try
                 {
-                    string sql = "UPDATE dbo.Startups SET Status = CASE WHEN Status = 'Published' THEN 'Draft' ELSE 'Published' END WHERE StartupId = @Id";
+                    string sql = "UPDATE dbo.Startups SET Status = CASE WHEN Status IN ('Published', 'Active') THEN 'Draft' ELSE 'Active' END WHERE StartupId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", startupId));
 
                     litAlertMsg.Text = "Startup visibility status updated successfully.";

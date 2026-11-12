@@ -110,30 +110,30 @@
                 <ItemTemplate>
                     <tr class="hover-bg-light">
                         <td class="fl-admin-td ps-4 fw-bold text-dark small" style="font-size:0.8rem;">
-                            <%# Eval("ReportCode") %>
+                            <%#: Eval("ReportCode") %>
                         </td>
                         <td class="fl-admin-td text-dark small" style="font-size:0.82rem;">
-                            <%# Eval("ReporterEmail") %>
+                            <%#: Eval("ReporterEmail") %>
                         </td>
                         <td class="fl-admin-td">
                             <span class="text-teal fw-semibold small d-block" style="color: #008C75;">
-                                <%# Eval("ReportedItem") %>
+                                <%#: Eval("ReportedItem") %>
                             </span>
                             <span class="text-muted small" style="font-size:0.75rem;" title='<%# Eval("Details") %>'>
-                                <%# Eval("Details") != null && Eval("Details").ToString().Length > 60 ? Eval("Details").ToString().Substring(0, 60) + "..." : Eval("Details") %>
+                                <%#: Eval("Details") != null && Eval("Details").ToString().Length > 60 ? Eval("Details").ToString().Substring(0, 60) + "..." : Eval("Details") %>
                             </span>
                         </td>
                         <td class="fl-admin-td">
                             <span class="badge rounded-2 px-2 py-1 small fw-semibold" style="background:#FEE2E2; color:#DC2626; font-size: 0.72rem;">
-                                <%# Eval("ReportType") != null && !string.IsNullOrEmpty(Eval("ReportType").ToString()) ? Eval("ReportType") : "Spam" %>
+                                <%#: Eval("ReportType") != null && !string.IsNullOrEmpty(Eval("ReportType").ToString()) ? Eval("ReportType") : "Spam" %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-muted small" style="font-size: 0.8rem;">
-                            <%# Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
+                            <%#: Eval("CreatedAt", "{0:MMM dd, yyyy}") %>
                         </td>
                         <td class="fl-admin-td">
                             <span class='<%# GetStatusBadgeClass(Eval("Status")) %>'>
-                                <%# Eval("Status") %>
+                                <%#: Eval("Status") %>
                             </span>
                         </td>
                         <td class="fl-admin-td text-end pe-4">

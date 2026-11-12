@@ -225,8 +225,9 @@ namespace FoundrLink
         {
             if (!Page.IsValid) return;
 
-            string currentPass = txtCurrentPassword.Text.Trim();
-            string newPass = txtNewPassword.Text.Trim();
+            // ASVS V2.1: Do not trim or alter passwords
+            string currentPass = txtCurrentPassword.Text;
+            string newPass = txtNewPassword.Text;
 
             if (string.IsNullOrEmpty(currentPass) || string.IsNullOrEmpty(newPass))
             {
@@ -242,7 +243,7 @@ namespace FoundrLink
                 return;
             }
 
-            if (newPass != txtConfirmPassword.Text.Trim())
+            if (newPass != txtConfirmPassword.Text)
             {
                 litAlertError.Text = "New password and confirm password do not match.";
                 pnlAlertError.Visible = true;

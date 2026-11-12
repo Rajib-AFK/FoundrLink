@@ -305,12 +305,15 @@ namespace FoundrLink.Helpers
             var ctx = HttpContext.Current;
             if (ctx?.Session != null)
             {
+                // ASVS V7.2: Defend against session fixation by clearing existing session state prior to populating credentials
+                ctx.Session.Clear();
                 ctx.Session["UserId"] = userId;
                 ctx.Session["FullName"] = fullName;
                 ctx.Session["Email"] = email;
                 ctx.Session["Role"] = role;
                 ctx.Session["UserRole"] = role;
                 ctx.Session["AvatarUrl"] = avatarUrl ?? "";
+                ctx.Session["SessionCreatedAt"] = DateTime.UtcNow;
             }
         }
 

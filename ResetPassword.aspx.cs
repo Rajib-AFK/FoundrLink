@@ -134,6 +134,12 @@ namespace FoundrLink
                     }
                 });
 
+                // ASVS V7.3: Terminate session if reset was performed in active browser session
+                if (SecurityHelper.GetCurrentUserId() == userId)
+                {
+                    SecurityHelper.Logout();
+                }
+
                 pnlResetForm.Visible = false;
                 pnlInvalidToken.Visible = false;
                 pnlSuccess.Visible = true;

@@ -304,16 +304,16 @@
                                 <div class="position-relative">
                                     <img src='<%# Eval("LogoUrl") %>' alt='<%# Eval("Name") %>' class="fl-raising-img" onerror="this.src='https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=500';" />
                                     <span class="fl-stage-badge">
-                                        <%# Eval("Stage") %>
+                                        <%#: Eval("Stage") %>
                                     </span>
                                 </div>
                                 <div class="p-4 d-flex flex-column flex-grow-1">
                                     <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <h5 class="fw-bold mb-0 text-dark"><%# Eval("Name") %></h5>
+                                        <h5 class="fw-bold mb-0 text-dark"><%#: Eval("Name") %></h5>
                                         <span class="text-muted" style="cursor: pointer;"><i class="bi bi-bookmark"></i></span>
                                     </div>
                                     <p class="text-muted small flex-grow-1 mb-4 lh-base" style="min-height: 44px;">
-                                        <%# Eval("ShortDescription") %>
+                                        <%#: Eval("ShortDescription") %>
                                     </p>
                                     
                                     <div class="pt-3 border-top mb-3" style="border-color: #F1F5F9 !important;">

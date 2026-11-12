@@ -60,15 +60,7 @@ namespace FoundrLink
                     int createdUserId = regResult.Data;
                     string defaultAvatar = "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80";
                     SecurityHelper.SetUserSession(createdUserId, fullName, email, role, defaultAvatar);
-
-                    if (string.Equals(role, "Admin", StringComparison.OrdinalIgnoreCase))
-                    {
-                        Response.Redirect("~/Admin/Dashboard.aspx");
-                    }
-                    else
-                    {
-                        Response.Redirect("~/Dashboard.aspx");
-                    }
+                    Response.Redirect("~/Dashboard.aspx");
                 }
                 else
                 {

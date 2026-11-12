@@ -193,8 +193,8 @@
                                     <i class='<%# GetActivityIcon(Eval("ActivityType")) %>'></i>
                                 </div>
                                 <div class="flex-grow-1">
-                                    <div class="fw-semibold small text-dark"><%# Eval("ActivityText") %></div>
-                                    <div class="text-muted" style="font-size: 0.74rem;"><%# Eval("TimeAgo") %></div>
+                                    <div class="fw-semibold small text-dark"><%#: Eval("ActivityText") %></div>
+                                    <div class="text-muted" style="font-size: 0.74rem;"><%#: Eval("TimeAgo") %></div>
                                 </div>
                             </div>
                         </ItemTemplate>
@@ -223,12 +223,12 @@
                         <ItemTemplate>
                             <div class="d-flex align-items-center gap-3">
                                 <div class='<%# Container.ItemIndex == 0 ? "fl-date-badge-red" : "fl-date-badge-gray" %>'>
-                                    <span style="font-size: 0.62rem; text-transform: uppercase;"><%# Eval("MonthText") %></span>
-                                    <span class="fs-5" style="line-height: 1;"><%# Eval("DayText") %></span>
+                                    <span style="font-size: 0.62rem; text-transform: uppercase;"><%#: Eval("MonthText") %></span>
+                                    <span class="fs-5" style="line-height: 1;"><%#: Eval("DayText") %></span>
                                 </div>
                                 <div>
-                                    <div class="fw-bold small text-dark"><%# Eval("Title") %></div>
-                                    <div class="text-muted" style="font-size: 0.74rem;"><%# Eval("Description") %></div>
+                                    <div class="fw-bold small text-dark"><%#: Eval("Title") %></div>
+                                    <div class="text-muted" style="font-size: 0.74rem;"><%#: Eval("Description") %></div>
                                 </div>
                             </div>
                         </ItemTemplate>
@@ -249,8 +249,8 @@
                                 <div class="d-flex align-items-center gap-3">
                                     <img src='<%# Eval("AvatarUrl") %>' class="rounded-circle" width="38" height="38" style="object-fit:cover; background:#E2E8F0;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                     <div>
-                                        <div class="fw-bold small text-dark"><%# Eval("FullName") %></div>
-                                        <div class="text-muted" style="font-size: 0.74rem;"><%# Eval("Role") %></div>
+                                        <div class="fw-bold small text-dark"><%#: Eval("FullName") %></div>
+                                        <div class="text-muted" style="font-size: 0.74rem;"><%#: Eval("Role") %></div>
                                     </div>
                                 </div>
                                 <div class="d-flex align-items-center gap-2">

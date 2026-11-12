@@ -137,14 +137,14 @@
                             </div>
                             <div class="flex-grow-1 overflow-hidden">
                                 <div class="d-flex justify-content-between align-items-center mb-1">
-                                    <div class="fw-bold text-dark text-truncate small" style="font-size: 0.88rem;"><%# Eval("FullName") %></div>
+                                    <div class="fw-bold text-dark text-truncate small" style="font-size: 0.88rem;"><%#: Eval("FullName") %></div>
                                     <div class="d-flex align-items-center gap-1">
-                                        <span class="text-muted" style="font-size: 0.72rem;"><%# Eval("TimeText") %></span>
+                                        <span class="text-muted" style="font-size: 0.72rem;"><%#: Eval("TimeText") %></span>
                                         <%# Convert.ToInt32(Eval("UnreadCount")) > 0 ? "<span class='rounded-circle d-inline-block' style='width:7px; height:7px; background:#10B981;'></span>" : "" %>
                                     </div>
                                 </div>
                                 <div class="text-muted text-truncate" style="font-size: 0.8rem; line-height: 1.3;">
-                                    <%# Eval("LastMessage") %>
+                                    <%#: Eval("LastMessage") %>
                                 </div>
                             </div>
                         </a>

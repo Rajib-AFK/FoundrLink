@@ -8,7 +8,11 @@ namespace FoundrLink
     public partial class StartupDetails : Page
     {
         private int _startupId = 8; // Default EcoTrack (Id 8)
-        private int _founderId = 1;
+        private int _founderId
+        {
+            get => ViewState["FounderId"] != null ? (int)ViewState["FounderId"] : 1;
+            set => ViewState["FounderId"] = value;
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {

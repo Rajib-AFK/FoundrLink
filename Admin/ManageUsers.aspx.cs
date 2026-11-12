@@ -325,7 +325,7 @@ namespace FoundrLink.Admin
                     // Clear fields
                     txtNewFullName.Text = "";
                     txtNewEmail.Text = "";
-                    txtNewPassword.Text = "Password123";
+                    txtNewPassword.Text = "";
                     ddlNewRole.SelectedIndex = 0;
 
                     PageIndex = 0;

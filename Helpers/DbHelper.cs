@@ -121,5 +121,28 @@ namespace FoundrLink.Helpers
                 Value = value ?? DBNull.Value
             };
         }
+
+        public static void ExecuteInTransaction(Action<SqlConnection, SqlTransaction> action)
+        {
+            if (action == null) throw new ArgumentNullException(nameof(action));
+
+            using (var conn = new SqlConnection(ConnectionString))
+            {
+                conn.Open();
+                using (var tx = conn.BeginTransaction())
+                {
+                    try
+                    {
+                        action(conn, tx);
+                        tx.Commit();
+                    }
+                    catch
+                    {
+                        tx.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
     }
 }

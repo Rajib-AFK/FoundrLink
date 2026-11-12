@@ -84,20 +84,20 @@
                         <div>
                             <div class="d-flex align-items-center gap-2 mb-1">
                                 <a href='<%# "Profile.aspx?id=" + Eval("PartnerUserId") %>' class="fw-bold text-dark text-decoration-none fs-6">
-                                    <%# Eval("PartnerName") %>
+                                    <%#: Eval("PartnerName") %>
                                 </a>
                                 <span class='<%# "fl-status-badge fl-status-" + Eval("Status").ToString().ToLowerInvariant() %>'>
-                                    <%# Eval("Status") %>
+                                    <%#: Eval("Status") %>
                                 </span>
                             </div>
                             <div class="text-muted small mb-2" style="font-size: 0.8rem;">
-                                <%# Eval("PartnerTitle") %> &bull; Startup: <strong><a href='<%# "StartupDetails.aspx?id=" + Eval("StartupId") %>' class="text-dark text-decoration-none"><%# Eval("StartupName") %></a></strong>
+                                <%#: Eval("PartnerTitle") %> &bull; Startup: <strong><a href='<%# "StartupDetails.aspx?id=" + Eval("StartupId") %>' class="text-dark text-decoration-none"><%#: Eval("StartupName") %></a></strong>
                             </div>
                             <div class="p-3 bg-light rounded-3 text-secondary small" style="max-width: 650px; line-height: 1.55; border: 1px solid #F1F5F9;">
-                                <%# Eval("Message") %>
+                                <%#: Eval("Message") %>
                             </div>
                             <div class="text-muted mt-2" style="font-size: 0.72rem;">
-                                Requested on <%# Convert.ToDateTime(Eval("CreatedAt")).ToString("MMM dd, yyyy h:mm tt") %>
+                                Requested on <%#: Convert.ToDateTime(Eval("CreatedAt")).ToString("MMM dd, yyyy h:mm tt") %>
                             </div>
                         </div>
                     </div>
