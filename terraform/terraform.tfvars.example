@@ -1,0 +1,48 @@
+###############################################################################
+# FoundrLink — terraform.tfvars.example
+#
+# INSTRUCTIONS:
+#   1. Copy this file:  cp terraform.tfvars.example terraform.tfvars
+#   2. Fill in your values below
+#   3. NEVER commit terraform.tfvars to git (it's in .gitignore already)
+###############################################################################
+
+# Deployment environment
+environment = "prod"
+
+# Azure region — Central India (Pune) is closest to India
+location = "centralindia"
+
+# VM size (Standard_B1ms is ~1 vCPU, 2GB RAM, burstable — lowest cost viable Windows VM)
+vm_size = "Standard_B1ms"
+
+# OS Disk Type: "StandardSSD_LRS" (recommended, saves ~$15/mo over Premium_LRS) or "Standard_LRS"
+os_disk_type = "StandardSSD_LRS"
+
+# Azure SQL SKU: "Basic" (~$4.99/mo fixed, recommended for minimum cost) or "GP_S_Gen5_1"
+sql_database_sku = "Basic"
+
+# Windows VM administrator credentials
+# Password rules: 12+ chars, upper + lower + digit + special character
+vm_admin_username = "foundrlink_admin"
+vm_admin_password = "CHANGE_ME_Secure123!"
+
+# Azure SQL administrator credentials
+sql_admin_username = "foundr_admin"
+sql_admin_password = "CHANGE_ME_Sql123!"
+
+# Your team's public IPs — these are whitelisted for RDP (3389) and Web Deploy (8172)
+# Find your IP at: https://whatismyipaddress.com/
+rdp_allowed_ips = [
+  "YOUR.PUBLIC.IP.HERE/32",   # e.g., "103.22.45.67/32" — Yash
+  # "SECOND.IP.HERE/32",      # Rajibul
+  # "THIRD.IP.HERE/32",       # Chirag
+]
+
+# Developer IPs whitelisted in Azure SQL Server firewall for SSMS/VS Studio connections
+developer_ips = [
+  "YOUR.PUBLIC.IP.HERE",   # Yash — SSMS access
+  # "SECOND.IP.HERE",      # Rajibul
+  # "THIRD.IP.HERE",       # Chirag
+]
+

@@ -1,0 +1,16 @@
+# FoundrLink App Service (Free F1 Plan) — terraform.tfvars.example
+# Copy this file to terraform.tfvars:
+# cp terraform.tfvars.example terraform.tfvars
+
+environment = "prod"
+location    = "centralindia"
+
+# SQL Administrator credentials (minimum 12 characters, uppercase + lowercase + number + special)
+sql_admin_username = "foundr_admin"
+sql_admin_password = "CHANGE_ME_Sql123!"
+
+# Developer Public IPs allowed to connect to SQL Server from SSMS / Visual Studio
+# Find your public IP: https://whatismyipaddress.com/
+developer_ips = [
+  "YOUR.PUBLIC.IP.HERE"
+]
