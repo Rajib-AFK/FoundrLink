@@ -4,6 +4,7 @@
 [![Application Type](https://img.shields.io/badge/Architecture-ASP.NET%20Web%20Forms-blue)](System-Architecture-and-Tech-Stack)
 [![Database](https://img.shields.io/badge/Database-SQL%20Server%20LocalDB-CC292B?logo=microsoftsqlserver)](Database-Design-and-Data-Dictionary)
 [![Deployment](https://img.shields.io/badge/Deployment-Azure%20IIS%2010.0-0078D4?logo=microsoftazure)](Deployment-to-Azure-Windows-Server)
+[![IaC](https://img.shields.io/badge/IaC-Terraform-7B42BC?logo=terraform)](Infrastructure-as-Code-Terraform)
 [![Academic Course](https://img.shields.io/badge/Course-CE545%20Enterprise%20Computing-green)](Academic-Rubric-and-Viva-Guide)
 [![Wiki Status](https://img.shields.io/badge/Wiki-Comprehensive%20v1.0-brightgreen)](#)
 
@@ -60,6 +61,7 @@ Navigate the complete documentation using the organized categories below:
 
 ### 6. ☁️ DevOps & Cloud Hosting
 * **[Deployment to Azure Windows Server](Deployment-to-Azure-Windows-Server)**: Azure VM provisioning, Windows Server 2022 with IIS 10.0, Azure SQL PaaS, Web Deploy, automated SSL/TLS certificates with Let's Encrypt (`win-acme`), and cost optimization.
+* **[Infrastructure as Code — Terraform](Infrastructure-as-Code-Terraform)**: Full Terraform configuration for automated Azure provisioning — VM, IIS bootstrap, Azure SQL Serverless, VNet, NSG, firewall rules, auto-shutdown, and outputs reference.
 * **[Multi-Developer Database Workflow](Multi-Developer-Database-Workflow)**: Connecting remote team members simultaneously to a shared cloud database, IP firewall whitelisting, and schema migration etiquette.
 
 ### 7. 🎓 Academic Rubric & Viva Preparation

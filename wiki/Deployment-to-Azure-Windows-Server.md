@@ -155,3 +155,6 @@ To minimize cloud costs during development and evaluation:
 
 > [!TIP]
 > Working simultaneously with multiple team members on the shared database? See the **[Multi-Developer Database Workflow](Multi-Developer-Database-Workflow)** guide.
+
+> [!TIP]
+> Want to automate all of this with a single command? See the **[Infrastructure as Code — Terraform](Infrastructure-as-Code-Terraform)** guide to provision the VM, SQL Database, networking, and IIS setup automatically.

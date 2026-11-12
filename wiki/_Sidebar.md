@@ -34,7 +34,10 @@
 
 #### ☁️ Cloud & DevOps
 * **[Deployment to Azure Windows Server](Deployment-to-Azure-Windows-Server)**
+* **[Infrastructure as Code — Terraform](Infrastructure-as-Code-Terraform)**
 * **[Multi-Developer Database Workflow](Multi-Developer-Database-Workflow)**
+* **[Azure Infrastructure & Cost Report](Azure-Infrastructure-and-Cost-Report)**
+* **[Azure Security Hardening](Azure-Security-Hardening)**
 
 ---
 
