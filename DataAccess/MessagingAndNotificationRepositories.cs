@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using FoundrLink.Core.Interfaces;
 using FoundrLink.Core.Models;
+using FoundrLink.Helpers;
 
 namespace FoundrLink.DataAccess
 {
@@ -59,15 +60,18 @@ namespace FoundrLink.DataAccess
         {
             var list = new List<Message>();
             const string sql = @"
-                SELECT MessageId, ConversationId, SenderId, ReceiverId, Content, IsRead, SentAt
-                FROM dbo.Messages
-                WHERE ConversationId = @ConversationId
-                ORDER BY SentAt ASC;";
+                SELECT m.MessageId, m.ConversationId, m.SenderId, m.ReceiverId, m.Content, m.IsRead, m.SentAt
+                FROM dbo.Messages m
+                INNER JOIN dbo.Conversations c ON m.ConversationId = c.ConversationId
+                WHERE c.ConversationId = @ConversationId
+                  AND (c.User1Id = @CurrentUserId OR c.User2Id = @CurrentUserId)
+                ORDER BY m.SentAt ASC;";
 
             using (var conn = DbConnectionFactory.OpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@ConversationId", conversationId);
+                cmd.Parameters.AddWithValue("@CurrentUserId", currentUserId);
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
@@ -248,8 +252,26 @@ namespace FoundrLink.DataAccess
             }
         }
 
+        public bool MarkAsRead(int notificationId, int currentUserId)
+        {
+            const string sql = "UPDATE dbo.Notifications SET IsRead = 1 WHERE NotificationId = @NotificationId AND UserId = @CurrentUserId;";
+            using (var conn = DbConnectionFactory.OpenConnection())
+            using (var cmd = new SqlCommand(sql, conn))
+            {
+                cmd.Parameters.AddWithValue("@NotificationId", notificationId);
+                cmd.Parameters.AddWithValue("@CurrentUserId", currentUserId);
+                return cmd.ExecuteNonQuery() > 0;
+            }
+        }
+
         public bool MarkAsRead(int notificationId)
         {
+            int currentUserId = SecurityHelper.GetCurrentUserId() ?? 0;
+            if (currentUserId > 0)
+            {
+                return MarkAsRead(notificationId, currentUserId);
+            }
+
             const string sql = "UPDATE dbo.Notifications SET IsRead = 1 WHERE NotificationId = @NotificationId;";
             using (var conn = DbConnectionFactory.OpenConnection())
             using (var cmd = new SqlCommand(sql, conn))

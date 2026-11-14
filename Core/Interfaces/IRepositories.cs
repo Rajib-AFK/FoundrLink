@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using FoundrLink.Core.Models;
 
@@ -16,6 +16,8 @@ namespace FoundrLink.Core.Interfaces
     public interface IUserRepository
     {
         BaseUser GetUserById(int userId);
+        BaseUser GetUserForAuth(int userId);
+        BaseUser GetUserForAuth(string email);
         BaseUser GetUserByEmail(string email);
         BaseUser Authenticate(string email, string password);
         int RegisterUser(string fullName, string email, string password, UserRole role, string title = null, string location = null);
@@ -35,8 +37,8 @@ namespace FoundrLink.Core.Interfaces
         List<Startup> GetStartupsByFounder(int founderId);
         List<Startup> GetFeaturedStartups(int limit = 3);
         int CreateStartup(Startup startup);
-        bool UpdateStartup(Startup startup);
-        bool DeleteStartup(int startupId);
+        bool UpdateStartup(Startup startup, int currentUserId = 0, bool isAdmin = false);
+        bool DeleteStartup(int startupId, int currentUserId = 0, bool isAdmin = false);
         List<OpenPosition> GetOpenPositions(int startupId);
         List<TeamMember> GetTeamMembers(int startupId);
         List<StartupUpdate> GetStartupUpdates(int startupId);
@@ -61,6 +63,7 @@ namespace FoundrLink.Core.Interfaces
         List<Notification> GetUserNotifications(int userId, string filterType = "All");
         int CreateNotification(int userId, string title, string message, string type, bool actionRequired);
         bool MarkAsRead(int notificationId);
+        bool MarkAsRead(int notificationId, int currentUserId);
         bool MarkAllAsRead(int userId);
         int GetUnreadNotificationCount(int userId);
         bool HandleCollaborationRequest(int notificationId, int userId, bool accept);

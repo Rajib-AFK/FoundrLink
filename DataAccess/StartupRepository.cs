@@ -4,6 +4,7 @@ using System.Data;
 using System.Data.SqlClient;
 using FoundrLink.Core.Interfaces;
 using FoundrLink.Core.Models;
+using FoundrLink.Helpers;
 
 namespace FoundrLink.DataAccess
 {
@@ -239,8 +240,11 @@ namespace FoundrLink.DataAccess
             }
         }
 
-        public bool UpdateStartup(Startup startup)
+        public bool UpdateStartup(Startup startup, int currentUserId = 0, bool isAdmin = false)
         {
+            int effectiveUserId = currentUserId != 0 ? currentUserId : (SecurityHelper.GetCurrentUserId() ?? startup.FounderId);
+            bool effectiveIsAdmin = isAdmin || SecurityHelper.IsUserAdmin();
+
             const string sql = @"
                 UPDATE dbo.Startups
                 SET Name = @Name,
@@ -259,12 +263,14 @@ namespace FoundrLink.DataAccess
                     Commitment = @Commitment,
                     Status = @Status,
                     UpdatedAt = SYSUTCDATETIME()
-                WHERE StartupId = @StartupId;";
+                WHERE StartupId = @StartupId AND (FounderId = @CurrentUserId OR @IsAdmin = 1);";
 
             using (var conn = DbConnectionFactory.OpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@StartupId", startup.StartupId);
+                cmd.Parameters.AddWithValue("@CurrentUserId", effectiveUserId);
+                cmd.Parameters.AddWithValue("@IsAdmin", effectiveIsAdmin ? 1 : 0);
                 cmd.Parameters.AddWithValue("@Name", startup.Name);
                 cmd.Parameters.AddWithValue("@Tagline", (object)startup.Tagline ?? DBNull.Value);
                 cmd.Parameters.AddWithValue("@Industry", startup.Industry ?? "AI/ML");
@@ -285,13 +291,18 @@ namespace FoundrLink.DataAccess
             }
         }
 
-        public bool DeleteStartup(int startupId)
+        public bool DeleteStartup(int startupId, int currentUserId = 0, bool isAdmin = false)
         {
-            const string sql = "DELETE FROM dbo.Startups WHERE StartupId = @StartupId;";
+            int effectiveUserId = currentUserId != 0 ? currentUserId : (SecurityHelper.GetCurrentUserId() ?? 0);
+            bool effectiveIsAdmin = isAdmin || SecurityHelper.IsUserAdmin();
+
+            const string sql = "DELETE FROM dbo.Startups WHERE StartupId = @StartupId AND (FounderId = @CurrentUserId OR @IsAdmin = 1);";
             using (var conn = DbConnectionFactory.OpenConnection())
             using (var cmd = new SqlCommand(sql, conn))
             {
                 cmd.Parameters.AddWithValue("@StartupId", startupId);
+                cmd.Parameters.AddWithValue("@CurrentUserId", effectiveUserId);
+                cmd.Parameters.AddWithValue("@IsAdmin", effectiveIsAdmin ? 1 : 0);
                 return cmd.ExecuteNonQuery() > 0;
             }
         }

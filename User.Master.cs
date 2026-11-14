@@ -6,12 +6,17 @@ namespace FoundrLink
 {
     public partial class UserMaster : MasterPage
     {
+        public string ViewStateUserKey
+        {
+            get => Page?.ViewStateUserKey;
+            set { if (Page != null) Page.ViewStateUserKey = value; }
+        }
+
         protected void Page_Init(object sender, EventArgs e)
         {
-            // ASVS V3.4: Protect against Cross-Site Request Forgery (CSRF) via ViewStateUserKey
-            if (Session != null && !string.IsNullOrEmpty(Session.SessionID))
+            if (Context.User?.Identity?.IsAuthenticated == true || SecurityHelper.IsUserLoggedIn())
             {
-                Page.ViewStateUserKey = Session.SessionID;
+                ViewStateUserKey = Session.SessionID;
             }
         }
 

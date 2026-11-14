@@ -6,11 +6,17 @@ namespace FoundrLink
 {
     public partial class SiteMaster : MasterPage
     {
+        public string ViewStateUserKey
+        {
+            get => Page?.ViewStateUserKey;
+            set { if (Page != null) Page.ViewStateUserKey = value; }
+        }
+
         protected void Page_Init(object sender, EventArgs e)
         {
-            if (Session != null && !string.IsNullOrEmpty(Session.SessionID))
+            if (Context.User?.Identity?.IsAuthenticated == true || SecurityHelper.IsUserLoggedIn())
             {
-                Page.ViewStateUserKey = Session.SessionID;
+                ViewStateUserKey = Session.SessionID;
             }
         }
 

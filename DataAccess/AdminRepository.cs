@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
@@ -40,7 +40,7 @@ namespace FoundrLink.DataAccess
         {
             var list = new List<BaseUser>();
             const string sql = @"
-                SELECT TOP (@Limit) UserId, FullName, Email, PasswordHash, Role, Title, Location, Bio, Company, AvatarUrl, IsVerified, Status, CreatedAt, UpdatedAt
+                SELECT TOP (@Limit) UserId, FullName, Email, Role, Title, Location, Bio, Company, AvatarUrl, IsVerified, Status, CreatedAt, UpdatedAt
                 FROM dbo.Users
                 ORDER BY CreatedAt DESC;";
 
@@ -140,7 +140,7 @@ namespace FoundrLink.DataAccess
         {
             var list = new List<BaseUser>();
             var sql = @"
-                SELECT UserId, FullName, Email, PasswordHash, Role, Title, Location, Bio, Company, AvatarUrl, IsVerified, Status, CreatedAt, UpdatedAt
+                SELECT UserId, FullName, Email, Role, Title, Location, Bio, Company, AvatarUrl, IsVerified, Status, CreatedAt, UpdatedAt
                 FROM dbo.Users
                 WHERE 1=1 ";
 
@@ -252,6 +252,16 @@ namespace FoundrLink.DataAccess
             }
         }
 
+        private static bool HasColumn(IDataRecord reader, string columnName)
+        {
+            for (int i = 0; i < reader.FieldCount; i++)
+            {
+                if (reader.GetName(i).Equals(columnName, StringComparison.OrdinalIgnoreCase))
+                    return true;
+            }
+            return false;
+        }
+
         private static BaseUser MapUser(SqlDataReader reader)
         {
             string roleStr = reader["Role"]?.ToString() ?? "Founder";
@@ -278,7 +288,7 @@ namespace FoundrLink.DataAccess
             user.UserId = Convert.ToInt32(reader["UserId"]);
             user.FullName = reader["FullName"]?.ToString() ?? string.Empty;
             user.Email = reader["Email"]?.ToString() ?? string.Empty;
-            user.PasswordHash = reader["PasswordHash"]?.ToString() ?? string.Empty;
+            user.PasswordHash = HasColumn(reader, "PasswordHash") ? (reader["PasswordHash"]?.ToString() ?? string.Empty) : string.Empty;
             user.Title = reader["Title"]?.ToString() ?? string.Empty;
             user.Location = reader["Location"]?.ToString() ?? string.Empty;
             user.Bio = reader["Bio"]?.ToString() ?? string.Empty;
