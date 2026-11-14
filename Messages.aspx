@@ -161,10 +161,10 @@
                     <asp:Image ID="imgActivePartner" runat="server" CssClass="rounded-circle" Width="44" height="44" style="object-fit:cover;" ImageUrl="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100" />
                     <div>
                         <div class="fw-bold text-dark mb-0 lh-1" style="font-size: 0.95rem;">
-                            <asp:Literal ID="litActivePartnerName" runat="server" Text="Ananya Iyer" />
+                            <asp:Literal ID="litActivePartnerName" runat="server" Mode="Encode" Text="Ananya Iyer" />
                         </div>
                         <div class="text-muted small mt-1" style="font-size: 0.75rem;">
-                            <asp:Literal ID="litActivePartnerRole" runat="server" Text="Lead Investor @ Apex Ventures" />
+                            <asp:Literal ID="litActivePartnerRole" runat="server" Mode="Encode" Text="Lead Investor @ Apex Ventures" />
                         </div>
                     </div>
                 </div>
@@ -190,7 +190,7 @@
                         <div class='<%# Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "fl-msg-sent" : "fl-msg-received" %>'>
                             <div><%# Server.HtmlEncode(Eval("Content")?.ToString() ?? "").Replace("\n", "<br/>") %></div>
                             <div class='<%# "text-end mt-1 " + (Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "text-light text-opacity-75" : "text-muted") %>' style="font-size: 0.68rem;">
-                                <%# Eval("TimeText") %>
+                                <%#: Eval("TimeText") %>
                                 <%# Convert.ToInt32(Eval("SenderId")) == CurrentUserId ? "<i class='bi bi-check2-all ms-1' style='color:#10B981;'></i>" : "" %>
                             </div>
                         </div>

@@ -96,10 +96,10 @@
             </div>
             <div>
                 <h2 class="fw-bold mb-1 text-dark" style="font-size: 1.75rem; letter-spacing: -0.02em;">
-                    Welcome back, <asp:Literal ID="litUserName" runat="server" Text="Rachit" />
+                    Welcome back, <asp:Literal ID="litUserName" runat="server" Mode="Encode" Text="Rachit" />
                 </h2>
                 <p class="text-muted mb-0 small" style="font-size: 0.92rem;">
-                    <asp:Literal ID="litUserHeadline" runat="server" Text="Technical Co-founder searching for seed funding." />
+                    <asp:Literal ID="litUserHeadline" runat="server" Mode="Encode" Text="Technical Co-founder searching for seed funding." />
                 </p>
             </div>
         </div>
@@ -108,7 +108,7 @@
         <div class="fl-profile-completion-box">
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <span class="small fw-semibold text-dark">Profile Completion</span>
-                <span class="small fw-bold" style="color: #10B981;"><asp:Literal ID="litCompletionPct" runat="server" Text="85%" /></span>
+                <span class="small fw-bold" style="color: #10B981;"><asp:Literal ID="litCompletionPct" runat="server" Mode="Encode" Text="85%" /></span>
             </div>
             <div class="progress mb-2" style="height: 6px; background-color: #E2E8F0; border-radius: 4px;">
                 <div id="divProgressBar" runat="server" class="progress-bar" style="width: 85%; background-color: #10B981; border-radius: 4px;"></div>
@@ -126,7 +126,7 @@
                 <div>
                     <div class="fl-stat-title">Active Connections</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litProfileViews" runat="server" Text="0" />
+                        <asp:Literal ID="litProfileViews" runat="server" Mode="Encode" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #6DF5E1; color: #0F172A;">
@@ -140,7 +140,7 @@
                 <div>
                     <div class="fl-stat-title">Active Messages</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litActiveMessages" runat="server" Text="0" />
+                        <asp:Literal ID="litActiveMessages" runat="server" Mode="Encode" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #0F172A; color: #FFFFFF;">
@@ -154,7 +154,7 @@
                 <div>
                     <div class="fl-stat-title">Teams Joined</div>
                     <div class="fl-stat-value">
-                        <asp:Literal ID="litTeamsJoined" runat="server" Text="0" />
+                        <asp:Literal ID="litTeamsJoined" runat="server" Mode="Encode" Text="0" />
                     </div>
                 </div>
                 <div class="fl-stat-icon-wrapper" style="background-color: #F1F5F9; color: #475569;">

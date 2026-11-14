@@ -113,8 +113,8 @@
                                     <div class="d-flex align-items-center gap-3">
                                         <img src='<%# Eval("AvatarUrl") %>' class="rounded-circle" width="46" height="46" style="object-fit:cover; flex-shrink: 0;" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
                                         <div>
-                                            <div class="fw-bold text-dark small" style="font-size: 0.88rem;"><%# Eval("Name") %></div>
-                                            <div class="text-muted" style="font-size: 0.75rem;"><%# Eval("Role") %></div>
+                                            <div class="fw-bold text-dark small" style="font-size: 0.88rem;"><%#: Eval("Name") %></div>
+                                            <div class="text-muted" style="font-size: 0.75rem;"><%#: Eval("Role") %></div>
                                         </div>
                                     </div>
                                     <i class="bi bi-arrow-right text-muted"></i>
@@ -133,7 +133,7 @@
                 <div class="fl-card-header mb-3">
                     <h5 class="fw-bold mb-0 text-dark">Open Roles</h5>
                     <span class="badge bg-light text-muted border rounded-circle" style="width: 24px; height: 24px; display:inline-flex; align-items:center; justify-content:center; font-size: 0.72rem;">
-                        <asp:Literal ID="litRoleCount" runat="server" Text="3" />
+                        <asp:Literal ID="litRoleCount" runat="server" Mode="Encode" Text="3" />
                     </span>
                 </div>
 
@@ -141,9 +141,9 @@
                     <asp:Repeater ID="rptRoles" runat="server">
                         <ItemTemplate>
                             <div class="fl-role-card">
-                                <div class="fw-bold small text-dark mb-1"><%# Eval("Title") %></div>
+                                <div class="fw-bold small text-dark mb-1"><%#: Eval("Title") %></div>
                                 <div class="text-muted small" style="font-size: 0.75rem;">
-                                    <i class="bi bi-geo-alt me-1"></i><%# Eval("Location") %> &bull; <i class="bi bi-clock me-1"></i><%# Eval("PositionType") %>
+                                    <i class="bi bi-geo-alt me-1"></i><%#: Eval("Location") %> &bull; <i class="bi bi-clock me-1"></i><%#: Eval("PositionType") %>
                                 </div>
                             </div>
                         </ItemTemplate>
@@ -166,9 +166,9 @@
                         <ItemTemplate>
                             <div class="fl-timeline-item">
                                 <div class='<%# "fl-timeline-dot " + (Container.ItemIndex > 0 ? "fl-timeline-dot-muted" : "") %>'></div>
-                                <div class="small fw-semibold text-dark"><%# Eval("AuthorName") %></div>
-                                <div class="text-muted small" style="font-size: 0.8rem; line-height: 1.4;"><%# Eval("Content") %></div>
-                                <div class="text-secondary" style="font-size: 0.7rem; margin-top: 3px; color: #94A3B8 !important;"><%# Eval("TimeAgo") %></div>
+                                <div class="small fw-semibold text-dark"><%#: Eval("AuthorName") %></div>
+                                <div class="text-muted small" style="font-size: 0.8rem; line-height: 1.4;"><%#: Eval("Content") %></div>
+                                <div class="text-secondary" style="font-size: 0.7rem; margin-top: 3px; color: #94A3B8 !important;"><%#: Eval("TimeAgo") %></div>
                             </div>
                         </ItemTemplate>
                     </asp:Repeater>

@@ -84,10 +84,10 @@
                         <asp:Image ID="imgSidebarAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="~/Images/default-avatar.png" />
                         <div class="overflow-hidden">
                             <div class="fw-bold text-truncate small">
-                                <asp:Literal ID="litSidebarUserName" runat="server" Text="Founder User" />
+                                <asp:Literal ID="litSidebarUserName" runat="server" Mode="Encode" Text="Founder User" />
                             </div>
                             <div class="text-muted small" style="font-size: 0.72rem;">
-                                <asp:Literal ID="litSidebarUserRole" runat="server" Text="Founder" />
+                                <asp:Literal ID="litSidebarUserRole" runat="server" Mode="Encode" Text="Founder" />
                             </div>
                         </div>
                     </a>
@@ -131,10 +131,10 @@
                         <asp:Image ID="imgTopbarAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="~/Images/default-avatar.png" />
                         <div class="d-none d-md-block text-start">
                             <div class="fw-bold small lh-1">
-                                <asp:Literal ID="litTopbarUserName" runat="server" Text="Founder User" />
+                                <asp:Literal ID="litTopbarUserName" runat="server" Mode="Encode" Text="Founder User" />
                             </div>
                             <small class="text-muted" style="font-size: 0.7rem;">
-                                <asp:Literal ID="litTopbarRole" runat="server" Text="Entrepreneur" />
+                                <asp:Literal ID="litTopbarRole" runat="server" Mode="Encode" Text="Entrepreneur" />
                             </small>
                         </div>
                     </a>

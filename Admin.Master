@@ -81,7 +81,7 @@
                         <asp:Image ID="imgAdminAvatar" runat="server" CssClass="fl-avatar-sm" ImageUrl="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&auto=format&fit=crop&q=80" />
                         <div class="overflow-hidden">
                             <div class="fw-bold text-truncate small">
-                                <asp:Literal ID="litAdminName" runat="server" Text="System Admin" />
+                                <asp:Literal ID="litAdminName" runat="server" Mode="Encode" Text="System Admin" />
                             </div>
                             <div class="text-muted small" style="font-size: 0.72rem;">Admin Console</div>
                         </div>
@@ -98,7 +98,7 @@
             <!-- Hidden admin topbar controls kept for server-side code-behind compatibility -->
             <div class="d-none">
                 <asp:Image ID="imgAdminTopAvatar" runat="server" />
-                <asp:Literal ID="litAdminTopName" runat="server" />
+                <asp:Literal ID="litAdminTopName" runat="server" Mode="Encode" />
             </div>
 
             <main class="fl-content-container">

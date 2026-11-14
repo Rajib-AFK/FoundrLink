@@ -75,14 +75,14 @@
             <asp:Image ID="imgAvatar" runat="server" CssClass="fl-profile-avatar-xl" ImageUrl="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=200" />
             <div>
                 <h2 class="fw-bold mb-1 text-dark" style="font-size: 2.2rem; letter-spacing: -0.02em;">
-                    <asp:Literal ID="litFullName" runat="server" Text="Yash Vinchhi" />
+                    <asp:Literal ID="litFullName" runat="server" Mode="Encode" Text="Yash Vinchhi" />
                 </h2>
                 <h5 class="text-secondary fw-medium mb-3" style="font-size: 1.1rem; color: #475569 !important;">
-                    <asp:Literal ID="litHeadline" runat="server" Text="Founder &amp; CEO @ NexusTech" />
+                    <asp:Literal ID="litHeadline" runat="server" Mode="Encode" Text="Founder &amp; CEO @ NexusTech" />
                 </h5>
                 <div class="d-flex flex-wrap align-items-center gap-3 text-muted small">
-                    <span><i class="bi bi-geo-alt me-1"></i><asp:Literal ID="litLocation" runat="server" Text="Mumbai, India" /></span>
-                    <span><i class="bi bi-briefcase me-1"></i><asp:Literal ID="litIndustry" runat="server" Text="SaaS, FinTech" /></span>
+                    <span><i class="bi bi-geo-alt me-1"></i><asp:Literal ID="litLocation" runat="server" Mode="Encode" Text="Mumbai, India" /></span>
+                    <span><i class="bi bi-briefcase me-1"></i><asp:Literal ID="litIndustry" runat="server" Mode="Encode" Text="SaaS, FinTech" /></span>
                     <asp:Panel ID="pnlVerified" runat="server" CssClass="fl-badge fl-badge-active">
                         <i class="bi bi-patch-check-fill me-1"></i> Verified Founder
                     </asp:Panel>
@@ -113,7 +113,7 @@
 
     <!-- Profile Action Alerts -->
     <asp:Panel ID="pnlProfileAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show rounded-3 shadow-sm mb-4">
-        <asp:Literal ID="litProfileAlertMessage" runat="server" />
+        <asp:Literal ID="litProfileAlertMessage" runat="server" Mode="Encode" />
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </asp:Panel>
 
@@ -168,35 +168,35 @@
                 <div class="p-4" style="padding-top: 40px !important;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <a id="lnkStartupWebsite" runat="server" href="#" target="_blank" class="fw-bold text-dark text-decoration-none fs-5 d-flex align-items-center gap-2">
-                            <asp:Literal ID="litStartupWebsite" runat="server" Text="nexustech.io" />
+                            <asp:Literal ID="litStartupWebsite" runat="server" Mode="Encode" Text="nexustech.io" />
                             <i class="bi bi-box-arrow-up-right fs-6 text-muted"></i>
                         </a>
                         <span class="badge bg-light text-muted border px-3 py-1 fw-bold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.05em;">
-                            <asp:Literal ID="litStartupStage" runat="server" Text="SEED STAGE" />
+                            <asp:Literal ID="litStartupStage" runat="server" Mode="Encode" Text="SEED STAGE" />
                         </span>
                     </div>
 
                     <div class="row text-center py-3 my-2 border-top border-bottom border-slate-100 g-3" style="border-color: #F1F5F9 !important;">
                         <div class="col-3 border-end" style="border-color: #F1F5F9 !important;">
                             <div class="text-muted text-uppercase" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;">FOUNDED</div>
-                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litFoundedYear" runat="server" Text="2022" /></div>
+                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litFoundedYear" runat="server" Mode="Encode" Text="2022" /></div>
                         </div>
                         <div class="col-3 border-end" style="border-color: #F1F5F9 !important;">
                             <div class="text-muted text-uppercase" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;">TEAM SIZE</div>
-                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litTeamSize" runat="server" Text="12" /></div>
+                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litTeamSize" runat="server" Mode="Encode" Text="12" /></div>
                         </div>
                         <div class="col-3 border-end" style="border-color: #F1F5F9 !important;">
                             <div class="text-muted text-uppercase" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;">FUNDING</div>
-                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litFunding" runat="server" Text="₹1.5M" /></div>
+                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litFunding" runat="server" Mode="Encode" Text="₹1.5M" /></div>
                         </div>
                         <div class="col-3">
                             <div class="text-muted text-uppercase" style="font-size: 0.68rem; font-weight: 700; letter-spacing: 0.05em;">MRR</div>
-                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litMRR" runat="server" Text="₹45k" /></div>
+                            <div class="fw-bold fs-5 text-dark mt-1"><asp:Literal ID="litMRR" runat="server" Mode="Encode" Text="₹45k" /></div>
                         </div>
                     </div>
 
                     <p class="text-muted small mb-0 mt-3 lh-base" style="font-size: 0.85rem;">
-                        <asp:Literal ID="litStartupDescription" runat="server" Text="Automating backend compliance and payment routing for marketplace platforms. We reduce integration time by 60% and ensure global cross-border regulatory compliance." />
+                        <asp:Literal ID="litStartupDescription" runat="server" Mode="Encode" Text="Automating backend compliance and payment routing for marketplace platforms. We reduce integration time by 60% and ensure global cross-border regulatory compliance." />
                     </p>
                 </div>
             </div>
@@ -216,7 +216,7 @@
                                         <div class="rounded-circle d-flex align-items-center justify-content-center" style="width: 18px; height: 18px; background: #E6FAF4; color: #10B981; font-size: 0.72rem; flex-shrink: 0; margin-top: 2px;">
                                             <i class="bi bi-check-lg"></i>
                                         </div>
-                                        <span><%# Container.DataItem %></span>
+                                        <span><%#: Container.DataItem %></span>
                                     </li>
                                 </ItemTemplate>
                             </asp:Repeater>
@@ -235,7 +235,7 @@
                                 <ItemTemplate>
                                     <li class="d-flex align-items-start gap-2 small text-dark" style="font-size: 0.85rem;">
                                         <i class="bi bi-arrow-right text-muted fs-6 mt-0" style="color: #94A3B8 !important;"></i>
-                                        <span><%# Container.DataItem %></span>
+                                        <span><%#: Container.DataItem %></span>
                                     </li>
                                 </ItemTemplate>
                             </asp:Repeater>
@@ -253,25 +253,25 @@
                 <div class="row g-4">
                     <div class="col-6">
                         <div class="fl-impact-value text-white">
-                            <asp:Literal ID="litImpactConnections" runat="server" Text="342" />
+                            <asp:Literal ID="litImpactConnections" runat="server" Mode="Encode" Text="342" />
                         </div>
                         <div class="text-secondary small mt-1" style="color: #94A3B8 !important; font-size: 0.75rem;">Connections</div>
                     </div>
                     <div class="col-6">
                         <div class="fl-impact-value" style="color: #4EE8C4;">
-                            <asp:Literal ID="litImpactIntros" runat="server" Text="14" />
+                            <asp:Literal ID="litImpactIntros" runat="server" Mode="Encode" Text="14" />
                         </div>
                         <div class="text-secondary small mt-1" style="color: #94A3B8 !important; font-size: 0.75rem;">Intros Made</div>
                     </div>
                     <div class="col-6">
                         <div class="fl-impact-value text-white">
-                            <asp:Literal ID="litImpactTeams" runat="server" Text="3" />
+                            <asp:Literal ID="litImpactTeams" runat="server" Mode="Encode" Text="3" />
                         </div>
                         <div class="text-secondary small mt-1" style="color: #94A3B8 !important; font-size: 0.75rem;">Active Teams</div>
                     </div>
                     <div class="col-6">
                         <div class="fl-impact-value text-white">
-                            <asp:Literal ID="litImpactSaved" runat="server" Text="8" />
+                            <asp:Literal ID="litImpactSaved" runat="server" Mode="Encode" Text="8" />
                         </div>
                         <div class="text-secondary small mt-1" style="color: #94A3B8 !important; font-size: 0.75rem;">Projects Saved</div>
                     </div>
@@ -286,7 +286,7 @@
                 <div class="d-flex flex-wrap">
                     <asp:Repeater ID="rptInterests" runat="server">
                         <ItemTemplate>
-                            <span class="fl-tag-chip"><%# Container.DataItem %></span>
+                            <span class="fl-tag-chip"><%#: Container.DataItem %></span>
                         </ItemTemplate>
                     </asp:Repeater>
                 </div>
@@ -300,7 +300,7 @@
                 </div>
                 <div style="height: 180px; background: url('https://images.unsplash.com/photo-1524661135-423995f22d0b?w=400&auto=format&fit=crop&q=80') center center / cover no-repeat; position: relative;">
                     <div class="position-absolute bottom-0 start-0 m-3 px-3 py-1 bg-white rounded shadow-sm fw-bold small">
-                        <asp:Literal ID="litBaseLocation" runat="server" Text="San Francisco" />
+                        <asp:Literal ID="litBaseLocation" runat="server" Mode="Encode" Text="San Francisco" />
                     </div>
                 </div>
             </div>

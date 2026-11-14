@@ -39,19 +39,19 @@
                     <div>
                         <div class="d-flex align-items-center gap-2 mb-1">
                             <h2 class="fw-bold mb-0 text-dark" style="font-size: 2rem; letter-spacing: -0.02em;">
-                                <asp:Literal ID="litStartupName" runat="server" Text="EcoTrack" />
+                                <asp:Literal ID="litStartupName" runat="server" Mode="Encode" Text="EcoTrack" />
                             </h2>
                             <span class="badge bg-light text-muted border text-uppercase fw-bold px-2 py-1" style="font-size: 0.72rem; border-radius: 4px;">
-                                <asp:Literal ID="litStageBadge" runat="server" Text="MVP" />
+                                <asp:Literal ID="litStageBadge" runat="server" Mode="Encode" Text="MVP" />
                             </span>
                         </div>
                         <p class="text-secondary mb-2" style="font-size: 0.95rem; color: #475569 !important;">
-                            <asp:Literal ID="litTagline" runat="server" Text="Helping small businesses reduce environmental impact" />
+                            <asp:Literal ID="litTagline" runat="server" Mode="Encode" Text="Helping small businesses reduce environmental impact" />
                         </p>
                         <div class="d-flex align-items-center gap-3 text-muted small" style="font-size: 0.8rem;">
-                            <span><i class="bi bi-shield-check me-1" style="color: #10B981;"></i><asp:Literal ID="litIndustry" runat="server" Text="Sustainability" /></span>
+                            <span><i class="bi bi-shield-check me-1" style="color: #10B981;"></i><asp:Literal ID="litIndustry" runat="server" Mode="Encode" Text="Sustainability" /></span>
                             <span>&bull;</span>
-                            <span><i class="bi bi-person me-1"></i><asp:Literal ID="litFounder" runat="server" Text="Rajibul Sheikh(Founder)" /></span>
+                            <span><i class="bi bi-person me-1"></i><asp:Literal ID="litFounder" runat="server" Mode="Encode" Text="Rajibul Sheikh(Founder)" /></span>
                         </div>
                     </div>
                 </div>
@@ -72,7 +72,7 @@
                 </div>
 
                 <asp:Panel ID="pnlAlert" runat="server" Visible="false" CssClass="alert alert-success mt-3 py-2 small">
-                    <asp:Literal ID="litAlertMessage" runat="server" />
+                    <asp:Literal ID="litAlertMessage" runat="server" Mode="Encode" />
                 </asp:Panel>
 
                 <!-- User-Facing Report Panel -->
@@ -109,7 +109,7 @@
                     <h5 class="fw-bold mb-0 text-dark">About</h5>
                 </div>
                 <div class="text-secondary lh-base" style="font-size: 0.92rem; color: #475569 !important; line-height: 1.65;">
-                    <asp:Literal ID="litAbout" runat="server" Text="EcoTrack is an integrated platform designed to help small to medium-sized businesses seamlessly track, analyze, and offset their carbon footprint. We are building a comprehensive dashboard that integrates with existing supply chain management tools to provide real-time sustainability metrics." />
+                    <asp:Literal ID="litAbout" runat="server" Mode="Encode" Text="EcoTrack is an integrated platform designed to help small to medium-sized businesses seamlessly track, analyze, and offset their carbon footprint. We are building a comprehensive dashboard that integrates with existing supply chain management tools to provide real-time sustainability metrics." />
                 </div>
             </div>
 
@@ -122,7 +122,7 @@
                             <h5 class="fw-bold mb-0 text-dark">The Problem</h5>
                         </div>
                         <p class="text-secondary small mb-0 lh-base" style="font-size: 0.85rem; color: #475569 !important; line-height: 1.6;">
-                            <asp:Literal ID="litProblem" runat="server" Text="SMBs face increasing pressure to report on environmental impact, but lack affordable, easy-to-use tools. Current solutions are enterprise-focused, expensive, and require specialized sustainability officers." />
+                            <asp:Literal ID="litProblem" runat="server" Mode="Encode" Text="SMBs face increasing pressure to report on environmental impact, but lack affordable, easy-to-use tools. Current solutions are enterprise-focused, expensive, and require specialized sustainability officers." />
                         </p>
                     </div>
                 </div>
@@ -134,7 +134,7 @@
                             <h5 class="fw-bold mb-0 text-dark">The Solution</h5>
                         </div>
                         <p class="text-secondary small mb-0 lh-base" style="font-size: 0.85rem; color: #475569 !important; line-height: 1.6;">
-                            <asp:Literal ID="litSolution" runat="server" Text="A streamlined, AI-driven web application that automatically calculates emissions based on basic input data and utility bills, providing actionable reduction strategies and certified offset options." />
+                            <asp:Literal ID="litSolution" runat="server" Mode="Encode" Text="A streamlined, AI-driven web application that automatically calculates emissions based on basic input data and utility bills, providing actionable reduction strategies and certified offset options." />
                         </p>
                     </div>
                 </div>
@@ -151,27 +151,27 @@
                 <table class="w-100 fl-detail-meta-table">
                     <tr>
                         <td class="text-muted">Industry</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaIndustry" runat="server" Text="Sustainability" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaIndustry" runat="server" Mode="Encode" Text="Sustainability" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Stage</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaStage" runat="server" Text="MVP" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaStage" runat="server" Mode="Encode" Text="MVP" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Founded</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaFounded" runat="server" Text="2023" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaFounded" runat="server" Mode="Encode" Text="2023" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Team Size</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaTeamSize" runat="server" Text="2 Members" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaTeamSize" runat="server" Mode="Encode" Text="2 Members" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Location</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaLocation" runat="server" Text="Remote (India)" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaLocation" runat="server" Mode="Encode" Text="Remote (India)" /></td>
                     </tr>
                     <tr>
                         <td class="text-muted">Commitment</td>
-                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaCommitment" runat="server" Text="Part-time / Equity" /></td>
+                        <td class="fw-bold text-dark text-end"><asp:Literal ID="litMetaCommitment" runat="server" Mode="Encode" Text="Part-time / Equity" /></td>
                     </tr>
                 </table>
             </div>

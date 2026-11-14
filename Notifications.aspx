@@ -82,7 +82,7 @@
                         </div>
 
                         <div>
-                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;"><%# Eval("Title") %></div>
+                            <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;"><%#: Eval("Title") %></div>
                             <%# Convert.ToBoolean(Eval("ActionRequired")) ? @"
                                 <div class='d-flex gap-2 mt-2'>
                                     <asp:LinkButton runat='server' CommandName='Accept' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-sm text-white px-3 fw-semibold' style='background:#006591; border-radius:6px; font-size:0.8rem;'>Accept</asp:LinkButton>
