@@ -166,7 +166,7 @@ namespace FoundrLink.Helpers
         }
 
         /// <summary>
-        /// Generates a PBKDF2 hash with a random cryptographic salt.
+        /// Generates a PBKDF2 hash with a random cryptographic salt using SHA-256 explicitly.
         /// Stored format: {iterations}.{base64Salt}.{base64Hash}
         /// </summary>
         public static string HashPassword(string password)
@@ -179,7 +179,7 @@ namespace FoundrLink.Helpers
                 byte[] salt = new byte[SaltSize];
                 rng.GetBytes(salt);
 
-                using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations))
+                using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, Iterations, HashAlgorithmName.SHA256))
                 {
                     byte[] hash = pbkdf2.GetBytes(HashSize);
                     return $"{Iterations}.{Convert.ToBase64String(salt)}.{Convert.ToBase64String(hash)}";
@@ -189,9 +189,10 @@ namespace FoundrLink.Helpers
 
         /// <summary>
         /// Verifies whether the supplied plaintext password matches the stored hash.
-        /// Also supports legacy plain SHA-256 for backward compatibility.
+        /// Upgrades to SHA-256 explicit PBKDF2.
+        /// For legacy plain SHA-256 fallback logins, triggers an automatic rehash to PBKDF2 upon successful verification.
         /// </summary>
-        public static bool VerifyPassword(string password, string storedHash)
+        public static bool VerifyPassword(string password, string storedHash, int? userId = null, string email = null)
         {
             if (string.IsNullOrEmpty(password) || string.IsNullOrEmpty(storedHash))
                 return false;
@@ -203,19 +204,74 @@ namespace FoundrLink.Helpers
                 byte[] salt = Convert.FromBase64String(parts[1]);
                 byte[] hash = Convert.FromBase64String(parts[2]);
 
-                using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations))
+                // First attempt verification using HMACSHA256 explicitly
+                using (var pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations, HashAlgorithmName.SHA256))
                 {
                     byte[] testHash = pbkdf2.GetBytes(hash.Length);
-                    return SlowEquals(hash, testHash);
+                    if (SlowEquals(hash, testHash))
+                    {
+                        return true;
+                    }
                 }
+
+                // Backward compatibility fallback for previous default PBKDF2 (HMACSHA1)
+                using (var pbkdf2Fallback = new Rfc2898DeriveBytes(password, salt, iterations))
+                {
+                    byte[] testHash = pbkdf2Fallback.GetBytes(hash.Length);
+                    if (SlowEquals(hash, testHash))
+                    {
+                        // Auto-upgrade to PBKDF2 SHA-256
+                        string upgradedHash = HashPassword(password);
+                        MigrateLegacyHash(userId, email, upgradedHash);
+                        return true;
+                    }
+                }
+
+                return false;
             }
 
-            // Fallback SHA256 if not PBKDF2 formatted
+            // Fallback plain SHA256 if not PBKDF2 formatted
             using (var sha = SHA256.Create())
             {
                 byte[] testBytes = sha.ComputeHash(Encoding.UTF8.GetBytes(password));
                 string hex = BitConverter.ToString(testBytes).Replace("-", "").ToLowerInvariant();
-                return string.Equals(hex, storedHash, StringComparison.OrdinalIgnoreCase);
+                bool isLegacyMatch = string.Equals(hex, storedHash, StringComparison.OrdinalIgnoreCase);
+
+                if (isLegacyMatch)
+                {
+                    // Automatic rehash to PBKDF2 upon successful verification
+                    string pbkdf2Hash = HashPassword(password);
+                    MigrateLegacyHash(userId, email, pbkdf2Hash);
+                    return true;
+                }
+
+                return false;
+            }
+        }
+
+        public static bool VerifyPassword(string password, string storedHash)
+        {
+            return VerifyPassword(password, storedHash, null, null);
+        }
+
+        private static void MigrateLegacyHash(int? userId, string email, string newHash)
+        {
+            try
+            {
+                if (userId.HasValue && userId.Value > 0)
+                {
+                    const string sql = "UPDATE dbo.Users SET PasswordHash = @Hash, UpdatedAt = SYSUTCDATETIME() WHERE UserId = @UserId;";
+                    DbHelper.ExecuteNonQuery(sql, new System.Data.SqlClient.SqlParameter("@Hash", newHash), new System.Data.SqlClient.SqlParameter("@UserId", userId.Value));
+                }
+                else if (!string.IsNullOrWhiteSpace(email))
+                {
+                    const string sql = "UPDATE dbo.Users SET PasswordHash = @Hash, UpdatedAt = SYSUTCDATETIME() WHERE LOWER(Email) = LOWER(@Email);";
+                    DbHelper.ExecuteNonQuery(sql, new System.Data.SqlClient.SqlParameter("@Hash", newHash), new System.Data.SqlClient.SqlParameter("@Email", email.Trim()));
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceWarning("Failed to automatically rehash legacy password: " + ex.Message);
             }
         }
 

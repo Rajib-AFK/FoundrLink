@@ -36,7 +36,8 @@ namespace FoundrLink.Services
                 }
 
                 string storedHash = row["PasswordHash"]?.ToString();
-                if (!SecurityHelper.VerifyPassword(password, storedHash))
+                int userId = Convert.ToInt32(row["UserId"]);
+                if (!SecurityHelper.VerifyPassword(password, storedHash, userId, email))
                 {
                     return ServiceResult<User>.Fail("Invalid email address or password. Please try again.");
                 }
