@@ -68,6 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Web.config" />
+    <Content Include="favicon.ico" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap-icons.min.css" />
     <Content Include="Content\fonts\bootstrap-icons.woff" />
