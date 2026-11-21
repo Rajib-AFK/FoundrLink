@@ -55,8 +55,8 @@ foreach (`$r in `$results) {
 }
 
 Write-Host "--------------------------------------------------------------------------------------------------" -ForegroundColor Gray
-$failedColor = if ($failedCount -eq 0) { "Green" } else { "Red" }
-Write-Host "Total Tests: $($results.Count) | Passed: $passedCount | Failed: $failedCount" -ForegroundColor $failedColor
+`$failedColor = if (`$failedCount -eq 0) { 'Green' } else { 'Red' }
+Write-Host "Total Tests: `$(`$results.Count) | Passed: `$passedCount | Failed: `$failedCount" -ForegroundColor `$failedColor
 Write-Host "==========================================================`n" -ForegroundColor Cyan
 
 if (`$failedCount -gt 0) {
