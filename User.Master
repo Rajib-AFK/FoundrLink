@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title><%: Page.Title %> - FoundrLink</title>
 
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
     <link href="~/Content/bootstrap.min.css" rel="stylesheet" />
     <link href="~/Content/bootstrap-icons.min.css" rel="stylesheet" />
     <link href="~/Content/foundrlink.css" rel="stylesheet" />
@@ -149,7 +150,12 @@
         </div>
     </form>
 
-    <script src='<%= ResolveClientUrl("~/Scripts/bootstrap.bundle.min.js") %>'></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        if (typeof bootstrap === 'undefined') {
+            document.write('<script src="<%= ResolveClientUrl("~/Scripts/bootstrap.bundle.min.js") %>"><\/script>');
+        }
+    </script>
     <script src='<%= ResolveClientUrl("~/Scripts/chart.umd.min.js") %>'></script>
     <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
     </asp:ContentPlaceHolder>

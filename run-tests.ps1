@@ -24,42 +24,50 @@ if ($LASTEXITCODE -ne 0) {
 }
 Write-Host "Build Succeeded!" -ForegroundColor Green
 
-# 2. Execute Tests via Reflection
+# 2. Execute Tests via Reflection in an isolated process to prevent assembly locking
 Write-Host "`n[2/2] Executing Automated Test Suite..." -ForegroundColor Yellow
 $dllPath = Join-Path $PSScriptRoot "bin\FoundrLink.dll"
 
-# Load dependencies
-Add-Type -Path $dllPath
+$testScript = @"
+Add-Type -Path '$dllPath'
+`$runnerType = [FoundrLink.Tests.TestRunner]
+`$results = `$runnerType::RunAllTests()
 
-$runnerType = [FoundrLink.Tests.TestRunner]
-$results = $runnerType::RunAllTests()
-
-$passedCount = 0
-$failedCount = 0
+`$passedCount = 0
+`$failedCount = 0
 
 Write-Host "`nTest Execution Results:" -ForegroundColor White
 Write-Host "--------------------------------------------------------------------------------------------------" -ForegroundColor Gray
 
-foreach ($r in $results) {
-    if ($r.Passed) {
-        $passedCount++
+foreach (`$r in `$results) {
+    if (`$r.Passed) {
+        `$passedCount++
         Write-Host "  [PASS] " -ForegroundColor Green -NoNewline
-        Write-Host "$($r.TestName) " -ForegroundColor White -NoNewline
-        Write-Host "($($r.DurationMs) ms)" -ForegroundColor DarkGray
+        Write-Host "`$(`$r.TestName) " -ForegroundColor White -NoNewline
+        Write-Host "(`$(`$r.DurationMs) ms)" -ForegroundColor DarkGray
     } else {
-        $failedCount++
+        `$failedCount++
         Write-Host "  [FAIL] " -ForegroundColor Red -NoNewline
-        Write-Host "$($r.TestName) " -ForegroundColor Red -NoNewline
-        Write-Host "($($r.DurationMs) ms)" -ForegroundColor DarkGray
-        Write-Host "         Error: $($r.ErrorMessage)" -ForegroundColor Yellow
+        Write-Host "`$(`$r.TestName) " -ForegroundColor Red -NoNewline
+        Write-Host "(`$(`$r.DurationMs) ms)" -ForegroundColor DarkGray
+        Write-Host "         Error: `$(`$r.ErrorMessage)" -ForegroundColor Yellow
     }
 }
 
 Write-Host "--------------------------------------------------------------------------------------------------" -ForegroundColor Gray
-Write-Host "Total Tests: $($results.Count) | Passed: $passedCount | Failed: $failedCount" -ForegroundColor $(if ($failedCount -eq 0) { 'Green' } else { 'Red' })
+$failedColor = if ($failedCount -eq 0) { "Green" } else { "Red" }
+Write-Host "Total Tests: $($results.Count) | Passed: $passedCount | Failed: $failedCount" -ForegroundColor $failedColor
 Write-Host "==========================================================`n" -ForegroundColor Cyan
 
-if ($failedCount -gt 0) {
+if (`$failedCount -gt 0) {
+    exit 1
+}
+exit 0
+"@
+
+$encoded = [Convert]::ToBase64String([System.Text.Encoding]::Unicode.GetBytes($testScript))
+& powershell.exe -NoProfile -EncodedCommand $encoded
+if ($LASTEXITCODE -ne 0) {
     exit 1
 }
 exit 0

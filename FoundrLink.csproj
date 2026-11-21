@@ -70,6 +70,8 @@
     <Content Include="Web.config" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap-icons.min.css" />
+    <Content Include="Content\fonts\bootstrap-icons.woff" />
+    <Content Include="Content\fonts\bootstrap-icons.woff2" />
     <Content Include="Content\foundrlink.css" />
     <Content Include="Scripts\bootstrap.bundle.min.js" />
     <Content Include="Scripts\chart.umd.min.js" />
