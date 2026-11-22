@@ -21,18 +21,21 @@
         <asp:ScriptManager runat="server" EnableCdn="false" />
 
         <!-- Left Sidebar Navigation -->
-        <aside class="fl-sidebar">
+        <aside class="fl-sidebar" id="flSidebar">
             <div>
                 <!-- Brand Header -->
-                <a class="fl-brand" runat="server" href="~/Dashboard.aspx">
-                    <div class="fl-brand-logo" style="width: 36px; height: 36px; background: #0F172A; border-radius: 9px;">
-                        <i class="bi bi-hexagon-fill" style="color: #6DF5E1; font-size: 1.15rem;"></i>
-                    </div>
-                    <div>
-                        <h1 class="fl-brand-title">FoundrLink</h1>
-                        <p class="fl-brand-subtitle">Founder Discovery</p>
-                    </div>
-                </a>
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <a class="fl-brand p-0" runat="server" href="~/Dashboard.aspx">
+                        <div class="fl-brand-logo" style="width: 36px; height: 36px; background: #0F172A; border-radius: 9px;">
+                            <i class="bi bi-hexagon-fill" style="color: #6DF5E1; font-size: 1.15rem;"></i>
+                        </div>
+                        <div>
+                            <h1 class="fl-brand-title">FoundrLink</h1>
+                            <p class="fl-brand-subtitle">Founder Discovery</p>
+                        </div>
+                    </a>
+                    <button type="button" class="btn-close d-lg-none" id="btnSidebarClose" aria-label="Close navigation"></button>
+                </div>
 
                 <!-- Primary Navigation -->
                 <ul class="fl-nav-list mt-3">
@@ -100,13 +103,21 @@
             </div>
         </aside>
 
+        <!-- Mobile Sidebar Backdrop Overlay -->
+        <div class="fl-sidebar-backdrop d-lg-none" id="flSidebarBackdrop"></div>
+
         <!-- Main Content Area -->
         <div class="fl-main-area">
             <!-- Topbar Header -->
             <header class="fl-topbar">
-                <div class="fl-search-box">
-                    <i class="bi bi-search"></i>
-                    <asp:TextBox ID="txtSearch" runat="server" placeholder="Search platform..." OnTextChanged="txtSearch_TextChanged" AutoPostBack="true" />
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-link fl-mobile-nav-toggle d-lg-none p-1 text-dark" id="btnSidebarToggle" aria-label="Toggle navigation">
+                        <i class="bi bi-list fs-2 lh-1"></i>
+                    </button>
+                    <div class="fl-search-box">
+                        <i class="bi bi-search"></i>
+                        <asp:TextBox ID="txtSearch" runat="server" placeholder="Search platform..." OnTextChanged="txtSearch_TextChanged" AutoPostBack="true" />
+                    </div>
                 </div>
 
                 <div class="fl-topbar-actions">
@@ -123,9 +134,9 @@
                     </a>
 
                     <!-- Create Startup Button -->
-                    <a runat="server" href="~/ManageStartup.aspx" class="btn-fl-dark text-nowrap" style="height: 38px; padding: 0 16px; font-size: 0.85rem;">
+                    <a runat="server" href="~/ManageStartup.aspx" class="btn-fl-dark text-nowrap d-flex align-items-center gap-1" style="height: 38px; padding: 0 14px; font-size: 0.85rem;" title="Create Startup">
                         <i class="bi bi-plus-lg"></i>
-                        <span>Create Startup</span>
+                        <span class="d-none d-sm-inline">Create Startup</span>
                     </a>
 
                     <!-- User Profile Avatar -->
@@ -158,6 +169,60 @@
         }
     </script>
     <script src='<%= ResolveClientUrl("~/Scripts/chart.umd.min.js") %>'></script>
+    <script>
+        (function () {
+            var sidebar = document.getElementById('flSidebar');
+            var toggleBtn = document.getElementById('btnSidebarToggle');
+            var closeBtn = document.getElementById('btnSidebarClose');
+            var backdrop = document.getElementById('flSidebarBackdrop');
+
+            function openSidebar() {
+                if (sidebar) sidebar.classList.add('show');
+                if (backdrop) backdrop.classList.add('show');
+                document.body.classList.add('fl-sidebar-open');
+            }
+
+            function closeSidebar() {
+                if (sidebar) sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+                document.body.classList.remove('fl-sidebar-open');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('show')) {
+                    closeSidebar();
+                }
+            });
+
+            if (sidebar) {
+                sidebar.querySelectorAll('.fl-nav-link').forEach(function (link) {
+                    link.addEventListener('click', function () {
+                        if (window.innerWidth < 992) {
+                            closeSidebar();
+                        }
+                    });
+                });
+            }
+
+            // Ensure clicking the label cleanly toggles ASP.NET rendered checkboxes and radio buttons
+            document.addEventListener('click', function (e) {
+                var label = e.target.closest('.form-check-label');
+                if (label) {
+                    var container = label.closest('.form-check');
+                    if (container) {
+                        var input = container.querySelector('input[type="radio"], input[type="checkbox"]');
+                        if (input && e.target !== input) {
+                            input.click();
+                        }
+                    }
+                }
+            });
+        })();
+    </script>
     <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
     </asp:ContentPlaceHolder>
 </body>

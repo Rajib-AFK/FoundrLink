@@ -53,6 +53,15 @@
             padding: 16px 20px;
             min-width: 280px;
         }
+        @media (max-width: 767.98px) {
+            .fl-welcome-hero {
+                padding: 20px 16px;
+            }
+            .fl-profile-completion-box {
+                min-width: unset;
+                width: 100%;
+            }
+        }
         .fl-date-badge-red {
             width: 48px;
             height: 48px;

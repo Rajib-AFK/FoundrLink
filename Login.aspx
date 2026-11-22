@@ -191,7 +191,7 @@
                     <label class="form-label small fw-semibold text-dark mb-1">Password</label>
                     <div class="fl-input-icon-wrapper">
                         <i class="bi bi-lock"></i>
-                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" />
+                        <asp:TextBox ID="txtPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" autocomplete="current-password" />
                     </div>
                     <asp:RequiredFieldValidator ID="rfvPassword" runat="server" ControlToValidate="txtPassword" ErrorMessage="Password is required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgLogin" />
                 </div>

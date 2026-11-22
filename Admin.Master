@@ -21,17 +21,20 @@
         <asp:ScriptManager runat="server" EnableCdn="false" />
 
         <!-- Admin Sidebar -->
-        <aside class="fl-sidebar">
+        <aside class="fl-sidebar" id="flAdminSidebar">
             <div>
-                <a class="fl-brand" runat="server" href="~/Admin/Dashboard.aspx">
-                    <div class="fl-brand-logo bg-dark text-teal">
-                        <i class="bi bi-hexagon-fill"></i>
-                    </div>
-                    <div>
-                        <h1 class="fl-brand-title">FoundrLink</h1>
-                        <p class="fl-brand-subtitle">Admin Console</p>
-                    </div>
-                </a>
+                <div class="d-flex align-items-center justify-content-between mb-4">
+                    <a class="fl-brand p-0" runat="server" href="~/Admin/Dashboard.aspx">
+                        <div class="fl-brand-logo bg-dark text-teal">
+                            <i class="bi bi-hexagon-fill"></i>
+                        </div>
+                        <div>
+                            <h1 class="fl-brand-title">FoundrLink</h1>
+                            <p class="fl-brand-subtitle">Admin Console</p>
+                        </div>
+                    </a>
+                    <button type="button" class="btn-close d-lg-none" id="btnAdminSidebarClose" aria-label="Close navigation"></button>
+                </div>
 
                 <ul class="fl-nav-list mt-3">
                     <li class="fl-nav-item">
@@ -95,8 +98,24 @@
             </div>
         </aside>
 
+        <!-- Mobile Admin Sidebar Backdrop Overlay -->
+        <div class="fl-sidebar-backdrop d-lg-none" id="flAdminSidebarBackdrop"></div>
+
         <!-- Admin Main Content -->
         <div class="fl-main-area">
+            <!-- Mobile Admin Topbar Header -->
+            <header class="fl-topbar d-flex align-items-center justify-content-between d-lg-none px-3">
+                <div class="d-flex align-items-center gap-2">
+                    <button type="button" class="btn btn-link fl-mobile-nav-toggle p-1 text-dark" id="btnAdminSidebarToggle" aria-label="Toggle navigation">
+                        <i class="bi bi-list fs-2 lh-1"></i>
+                    </button>
+                    <span class="fw-bold fs-6 text-dark">Admin Console</span>
+                </div>
+                <div class="d-flex align-items-center gap-2">
+                    <span class="badge bg-dark">Admin</span>
+                </div>
+            </header>
+
             <!-- Hidden admin topbar controls kept for server-side code-behind compatibility -->
             <div class="d-none">
                 <asp:Image ID="imgAdminTopAvatar" runat="server" />
@@ -117,6 +136,46 @@
         }
     </script>
     <script src='<%= ResolveClientUrl("~/Scripts/chart.umd.min.js") %>'></script>
+    <script>
+        (function () {
+            var sidebar = document.getElementById('flAdminSidebar');
+            var toggleBtn = document.getElementById('btnAdminSidebarToggle');
+            var closeBtn = document.getElementById('btnAdminSidebarClose');
+            var backdrop = document.getElementById('flAdminSidebarBackdrop');
+
+            function openSidebar() {
+                if (sidebar) sidebar.classList.add('show');
+                if (backdrop) backdrop.classList.add('show');
+                document.body.classList.add('fl-sidebar-open');
+            }
+
+            function closeSidebar() {
+                if (sidebar) sidebar.classList.remove('show');
+                if (backdrop) backdrop.classList.remove('show');
+                document.body.classList.remove('fl-sidebar-open');
+            }
+
+            if (toggleBtn) toggleBtn.addEventListener('click', openSidebar);
+            if (closeBtn) closeBtn.addEventListener('click', closeSidebar);
+            if (backdrop) backdrop.addEventListener('click', closeSidebar);
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && sidebar && sidebar.classList.contains('show')) {
+                    closeSidebar();
+                }
+            });
+
+            if (sidebar) {
+                sidebar.querySelectorAll('.fl-nav-link').forEach(function (link) {
+                    link.addEventListener('click', function () {
+                        if (window.innerWidth < 992) {
+                            closeSidebar();
+                        }
+                    });
+                });
+            }
+        })();
+    </script>
     <asp:ContentPlaceHolder ID="ScriptsContent" runat="server">
     </asp:ContentPlaceHolder>
 </body>

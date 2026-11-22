@@ -142,7 +142,7 @@
                             <label class="form-label small fw-semibold text-dark mb-1">New Password</label>
                             <div class="fl-input-icon-wrapper">
                                 <i class="bi bi-lock"></i>
-                                <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" />
+                                <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" autocomplete="new-password" />
                             </div>
                             <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" ErrorMessage="New password is required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgReset" />
                             <asp:RegularExpressionValidator ID="revNewPassword" runat="server" ControlToValidate="txtNewPassword" ValidationExpression=".{8,}" ErrorMessage="Password must be at least 8 characters long." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgReset" />
@@ -152,7 +152,7 @@
                             <label class="form-label small fw-semibold text-dark mb-1">Confirm New Password</label>
                             <div class="fl-input-icon-wrapper">
                                 <i class="bi bi-lock-fill"></i>
-                                <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" />
+                                <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" placeholder="••••••••" autocomplete="new-password" />
                             </div>
                             <asp:RequiredFieldValidator ID="rfvConfirm" runat="server" ControlToValidate="txtConfirmPassword" ErrorMessage="Confirm password is required." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgReset" />
                             <asp:CompareValidator ID="cvPasswords" runat="server" ControlToValidate="txtConfirmPassword" ControlToCompare="txtNewPassword" ErrorMessage="Passwords do not match." CssClass="text-danger small" Display="Dynamic" ValidationGroup="vgReset" />

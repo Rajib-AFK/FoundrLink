@@ -180,21 +180,21 @@
 
                 <div class="mb-3">
                     <label class="form-label small fw-semibold text-dark mb-1">Current Password</label>
-                    <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
+                    <asp:TextBox ID="txtCurrentPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" autocomplete="current-password" />
                     <asp:RequiredFieldValidator ID="rfvCurrentPassword" runat="server" ControlToValidate="txtCurrentPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Current password is required." ValidationGroup="PasswordGroup" />
                 </div>
 
                 <div class="row g-3 mb-4">
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-dark mb-1">New Password</label>
-                        <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
-                        <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="New password is required." ValidationGroup="PasswordGroup" />
+                        <asp:TextBox ID="txtNewPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" autocomplete="new-password" />
+                        <asp:RequiredFieldValidator ID="rfvNewPassword" runat="server" ControlToValidate="txtNewPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Must be at least 8 characters." ValidationGroup="PasswordGroup" />
                         <asp:RegularExpressionValidator ID="revNewPassword" runat="server" ControlToValidate="txtNewPassword" ValidationExpression=".{8,}" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Must be at least 8 characters." ValidationGroup="PasswordGroup" />
                     </div>
 
                     <div class="col-6">
                         <label class="form-label small fw-semibold text-dark mb-1">Confirm New Password</label>
-                        <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" />
+                        <asp:TextBox ID="txtConfirmPassword" runat="server" CssClass="form-control" TextMode="Password" style="height: 44px;" autocomplete="new-password" />
                         <asp:RequiredFieldValidator ID="rfvConfirmPassword" runat="server" ControlToValidate="txtConfirmPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Please confirm new password." ValidationGroup="PasswordGroup" />
                         <asp:CompareValidator ID="cvPasswords" runat="server" ControlToCompare="txtNewPassword" ControlToValidate="txtConfirmPassword" Display="Dynamic" CssClass="text-danger small" ErrorMessage="Passwords do not match." ValidationGroup="PasswordGroup" />
                     </div>

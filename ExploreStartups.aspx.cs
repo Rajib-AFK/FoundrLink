@@ -113,6 +113,28 @@ namespace FoundrLink
             LoadStartups();
         }
 
+        protected void btnPrevPage_Click(object sender, EventArgs e)
+        {
+            LoadStartups();
+        }
+
+        protected void btnNextPage_Click(object sender, EventArgs e)
+        {
+            LoadStartups();
+        }
+
+        protected void rptPager_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
+        {
+            LoadStartups();
+        }
+
+        protected string FormatLocation(object location)
+        {
+            if (location == null || location == DBNull.Value || string.IsNullOrWhiteSpace(location.ToString()))
+                return "Remote / Flexible";
+            return location.ToString().Trim();
+        }
+
         protected string FormatSkills(object skills)
         {
             if (skills == null || skills == DBNull.Value) return "";
