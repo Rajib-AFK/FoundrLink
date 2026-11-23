@@ -17,8 +17,7 @@ namespace FoundrLink
         {
             if (!IsPostBack)
             {
-                chkRoleTech.Checked = true; // Default as shown in Figma reference
-                _activeSkill = "React";
+                _activeSkill = "";
                 ViewState["ActiveSkill"] = _activeSkill;
                 LoadFounders();
             }

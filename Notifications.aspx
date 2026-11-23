@@ -83,12 +83,12 @@
 
                         <div>
                             <div class="fw-bold text-dark mb-1" style="font-size: 0.95rem;"><%#: Eval("Title") %></div>
-                            <%# Convert.ToBoolean(Eval("ActionRequired")) ? @"
-                                <div class='d-flex gap-2 mt-2'>
-                                    <asp:LinkButton runat='server' CommandName='Accept' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-sm text-white px-3 fw-semibold' style='background:#006591; border-radius:6px; font-size:0.8rem;'>Accept</asp:LinkButton>
-                                    <asp:LinkButton runat='server' CommandName='Decline' CommandArgument='" + Eval("NotificationId") + @"' CssClass='btn btn-sm btn-outline-secondary px-3 fw-semibold' style='border-radius:6px; font-size:0.8rem; border-color:#CBD5E1; color:#0F172A;'>Decline</asp:LinkButton>
+                            <asp:PlaceHolder runat="server" Visible='<%# Convert.ToBoolean(Eval("ActionRequired")) %>'>
+                                <div class="d-flex gap-2 mt-2">
+                                    <asp:LinkButton ID="btnAcceptNotif" runat="server" CommandName="Accept" CommandArgument='<%# Eval("NotificationId") %>' CssClass="btn btn-sm btn-dark px-3 fw-semibold text-white" style="border-radius:6px; font-size:0.8rem; background-color:#0F172A;">Accept</asp:LinkButton>
+                                    <asp:LinkButton ID="btnDeclineNotif" runat="server" CommandName="Decline" CommandArgument='<%# Eval("NotificationId") %>' CssClass="btn btn-sm btn-outline-secondary px-3 fw-semibold" style="border-radius:6px; font-size:0.8rem; border-color:#CBD5E1; color:#0F172A;">Decline</asp:LinkButton>
                                 </div>
-                            " : "" %>
+                            </asp:PlaceHolder>
                         </div>
                     </div>
 

@@ -174,6 +174,55 @@
                 </div>
             </div>
 
+            <!-- 2. Co-Founder Matching Profile Card -->
+            <div class="fl-settings-card">
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <div>
+                        <h4 class="fw-bold text-dark mb-1" style="font-size: 1.25rem;">Co-Founder Matching Profile</h4>
+                        <p class="text-muted small mb-0">Highlight your technical stack, complementary abilities, and partnership preferences.</p>
+                    </div>
+                    <span class="badge bg-teal-subtle text-teal border px-3 py-1 fw-semibold" style="font-size: 0.75rem; border-radius: 6px;">
+                        <i class="bi bi-stars me-1"></i> Matchmaking Active
+                    </span>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1">Skills &amp; Tech Stack <span class="text-muted fw-normal">(Comma-separated)</span></label>
+                    <asp:TextBox ID="txtSkills" runat="server" CssClass="form-control" placeholder="e.g. React, Node.js, Python, System Architecture, AWS" style="height: 44px;" />
+                    <div class="text-muted small mt-1" style="font-size: 0.72rem;">These skills power the matchmaking engine on Find Co-Founders.</div>
+                </div>
+
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Time Availability</label>
+                        <asp:DropDownList ID="ddlAvailability" runat="server" CssClass="form-select" style="height: 44px;">
+                            <asp:ListItem Value="Full-time" Text="Full-time" />
+                            <asp:ListItem Value="Part-time" Text="Part-time" />
+                            <asp:ListItem Value="Side Hustle / Nights & Weekends" Text="Side Hustle / Nights & Weekends" />
+                            <asp:ListItem Value="Advisory" Text="Advisory" />
+                        </asp:DropDownList>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label small fw-semibold text-dark mb-1">Industry Interests <span class="text-muted fw-normal">(Comma-separated)</span></label>
+                        <asp:TextBox ID="txtInterests" runat="server" CssClass="form-control" placeholder="e.g. AI/ML, SaaS, FinTech, HealthTech" style="height: 44px;" />
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold text-dark mb-1">What I Can Offer <span class="text-muted fw-normal">(Separated by semicolons or newlines)</span></label>
+                    <asp:TextBox ID="txtCanOffer" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="e.g. Fullstack engineering from 0-to-1; Cloud infrastructure & DevOps; System architecture & design" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label small fw-semibold text-dark mb-1">What I'm Looking For in a Co-Founder</label>
+                    <asp:TextBox ID="txtLookingFor" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="3" placeholder="e.g. Business/domain expert with strong B2B sales track record and customer discovery experience..." />
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <asp:Button ID="btnSaveFounderProfile" runat="server" Text="Save Matching Preferences" CssClass="btn-fl-primary px-4" OnClick="btnSaveFounderProfile_Click" />
+                </div>
+            </div>
+
             <!-- 2. Change Password Card -->
             <div class="fl-settings-card">
                 <h4 class="fw-bold text-dark mb-4" style="font-size: 1.25rem;">Change Password</h4>

@@ -64,6 +64,24 @@ namespace FoundrLink
                         ? txtAvatarUrl.Text 
                         : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=120";
                 }
+
+                // Load Founder Profile preferences
+                string profSql = "SELECT Skills, ICanOffer, LookingFor, Availability, Interests FROM dbo.FounderProfiles WHERE UserId = @UserId";
+                DataTable dtProf = DbHelper.ExecuteDataTable(profSql, new SqlParameter("@UserId", CurrentUserId));
+                if (dtProf.Rows.Count > 0)
+                {
+                    DataRow pr = dtProf.Rows[0];
+                    txtSkills.Text = pr["Skills"] != DBNull.Value ? pr["Skills"].ToString() : "";
+                    txtCanOffer.Text = pr["ICanOffer"] != DBNull.Value ? pr["ICanOffer"].ToString() : "";
+                    txtLookingFor.Text = pr["LookingFor"] != DBNull.Value ? pr["LookingFor"].ToString() : "";
+                    txtInterests.Text = pr["Interests"] != DBNull.Value ? pr["Interests"].ToString() : "";
+
+                    string avail = pr["Availability"]?.ToString();
+                    if (!string.IsNullOrEmpty(avail) && ddlAvailability.Items.FindByValue(avail) != null)
+                    {
+                        ddlAvailability.SelectedValue = avail;
+                    }
+                }
             }
             catch (Exception ex)
             {
@@ -217,6 +235,63 @@ namespace FoundrLink
 
                 System.Diagnostics.Trace.TraceError("SaveProfile error: " + ex);
                 litAlertError.Text = "An error occurred while saving your profile. Please try again.";
+                pnlAlertError.Visible = true;
+            }
+        }
+
+        protected void btnSaveFounderProfile_Click(object sender, EventArgs e)
+        {
+            string skills = txtSkills.Text.Trim();
+            string availability = ddlAvailability.SelectedValue;
+            string interests = txtInterests.Text.Trim();
+            string canOffer = txtCanOffer.Text.Trim();
+            string lookingFor = txtLookingFor.Text.Trim();
+
+            try
+            {
+                // Dynamic profile completion evaluation
+                int completion = 40;
+                if (!string.IsNullOrWhiteSpace(txtTitle.Text)) completion += 10;
+                if (!string.IsNullOrWhiteSpace(txtLocation.Text)) completion += 10;
+                if (!string.IsNullOrWhiteSpace(txtBio.Text)) completion += 10;
+                if (!string.IsNullOrWhiteSpace(txtAvatarUrl.Text)) completion += 10;
+                if (!string.IsNullOrWhiteSpace(skills)) completion += 10;
+                if (!string.IsNullOrWhiteSpace(canOffer)) completion += 10;
+
+                string saveSql = @"
+                    IF EXISTS (SELECT 1 FROM dbo.FounderProfiles WHERE UserId = @UserId)
+                    BEGIN
+                        UPDATE dbo.FounderProfiles
+                        SET Skills = @Skills,
+                            Availability = @Availability,
+                            Interests = @Interests,
+                            ICanOffer = @ICanOffer,
+                            LookingFor = @LookingFor,
+                            ProfileCompletionPercentage = @Completion
+                        WHERE UserId = @UserId;
+                    END
+                    ELSE
+                    BEGIN
+                        INSERT INTO dbo.FounderProfiles (UserId, Skills, Availability, Interests, ICanOffer, LookingFor, ProfileCompletionPercentage)
+                        VALUES (@UserId, @Skills, @Availability, @Interests, @ICanOffer, @LookingFor, @Completion);
+                    END";
+
+                DbHelper.ExecuteNonQuery(saveSql,
+                    new SqlParameter("@UserId", CurrentUserId),
+                    new SqlParameter("@Skills", (object)skills ?? DBNull.Value),
+                    new SqlParameter("@Availability", (object)availability ?? "Full-time"),
+                    new SqlParameter("@Interests", (object)interests ?? DBNull.Value),
+                    new SqlParameter("@ICanOffer", (object)canOffer ?? DBNull.Value),
+                    new SqlParameter("@LookingFor", (object)lookingFor ?? DBNull.Value),
+                    new SqlParameter("@Completion", Math.Min(100, completion)));
+
+                litAlertSuccess.Text = "Your co-founder matching profile and preferences have been successfully updated.";
+                pnlAlertSuccess.Visible = true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Trace.TraceError("SaveFounderProfile error: " + ex);
+                litAlertError.Text = "An error occurred while saving your co-founder preferences. Please try again.";
                 pnlAlertError.Visible = true;
             }
         }

@@ -69,7 +69,7 @@
 
         <div class="mb-3">
             <label class="form-label small fw-semibold text-dark mb-1">Startup Name <span class="text-danger">*</span></label>
-            <asp:TextBox ID="txtName" runat="server" CssClass="form-control" placeholder="e.g. Rita Sharma" style="height: 44px;" />
+            <asp:TextBox ID="txtName" runat="server" CssClass="form-control" placeholder="e.g. Apex AI" style="height: 44px;" />
             <asp:RequiredFieldValidator ID="rfvName" runat="server" ControlToValidate="txtName" ErrorMessage="Startup Name is required" CssClass="text-danger small mt-1 d-block" Display="Dynamic" ValidationGroup="vgStartup" />
         </div>
 
@@ -178,6 +178,46 @@
                 <span class="small text-muted" style="font-size: 0.75rem;">Add roles (separated by commas or newlines)</span>
             </div>
             <asp:TextBox ID="txtOpenRole" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="2" placeholder="e.g. Technical Co-Founder (CTO), Lead Full-Stack Engineer" />
+        </div>
+    </div>
+
+    <!-- 5. Investment & Traction -->
+    <div class="fl-form-card">
+        <div class="fl-section-title">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span>Investment &amp; Traction</span>
+        </div>
+
+        <div class="row g-3 mb-3">
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold text-dark mb-1">Funding Goal (₹)</label>
+                <asp:TextBox ID="txtFundingGoal" runat="server" CssClass="form-control" TextMode="Number" placeholder="5000000" style="height: 44px;" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold text-dark mb-1">Capital Raised So Far (₹)</label>
+                <asp:TextBox ID="txtFundingRaised" runat="server" CssClass="form-control" TextMode="Number" placeholder="1000000" style="height: 44px;" />
+            </div>
+            <div class="col-md-4">
+                <label class="form-label small fw-semibold text-dark mb-1">Monthly Recurring Revenue (MRR ₹)</label>
+                <asp:TextBox ID="txtMRR" runat="server" CssClass="form-control" TextMode="Number" placeholder="50000" style="height: 44px;" />
+            </div>
+        </div>
+
+        <div class="row g-3">
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold text-dark mb-1">Year Founded</label>
+                <asp:TextBox ID="txtFoundedYear" runat="server" CssClass="form-control" TextMode="Number" placeholder="2024" style="height: 44px;" />
+            </div>
+            <div class="col-md-6">
+                <label class="form-label small fw-semibold text-dark mb-1">Commitment Model</label>
+                <asp:DropDownList ID="ddlCommitment" runat="server" CssClass="form-select" style="height: 44px;">
+                    <asp:ListItem Value="Full-time / Equity" Text="Full-time / Equity" />
+                    <asp:ListItem Value="Part-time / Equity" Text="Part-time / Equity" />
+                    <asp:ListItem Value="Sweat Equity Only" Text="Sweat Equity Only" />
+                    <asp:ListItem Value="Salaried + Equity" Text="Salaried + Equity" />
+                    <asp:ListItem Value="Flexible" Text="Flexible" />
+                </asp:DropDownList>
+            </div>
         </div>
     </div>
 

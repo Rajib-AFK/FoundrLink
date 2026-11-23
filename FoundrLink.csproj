@@ -88,6 +88,7 @@
     <Content Include="StartupDetails.aspx" />
     <Content Include="FindCoFounders.aspx" />
     <Content Include="ManageStartup.aspx" />
+    <Content Include="MyStartups.aspx" />
     <Content Include="TeamDetails.aspx" />
     <Content Include="Messages.aspx" />
     <Content Include="Notifications.aspx" />
@@ -228,6 +229,13 @@
     </Compile>
     <Compile Include="ManageStartup.aspx.designer.cs">
       <DependentUpon>ManageStartup.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="MyStartups.aspx.cs">
+      <DependentUpon>MyStartups.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="MyStartups.aspx.designer.cs">
+      <DependentUpon>MyStartups.aspx</DependentUpon>
     </Compile>
     <Compile Include="TeamDetails.aspx.cs">
       <DependentUpon>TeamDetails.aspx</DependentUpon>

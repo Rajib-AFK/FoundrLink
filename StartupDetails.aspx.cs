@@ -7,7 +7,7 @@ namespace FoundrLink
 {
     public partial class StartupDetails : Page
     {
-        private int _startupId = 8; // Default EcoTrack (Id 8)
+        private int _startupId = 1;
         private int _founderId
         {
             get => ViewState["FounderId"] != null ? (int)ViewState["FounderId"] : 1;
@@ -25,6 +25,14 @@ namespace FoundrLink
             if (!string.IsNullOrEmpty(Request.QueryString["id"]) && int.TryParse(Request.QueryString["id"], out int sId))
             {
                 _startupId = sId;
+            }
+            else
+            {
+                object firstId = DbHelper.ExecuteScalar("SELECT TOP 1 StartupId FROM dbo.Startups WHERE Status IN ('Active', 'Approved', 'Published') ORDER BY StartupId ASC");
+                if (firstId != null && firstId != DBNull.Value)
+                {
+                    _startupId = Convert.ToInt32(firstId);
+                }
             }
 
             lnkTeamDetails.HRef = "TeamDetails.aspx?id=" + _startupId;
@@ -69,15 +77,18 @@ namespace FoundrLink
                     string fullDesc = r["FullDescription"]?.ToString();
                     litAbout.Text = !string.IsNullOrEmpty(fullDesc) ? fullDesc : r["ShortDescription"]?.ToString();
 
-                    litProblem.Text = r["Problem"]?.ToString() ?? "Enterprises lack standardized, low-barrier sustainability auditing.";
-                    litSolution.Text = r["Solution"]?.ToString() ?? "An automated API-driven compliance and carbon footprint auditing platform.";
+                    string problem = r["Problem"]?.ToString();
+                    litProblem.Text = !string.IsNullOrWhiteSpace(problem) ? problem : (r["Tagline"]?.ToString() ?? "Problem statement in development.");
 
-                    litMetaIndustry.Text = r["Industry"]?.ToString();
-                    litMetaStage.Text = r["Stage"]?.ToString();
-                    litMetaFounded.Text = r["FoundedYear"]?.ToString() ?? "2023";
-                    litMetaTeamSize.Text = r["TeamSize"]?.ToString() + " Members";
+                    string solution = r["Solution"]?.ToString();
+                    litSolution.Text = !string.IsNullOrWhiteSpace(solution) ? solution : (r["ShortDescription"]?.ToString() ?? "Solution architecture in development.");
+
+                    litMetaIndustry.Text = r["Industry"]?.ToString() ?? "Technology";
+                    litMetaStage.Text = r["Stage"]?.ToString() ?? "Early Stage";
+                    litMetaFounded.Text = r["FoundedYear"]?.ToString() ?? DateTime.Now.Year.ToString();
+                    litMetaTeamSize.Text = (r["TeamSize"]?.ToString() ?? "1") + " Members";
                     litMetaLocation.Text = r["Location"]?.ToString() ?? "Remote";
-                    litMetaCommitment.Text = r["Commitment"]?.ToString() ?? "Part-time / Equity";
+                    litMetaCommitment.Text = r["Commitment"]?.ToString() ?? "Full-time / Equity";
 
                     int? currentUserId = SecurityHelper.GetCurrentUserId();
                     if (currentUserId.HasValue)

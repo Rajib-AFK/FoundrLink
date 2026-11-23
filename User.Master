@@ -58,7 +58,7 @@
                         </a>
                     </li>
                     <li class="fl-nav-item">
-                        <a id="navStartups" runat="server" href="~/ManageStartup.aspx" class="fl-nav-link">
+                        <a id="navStartups" runat="server" href="~/MyStartups.aspx" class="fl-nav-link">
                             <i class="bi bi-briefcase-fill"></i>
                             <span>Startups</span>
                         </a>

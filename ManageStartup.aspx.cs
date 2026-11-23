@@ -69,7 +69,25 @@ namespace FoundrLink
                     txtSkills.Text = r["RequiredSkills"]?.ToString();
                     txtLocation.Text = r["Location"]?.ToString();
                     txtWebsite.Text = r["WebsiteUrl"]?.ToString();
+                    txtFundingGoal.Text = r["FundingGoal"] != DBNull.Value ? Convert.ToDecimal(r["FundingGoal"]).ToString("0") : "";
+                    txtFundingRaised.Text = r["FundingRaised"] != DBNull.Value ? Convert.ToDecimal(r["FundingRaised"]).ToString("0") : "";
+                    txtMRR.Text = r["MRR"] != DBNull.Value ? Convert.ToDecimal(r["MRR"]).ToString("0") : "";
+                    txtFoundedYear.Text = r["FoundedYear"] != DBNull.Value ? r["FoundedYear"].ToString() : DateTime.Now.Year.ToString();
+                    string commitment = r["Commitment"]?.ToString();
+                    if (!string.IsNullOrEmpty(commitment) && ddlCommitment.Items.FindByValue(commitment) != null)
+                        ddlCommitment.SelectedValue = commitment;
+
                     litStatusBadge.Text = r["Status"]?.ToString() ?? "Draft";
+
+                    // Load open positions for edit
+                    string posSql = "SELECT Title FROM dbo.OpenPositions WHERE StartupId = @StartupId ORDER BY PositionId ASC";
+                    DataTable dtPos = DbHelper.ExecuteDataTable(posSql, DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId));
+                    var rolesList = new System.Collections.Generic.List<string>();
+                    foreach (DataRow pr in dtPos.Rows)
+                    {
+                        rolesList.Add(pr["Title"].ToString());
+                    }
+                    txtOpenRole.Text = string.Join(", ", rolesList);
                 }
                 else
                 {
@@ -121,6 +139,13 @@ namespace FoundrLink
             string location = txtLocation.Text.Trim();
             string website = txtWebsite.Text.Trim();
 
+            decimal.TryParse(txtFundingGoal.Text.Trim(), out decimal fundingGoal);
+            decimal.TryParse(txtFundingRaised.Text.Trim(), out decimal fundingRaised);
+            decimal.TryParse(txtMRR.Text.Trim(), out decimal mrr);
+            int.TryParse(txtFoundedYear.Text.Trim(), out int foundedYear);
+            if (foundedYear == 0) foundedYear = DateTime.UtcNow.Year;
+            string commitment = !string.IsNullOrEmpty(ddlCommitment.SelectedValue) ? ddlCommitment.SelectedValue : "Part-time / Equity";
+
             string logoUrl = "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=200";
 
             if (fuLogo.HasFile)
@@ -169,6 +194,8 @@ namespace FoundrLink
                             ShortDescription = @ShortDescription, FullDescription = @FullDescription,
                             Problem = @Problem, Solution = @Solution, TeamSize = @TeamSize,
                             RequiredSkills = @RequiredSkills, Location = @Location, WebsiteUrl = @WebsiteUrl,
+                            Commitment = @Commitment, FoundedYear = @FoundedYear, FundingRaised = @FundingRaised,
+                            FundingGoal = @FundingGoal, MRR = @MRR,
                             Status = @Status, UpdatedAt = SYSUTCDATETIME()
                         WHERE StartupId = @StartupId AND (FounderId = @CurrentUserId OR @IsAdmin = 1)";
 
@@ -185,6 +212,11 @@ namespace FoundrLink
                         DbHelper.CreateParam("@RequiredSkills", SqlDbType.NVarChar, skills),
                         DbHelper.CreateParam("@Location", SqlDbType.NVarChar, location),
                         DbHelper.CreateParam("@WebsiteUrl", SqlDbType.NVarChar, website),
+                        DbHelper.CreateParam("@Commitment", SqlDbType.NVarChar, commitment),
+                        DbHelper.CreateParam("@FoundedYear", SqlDbType.Int, foundedYear),
+                        DbHelper.CreateParam("@FundingRaised", SqlDbType.Decimal, fundingRaised),
+                        DbHelper.CreateParam("@FundingGoal", SqlDbType.Decimal, fundingGoal),
+                        DbHelper.CreateParam("@MRR", SqlDbType.Decimal, mrr),
                         DbHelper.CreateParam("@Status", SqlDbType.NVarChar, status),
                         DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId.Value),
                         DbHelper.CreateParam("@CurrentUserId", SqlDbType.Int, founderId),
@@ -199,6 +231,8 @@ namespace FoundrLink
                         return;
                     }
 
+                    SaveOpenPositions(_startupId.Value, txtOpenRole.Text.Trim(), location);
+
                     litSuccess.Text = "Startup updated successfully!";
                     pnlSuccess.CssClass = "alert alert-success py-2 small mb-4";
                     pnlSuccess.Visible = true;
@@ -207,9 +241,9 @@ namespace FoundrLink
                 {
                     // Insert
                     string insertSql = @"
-                        INSERT INTO dbo.Startups (FounderId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, FullDescription, Problem, Solution, TeamSize, RequiredSkills, Location, WebsiteUrl, Status, CreatedAt, UpdatedAt)
+                        INSERT INTO dbo.Startups (FounderId, Name, Tagline, Industry, Stage, LogoUrl, ShortDescription, FullDescription, Problem, Solution, TeamSize, RequiredSkills, Location, WebsiteUrl, Commitment, FoundedYear, FundingRaised, FundingGoal, MRR, Status, CreatedAt, UpdatedAt)
                         OUTPUT INSERTED.StartupId
-                        VALUES (@FounderId, @Name, @Tagline, @Industry, @Stage, @LogoUrl, @ShortDescription, @FullDescription, @Problem, @Solution, @TeamSize, @RequiredSkills, @Location, @WebsiteUrl, @Status, SYSUTCDATETIME(), SYSUTCDATETIME());";
+                        VALUES (@FounderId, @Name, @Tagline, @Industry, @Stage, @LogoUrl, @ShortDescription, @FullDescription, @Problem, @Solution, @TeamSize, @RequiredSkills, @Location, @WebsiteUrl, @Commitment, @FoundedYear, @FundingRaised, @FundingGoal, @MRR, @Status, SYSUTCDATETIME(), SYSUTCDATETIME());";
 
                     object newId = DbHelper.ExecuteScalar(insertSql,
                         DbHelper.CreateParam("@FounderId", SqlDbType.Int, founderId),
@@ -226,23 +260,34 @@ namespace FoundrLink
                         DbHelper.CreateParam("@RequiredSkills", SqlDbType.NVarChar, skills),
                         DbHelper.CreateParam("@Location", SqlDbType.NVarChar, location),
                         DbHelper.CreateParam("@WebsiteUrl", SqlDbType.NVarChar, website),
+                        DbHelper.CreateParam("@Commitment", SqlDbType.NVarChar, commitment),
+                        DbHelper.CreateParam("@FoundedYear", SqlDbType.Int, foundedYear),
+                        DbHelper.CreateParam("@FundingRaised", SqlDbType.Decimal, fundingRaised),
+                        DbHelper.CreateParam("@FundingGoal", SqlDbType.Decimal, fundingGoal),
+                        DbHelper.CreateParam("@MRR", SqlDbType.Decimal, mrr),
                         DbHelper.CreateParam("@Status", SqlDbType.NVarChar, status)
                     );
 
                     if (newId != null && int.TryParse(newId.ToString(), out int sId))
                     {
-                        if (!string.IsNullOrEmpty(txtOpenRole.Text.Trim()))
-                        {
-                            string roleSql = @"
-                                INSERT INTO dbo.OpenPositions (StartupId, Title, Location, PositionType, CreatedAt)
-                                VALUES (@StartupId, @Title, @Location, 'Full-time', SYSUTCDATETIME());";
+                        // Auto-add founder as key team member
+                        DataTable dtUser = DbHelper.ExecuteDataTable("SELECT FullName, Title, AvatarUrl FROM dbo.Users WHERE UserId = @UserId",
+                            DbHelper.CreateParam("@UserId", SqlDbType.Int, founderId));
+                        string founderName = dtUser.Rows.Count > 0 && dtUser.Rows[0]["FullName"] != DBNull.Value ? dtUser.Rows[0]["FullName"].ToString() : "Founder";
+                        string founderRole = dtUser.Rows.Count > 0 && dtUser.Rows[0]["Title"] != DBNull.Value && !string.IsNullOrWhiteSpace(dtUser.Rows[0]["Title"].ToString()) ? dtUser.Rows[0]["Title"].ToString() : "Founder & CEO";
+                        string founderAvatar = dtUser.Rows.Count > 0 && dtUser.Rows[0]["AvatarUrl"] != DBNull.Value ? dtUser.Rows[0]["AvatarUrl"].ToString() : "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150";
 
-                            DbHelper.ExecuteNonQuery(roleSql,
-                                DbHelper.CreateParam("@StartupId", SqlDbType.Int, sId),
-                                DbHelper.CreateParam("@Title", SqlDbType.NVarChar, txtOpenRole.Text.Trim()),
-                                DbHelper.CreateParam("@Location", SqlDbType.NVarChar, string.IsNullOrEmpty(location) ? "Remote" : location)
-                            );
-                        }
+                        DbHelper.ExecuteNonQuery(@"
+                            INSERT INTO dbo.TeamMembers (StartupId, UserId, Name, Role, AvatarUrl, JoinedDate)
+                            VALUES (@StartupId, @UserId, @Name, @Role, @AvatarUrl, SYSUTCDATETIME());",
+                            DbHelper.CreateParam("@StartupId", SqlDbType.Int, sId),
+                            DbHelper.CreateParam("@UserId", SqlDbType.Int, founderId),
+                            DbHelper.CreateParam("@Name", SqlDbType.NVarChar, founderName),
+                            DbHelper.CreateParam("@Role", SqlDbType.NVarChar, founderRole),
+                            DbHelper.CreateParam("@AvatarUrl", SqlDbType.NVarChar, founderAvatar)
+                        );
+
+                        SaveOpenPositions(sId, txtOpenRole.Text.Trim(), location);
 
                         Response.Redirect("~/StartupDetails.aspx?id=" + sId);
                         return;
@@ -255,6 +300,35 @@ namespace FoundrLink
                 litSuccess.Text = "An error occurred while saving the startup.";
                 pnlSuccess.CssClass = "alert alert-danger py-2 small mb-4";
                 pnlSuccess.Visible = true;
+            }
+        }
+
+        private void SaveOpenPositions(int startupId, string rolesText, string location)
+        {
+            if (string.IsNullOrWhiteSpace(rolesText)) return;
+
+            string[] roles = rolesText.Split(new[] { '\r', '\n', ',' }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string rawRole in roles)
+            {
+                string role = rawRole.Trim();
+                if (string.IsNullOrEmpty(role)) continue;
+
+                object exists = DbHelper.ExecuteScalar(
+                    "SELECT COUNT(1) FROM dbo.OpenPositions WHERE StartupId = @StartupId AND Title = @Title",
+                    DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId),
+                    DbHelper.CreateParam("@Title", SqlDbType.NVarChar, role)
+                );
+
+                if (exists == null || Convert.ToInt32(exists) == 0)
+                {
+                    DbHelper.ExecuteNonQuery(@"
+                        INSERT INTO dbo.OpenPositions (StartupId, Title, Location, PositionType, CreatedAt)
+                        VALUES (@StartupId, @Title, @Location, 'Full-time', SYSUTCDATETIME());",
+                        DbHelper.CreateParam("@StartupId", SqlDbType.Int, startupId),
+                        DbHelper.CreateParam("@Title", SqlDbType.NVarChar, role),
+                        DbHelper.CreateParam("@Location", SqlDbType.NVarChar, string.IsNullOrEmpty(location) ? "Remote" : location)
+                    );
+                }
             }
         }
 

@@ -4,12 +4,21 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Text;
 using System.Web.UI;
+using System.Web.UI.WebControls;
 using FoundrLink.Helpers;
 
 namespace FoundrLink
 {
     public partial class ExploreStartups : Page
     {
+        public int CurrentPage
+        {
+            get => ViewState["CurrentPage"] is int p ? p : 1;
+            set => ViewState["CurrentPage"] = value;
+        }
+
+        public const int PageSize = 6;
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -32,7 +41,7 @@ namespace FoundrLink
                            u.FullName AS FounderName, u.Title AS FounderTitle, u.AvatarUrl AS FounderAvatar
                     FROM dbo.Startups s
                     JOIN dbo.Users u ON s.FounderId = u.UserId
-                    WHERE s.Status IN ('Active', 'Approved')");
+                    WHERE s.Status IN ('Active', 'Approved', 'Published')");
 
                 var parameters = new List<SqlParameter>();
 
@@ -80,11 +89,44 @@ namespace FoundrLink
 
                 DataTable dt = DbHelper.ExecuteDataTable(sb.ToString(), parameters.ToArray());
                 
-                // Syllabus Unit 7: ADO.NET Disconnected Architecture - DataView usage
+                // Syllabus Unit 7: ADO.NET Disconnected Architecture - DataView & PagedDataSource
+                int totalRecords = dt.Rows.Count;
+                int totalPages = (int)Math.Ceiling((double)totalRecords / PageSize);
+                if (totalPages < 1) totalPages = 1;
+
+                if (CurrentPage > totalPages) CurrentPage = totalPages;
+                if (CurrentPage < 1) CurrentPage = 1;
+
                 DataView dv = new DataView(dt);
-                litMatchCount.Text = dv.Count.ToString();
-                rptStartups.DataSource = dv;
+                var pds = new PagedDataSource
+                {
+                    DataSource = dv,
+                    AllowPaging = true,
+                    PageSize = PageSize,
+                    CurrentPageIndex = CurrentPage - 1
+                };
+
+                btnPrevPage.Enabled = !pds.IsFirstPage;
+                btnNextPage.Enabled = !pds.IsLastPage;
+                btnPrevPage.CssClass = pds.IsFirstPage ? "fl-page-btn text-muted disabled" : "fl-page-btn";
+                btnNextPage.CssClass = pds.IsLastPage ? "fl-page-btn text-muted disabled" : "fl-page-btn";
+
+                litMatchCount.Text = $"{totalRecords} startups found (Page {CurrentPage} of {totalPages})";
+                rptStartups.DataSource = pds;
                 rptStartups.DataBind();
+
+                pnlPagination.Visible = totalPages > 1;
+                pnlEmptyState.Visible = totalRecords == 0;
+                rptStartups.Visible = totalRecords > 0;
+
+                // Build Pager links
+                var pages = new List<dynamic>();
+                for (int i = 1; i <= totalPages; i++)
+                {
+                    pages.Add(new { PageIndex = i, PageText = i.ToString(), IsActive = (i == CurrentPage) });
+                }
+                rptPager.DataSource = pages;
+                rptPager.DataBind();
             }
             catch (Exception ex)
             {
@@ -94,11 +136,13 @@ namespace FoundrLink
 
         protected void btnApply_Click(object sender, EventArgs e)
         {
+            CurrentPage = 1;
             LoadStartups();
         }
 
         protected void btnClear_Click(object sender, EventArgs e)
         {
+            CurrentPage = 1;
             txtSearch.Text = "";
             ddlIndustry.SelectedIndex = 0;
             ddlSkill.SelectedIndex = 0;
@@ -110,22 +154,32 @@ namespace FoundrLink
 
         protected void ddlSort_SelectedIndexChanged(object sender, EventArgs e)
         {
+            CurrentPage = 1;
             LoadStartups();
         }
 
         protected void btnPrevPage_Click(object sender, EventArgs e)
         {
-            LoadStartups();
+            if (CurrentPage > 1)
+            {
+                CurrentPage--;
+                LoadStartups();
+            }
         }
 
         protected void btnNextPage_Click(object sender, EventArgs e)
         {
+            CurrentPage++;
             LoadStartups();
         }
 
         protected void rptPager_ItemCommand(object source, System.Web.UI.WebControls.RepeaterCommandEventArgs e)
         {
-            LoadStartups();
+            if (int.TryParse(e.CommandArgument?.ToString(), out int p))
+            {
+                CurrentPage = p;
+                LoadStartups();
+            }
         }
 
         protected string FormatLocation(object location)

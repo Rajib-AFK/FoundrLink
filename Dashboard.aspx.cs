@@ -69,7 +69,7 @@ namespace FoundrLink
                 // 2. Metric Counters
                 object connObj = DbHelper.ExecuteScalar(
                     @"SELECT COUNT(1) FROM dbo.Connections 
-                      WHERE (RequesterUserId = @UserId OR ReceiverUserId = @UserId) AND Status = 'Accepted'",
+                      WHERE (RequesterUserId = @UserId OR ReceiverUserId = @UserId) AND Status IN ('Accepted', 'Connected')",
                     DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
                 int connectionsCount = connObj != null && connObj != DBNull.Value ? Convert.ToInt32(connObj) : 0;
                 litProfileViews.Text = connectionsCount.ToString();

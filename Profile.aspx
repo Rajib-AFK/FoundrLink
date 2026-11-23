@@ -162,7 +162,7 @@
             <div class="fl-card p-0 overflow-hidden mb-4">
                 <div class="fl-startup-preview-banner">
                     <div class="fl-startup-logo-overlap">
-                        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100" width="56" height="56" style="object-fit:cover; border-radius:8px;" alt="Logo" />
+                        <asp:Image ID="imgStartupLogo" runat="server" Width="56" Height="56" style="object-fit:cover; border-radius:8px;" ImageUrl="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100" AlternateText="Startup Logo" />
                     </div>
                 </div>
                 <div class="p-4" style="padding-top: 40px !important;">

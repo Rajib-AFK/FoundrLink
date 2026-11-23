@@ -15,7 +15,8 @@ namespace FoundrLink.Services
             string sql = @"
                 SELECT s.StartupId, s.Name, s.Tagline, s.Industry, s.Stage, 
                        COALESCE(NULLIF(s.LogoUrl, ''), 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=100') AS LogoUrl, 
-                       s.ShortDescription, s.TeamSize, s.RequiredSkills, s.Location, s.WebsiteUrl,
+                       s.ShortDescription, s.FullDescription, s.Problem, s.Solution, s.Commitment, s.FoundedYear,
+                       s.TeamSize, s.FundingRaised, s.FundingGoal, s.MRR, s.RequiredSkills, s.Location, s.WebsiteUrl,
                        COALESCE(u.FullName, 'Founder') AS FounderName, 
                        COALESCE(u.Title, 'Founder & CEO') AS FounderTitle, 
                        COALESCE(NULLIF(u.AvatarUrl, ''), 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100') AS FounderAvatar
@@ -53,8 +54,9 @@ namespace FoundrLink.Services
 
             string sql = @"
                 SELECT s.StartupId, s.FounderId, s.Name, s.Tagline, s.Industry, s.Stage, s.LogoUrl, 
-                       s.ShortDescription, s.FullPitch, s.PitchDeckUrl, s.WebsiteUrl, s.Location, 
-                       s.TeamSize, s.FundingRaised, s.FundingGoal, s.RequiredSkills, s.Status, 
+                       s.ShortDescription, s.FullDescription, s.Problem, s.Solution, s.Commitment, 
+                       s.FoundedYear, s.WebsiteUrl, s.Location, s.TeamSize, s.FundingRaised, 
+                       s.FundingGoal, s.MRR, s.RequiredSkills, s.Status, 
                        s.CreatedAt, s.UpdatedAt,
                        u.FullName AS FounderName, u.Title AS FounderTitle, u.AvatarUrl AS FounderAvatar
                 FROM dbo.Startups s
@@ -75,13 +77,17 @@ namespace FoundrLink.Services
                 Stage = r["Stage"]?.ToString(),
                 LogoUrl = r["LogoUrl"]?.ToString(),
                 ShortDescription = r["ShortDescription"]?.ToString(),
-                FullPitch = r["FullPitch"]?.ToString(),
-                PitchDeckUrl = r["PitchDeckUrl"]?.ToString(),
+                FullDescription = r["FullDescription"]?.ToString(),
+                Problem = r["Problem"]?.ToString(),
+                Solution = r["Solution"]?.ToString(),
+                Commitment = r["Commitment"]?.ToString(),
+                FoundedYear = r["FoundedYear"] != DBNull.Value ? Convert.ToInt32(r["FoundedYear"]) : 0,
                 WebsiteUrl = r["WebsiteUrl"]?.ToString(),
                 Location = r["Location"]?.ToString(),
                 TeamSize = r["TeamSize"] != DBNull.Value ? Convert.ToInt32(r["TeamSize"]) : 1,
                 FundingRaised = r["FundingRaised"] != DBNull.Value ? Convert.ToDecimal(r["FundingRaised"]) : 0m,
                 FundingGoal = r["FundingGoal"] != DBNull.Value ? Convert.ToDecimal(r["FundingGoal"]) : 0m,
+                MRR = r["MRR"] != DBNull.Value ? Convert.ToDecimal(r["MRR"]) : 0m,
                 RequiredSkills = r["RequiredSkills"]?.ToString(),
                 Status = r["Status"]?.ToString(),
                 CreatedAt = r["CreatedAt"] != DBNull.Value ? Convert.ToDateTime(r["CreatedAt"]) : DateTime.UtcNow,

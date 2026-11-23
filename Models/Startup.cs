@@ -12,8 +12,12 @@ namespace FoundrLink.Models
         public string Stage { get; set; }
         public string LogoUrl { get; set; }
         public string ShortDescription { get; set; }
-        public string FullPitch { get; set; }
-        public string PitchDeckUrl { get; set; }
+        public string FullDescription { get; set; }
+        public string Problem { get; set; }
+        public string Solution { get; set; }
+        public string Commitment { get; set; }
+        public int FoundedYear { get; set; }
+        public decimal MRR { get; set; }
         public string WebsiteUrl { get; set; }
         public string Location { get; set; }
         public int TeamSize { get; set; }

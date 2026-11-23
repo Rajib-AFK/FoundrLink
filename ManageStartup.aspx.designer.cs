@@ -18,6 +18,11 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.TextBox txtTeamSize;
         protected global::System.Web.UI.WebControls.TextBox txtSkills;
         protected global::System.Web.UI.WebControls.TextBox txtOpenRole;
+        protected global::System.Web.UI.WebControls.TextBox txtFundingGoal;
+        protected global::System.Web.UI.WebControls.TextBox txtFundingRaised;
+        protected global::System.Web.UI.WebControls.TextBox txtMRR;
+        protected global::System.Web.UI.WebControls.TextBox txtFoundedYear;
+        protected global::System.Web.UI.WebControls.DropDownList ddlCommitment;
         protected global::System.Web.UI.WebControls.TextBox txtLocation;
         protected global::System.Web.UI.WebControls.TextBox txtWebsite;
         protected global::System.Web.UI.WebControls.Button btnDelete;

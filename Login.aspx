@@ -98,25 +98,48 @@
             background-color: #1F2937;
             color: #FFFFFF;
         }
-        .btn-fl-google {
-            background-color: #FFFFFF;
-            border: 1px solid #E2E8F0;
-            border-radius: 8px;
-            height: 46px;
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #1E293B;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-            width: 100%;
-            transition: all 0.15s ease;
+
+        .fl-checkbox,
+        .form-check span.form-check-input,
+        .form-check span {
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: none !important;
+            background: transparent !important;
+            width: auto !important;
+            height: auto !important;
+            box-shadow: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            float: none !important;
+            line-height: 1 !important;
         }
-        .btn-fl-google:hover {
-            background-color: #F8FAFC;
-            border-color: #CBD5E1;
-            color: #0F172A;
+        .fl-checkbox input[type="checkbox"],
+        .form-check input[type="checkbox"] {
+            width: 16px !important;
+            height: 16px !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            float: none !important;
+            cursor: pointer !important;
+            accent-color: #0284C7 !important;
+            vertical-align: middle !important;
+        }
+        .form-check {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            padding-left: 0 !important;
+            min-height: auto !important;
+            margin: 0 !important;
+        }
+        .form-check .form-check-label {
+            margin: 0 !important;
+            padding: 0 !important;
+            cursor: pointer !important;
+            line-height: 1.2 !important;
+            user-select: none;
         }
         @media (max-width: 991px) {
             .fl-login-left { display: none; }
@@ -198,7 +221,7 @@
 
                 <div class="d-flex justify-content-between align-items-center mb-4">
                     <div class="form-check">
-                        <asp:CheckBox ID="chkRememberMe" runat="server" CssClass="form-check-input" />
+                        <asp:CheckBox ID="chkRememberMe" runat="server" CssClass="fl-checkbox" />
                         <label class="form-check-label small text-muted" for="chkRememberMe">Remember me</label>
                     </div>
                     <a href="ForgotPassword.aspx" class="small text-decoration-none fw-semibold" style="color: #0284C7;">Forgot password?</a>
@@ -206,16 +229,7 @@
 
                 <asp:Button ID="btnSignIn" runat="server" Text="Sign In" CssClass="btn-fl-black mb-4" OnClick="btnSignIn_Click" ValidationGroup="vgLogin" />
 
-                <div class="d-flex align-items-center mb-4">
-                    <hr class="flex-grow-1 my-0" style="border-color: #E2E8F0;" />
-                    <span class="px-3 text-muted small">Or continue with</span>
-                    <hr class="flex-grow-1 my-0" style="border-color: #E2E8F0;" />
-                </div>
 
-                <button type="button" class="btn-fl-google mb-4">
-                    <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.4l3.7 2.9C6.5 7.4 9 5 12 5z"/><path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.7-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5.1 3.7-8.8z"/><path fill="#FBBC05" d="M5.6 14.7c-.2-.7-.4-1.5-.4-2.7s.1-2 .4-2.7L1.9 6.4C.7 8.8 0 10.4 0 12s.7 3.2 1.9 5.6l3.7-2.9z"/><path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.3L1.9 16c1.8 3.8 5.6 7 10.1 7z"/></svg>
-                    Google
-                </button>
 
                 <div class="text-center small text-muted">
                     Don't have an account? <a href="Register.aspx" class="fw-bold text-dark text-decoration-none">Create one</a>

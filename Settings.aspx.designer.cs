@@ -26,6 +26,12 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.DropDownList ddlRole;
         protected global::System.Web.UI.WebControls.TextBox txtBio;
         protected global::System.Web.UI.WebControls.Button btnSaveProfile;
+        protected global::System.Web.UI.WebControls.TextBox txtSkills;
+        protected global::System.Web.UI.WebControls.DropDownList ddlAvailability;
+        protected global::System.Web.UI.WebControls.TextBox txtInterests;
+        protected global::System.Web.UI.WebControls.TextBox txtCanOffer;
+        protected global::System.Web.UI.WebControls.TextBox txtLookingFor;
+        protected global::System.Web.UI.WebControls.Button btnSaveFounderProfile;
         protected global::System.Web.UI.WebControls.TextBox txtCurrentPassword;
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvCurrentPassword;
         protected global::System.Web.UI.WebControls.TextBox txtNewPassword;

@@ -787,7 +787,9 @@ body.fl-sidebar-open {
 }
 
 .form-check > span.form-check-input,
-.form-check > span {
+.form-check > span.fl-checkbox,
+.form-check > span,
+.fl-checkbox {
     border: none !important;
     background: transparent !important;
     width: auto !important;
@@ -805,6 +807,8 @@ body.fl-sidebar-open {
 
 .form-check > span.form-check-input > input[type="radio"],
 .form-check > span.form-check-input > input[type="checkbox"],
+.form-check > span.fl-checkbox > input[type="checkbox"],
+.fl-checkbox > input[type="checkbox"],
 .form-check > span > input[type="radio"],
 .form-check > span > input[type="checkbox"],
 .form-check > input.form-check-input,

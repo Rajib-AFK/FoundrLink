@@ -9,18 +9,13 @@
 
 namespace FoundrLink
 {
-
-
     public partial class Default
     {
-
-        /// <summary>
-        /// rptRaisingStartups control.
-        /// </summary>
-        /// <remarks>
-        /// Auto-generated field.
-        /// To modify move field declaration from designer file to code-behind file.
-        /// </remarks>
+        protected global::System.Web.UI.WebControls.Literal litCohortBadge;
+        protected global::System.Web.UI.WebControls.Repeater rptMatchCandidates;
         protected global::System.Web.UI.WebControls.Repeater rptRaisingStartups;
+        protected global::System.Web.UI.WebControls.Literal litStatFounders;
+        protected global::System.Web.UI.WebControls.Literal litStatCapital;
+        protected global::System.Web.UI.WebControls.Literal litStatInvestors;
     }
 }

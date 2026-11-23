@@ -91,7 +91,9 @@
                                 </span>
                             </div>
                             <div class="text-muted small mb-2" style="font-size: 0.8rem;">
-                                <%#: Eval("PartnerTitle") %> &bull; Startup: <strong><a href='<%# "StartupDetails.aspx?id=" + Eval("StartupId") %>' class="text-dark text-decoration-none"><%#: Eval("StartupName") %></a></strong>
+                                <%#: Eval("PartnerTitle") %> &bull; 
+                                <span class="badge bg-light text-secondary border me-1"><%#: Eval("ReqTypeLabel") %></span>
+                                <%# Convert.ToInt32(Eval("StartupId")) > 0 ? "Startup: <strong><a href='StartupDetails.aspx?id=" + Eval("StartupId") + "' class='text-dark text-decoration-none'>" + Server.HtmlEncode(Eval("StartupName").ToString()) + "</a></strong>" : "<span>Direct Co-Founder Invitation</span>" %>
                             </div>
                             <div class="p-3 bg-light rounded-3 text-secondary small" style="max-width: 650px; line-height: 1.55; border: 1px solid #F1F5F9;">
                                 <%#: Eval("Message") %>
@@ -104,14 +106,14 @@
 
                     <!-- Action Controls -->
                     <div class="d-flex gap-2 align-items-center">
-                        <%# (ActiveTab == "Received" && Eval("Status").ToString() == "Pending") ? @"
-                            <asp:LinkButton runat='server' CommandName='Accept' CommandArgument='" + Eval("RequestId") + @"' CssClass='btn btn-sm btn-dark px-3 fw-semibold' style='font-size:0.8rem;'>Accept</asp:LinkButton>
-                            <asp:LinkButton runat='server' CommandName='Decline' CommandArgument='" + Eval("RequestId") + @"' CssClass='btn btn-sm btn-outline-secondary px-3 fw-semibold' style='font-size:0.8rem;'>Decline</asp:LinkButton>
-                        " : "" %>
+                        <asp:PlaceHolder runat="server" Visible='<%# ActiveTab == "Received" && Eval("Status").ToString() == "Pending" %>'>
+                            <asp:LinkButton ID="btnAccept" runat="server" CommandName="Accept" CommandArgument='<%# Eval("ReqType") + ":" + Eval("RequestId") %>' CssClass="btn btn-sm btn-dark px-3 fw-semibold" style="font-size:0.8rem;">Accept</asp:LinkButton>
+                            <asp:LinkButton ID="btnDecline" runat="server" CommandName="Decline" CommandArgument='<%# Eval("ReqType") + ":" + Eval("RequestId") %>' CssClass="btn btn-sm btn-outline-secondary px-3 fw-semibold" style="font-size:0.8rem;">Decline</asp:LinkButton>
+                        </asp:PlaceHolder>
 
-                        <%# (ActiveTab == "Sent" && Eval("Status").ToString() == "Pending") ? @"
-                            <asp:LinkButton runat='server' CommandName='Withdraw' CommandArgument='" + Eval("RequestId") + @"' CssClass='btn btn-sm btn-outline-danger px-3 fw-semibold' style='font-size:0.8rem;'>Withdraw</asp:LinkButton>
-                        " : "" %>
+                        <asp:PlaceHolder runat="server" Visible='<%# ActiveTab == "Sent" && Eval("Status").ToString() == "Pending" %>'>
+                            <asp:LinkButton ID="btnWithdraw" runat="server" CommandName="Withdraw" CommandArgument='<%# Eval("ReqType") + ":" + Eval("RequestId") %>' CssClass="btn btn-sm btn-outline-danger px-3 fw-semibold" style="font-size:0.8rem;">Withdraw</asp:LinkButton>
+                        </asp:PlaceHolder>
 
                         <a href='<%# "Messages.aspx?partnerId=" + Eval("PartnerUserId") %>' class="btn btn-sm btn-outline-secondary px-3" style="font-size: 0.8rem;" title="Send Message">
                             <i class="bi bi-chat-dots"></i>

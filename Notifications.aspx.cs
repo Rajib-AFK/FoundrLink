@@ -139,7 +139,32 @@ namespace FoundrLink
                 {
                     DbHelper.ExecuteInTransaction((conn, tx) =>
                     {
-                        // 1. Mark notification read
+                        // 1. Fetch notification details
+                        string notifTitle = string.Empty;
+                        string notifMessage = string.Empty;
+                        DateTime notifCreatedAt = DateTime.UtcNow;
+
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = tx;
+                            cmd.CommandText = "SELECT Title, Message, CreatedAt FROM dbo.Notifications WHERE NotificationId = @Id AND UserId = @UserId";
+                            cmd.Parameters.Add(new SqlParameter("@Id", notifId));
+                            cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
+                            using (var rdr = cmd.ExecuteReader())
+                            {
+                                if (rdr.Read())
+                                {
+                                    notifTitle = rdr["Title"]?.ToString() ?? string.Empty;
+                                    notifMessage = rdr["Message"]?.ToString() ?? string.Empty;
+                                    if (rdr["CreatedAt"] != DBNull.Value)
+                                    {
+                                        notifCreatedAt = Convert.ToDateTime(rdr["CreatedAt"]);
+                                    }
+                                }
+                            }
+                        }
+
+                        // 2. Mark notification read
                         using (var cmd = conn.CreateCommand())
                         {
                             cmd.Transaction = tx;
@@ -149,91 +174,104 @@ namespace FoundrLink
                             cmd.ExecuteNonQuery();
                         }
 
-                        // 2. Find any pending collaboration request for this receiver
-                        int senderUserId = 0;
-                        int startupId = 0;
-                        string startupName = "";
-                        string senderName = "";
-
-                        using (var cmd = conn.CreateCommand())
+                        // 3. Find specific matching request (Collaboration or Connection)
+                        var match = FindMatchingRequest(conn, tx, notifTitle, notifMessage, notifCreatedAt);
+                        if (match != null)
                         {
-                            cmd.Transaction = tx;
-                            cmd.CommandText = @"
-                                SELECT TOP 1 cr.RequestId, cr.SenderUserId, cr.StartupId, s.Name AS StartupName, u.FullName AS SenderName
-                                FROM dbo.CollaborationRequests cr
-                                JOIN dbo.Startups s ON cr.StartupId = s.StartupId
-                                JOIN dbo.Users u ON cr.SenderUserId = u.UserId
-                                WHERE cr.ReceiverUserId = @UserId AND cr.Status = 'Pending'
-                                ORDER BY cr.RequestId DESC";
-                            cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
-                            using (var rdr = cmd.ExecuteReader())
+                            string currentUserName = SecurityHelper.GetCurrentUserName();
+
+                            if (match.IsCollaboration)
                             {
-                                if (rdr.Read())
+                                // Update collaboration request
+                                using (var cmd = conn.CreateCommand())
                                 {
-                                    senderUserId = rdr.GetInt32(1);
-                                    startupId = rdr.GetInt32(2);
-                                    startupName = rdr.GetString(3);
-                                    senderName = rdr.GetString(4);
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = "UPDATE dbo.CollaborationRequests SET Status = 'Accepted' WHERE RequestId = @RequestId AND Status = 'Pending'";
+                                    cmd.Parameters.Add(new SqlParameter("@RequestId", match.RequestId));
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Add to TeamMembers
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = @"
+                                        IF NOT EXISTS (SELECT 1 FROM dbo.TeamMembers WHERE StartupId = @StartupId AND UserId = @SenderId)
+                                        BEGIN
+                                            INSERT INTO dbo.TeamMembers (StartupId, UserId, Name, Role, JoinedDate)
+                                            VALUES (@StartupId, @SenderId, @SenderName, 'Co-Founder', SYSUTCDATETIME());
+                                        END";
+                                    cmd.Parameters.Add(new SqlParameter("@StartupId", match.StartupId));
+                                    cmd.Parameters.Add(new SqlParameter("@SenderId", match.SenderUserId));
+                                    cmd.Parameters.Add(new SqlParameter("@SenderName", match.SenderName));
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Add to Connections
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = @"
+                                        IF NOT EXISTS (SELECT 1 FROM dbo.Connections WHERE (RequesterUserId = @U1 AND ReceiverUserId = @U2) OR (RequesterUserId = @U2 AND ReceiverUserId = @U1))
+                                        BEGIN
+                                            INSERT INTO dbo.Connections (RequesterUserId, ReceiverUserId, Status, CreatedAt)
+                                            VALUES (@U1, @U2, 'Connected', SYSUTCDATETIME());
+                                        END";
+                                    cmd.Parameters.Add(new SqlParameter("@U1", CurrentUserId));
+                                    cmd.Parameters.Add(new SqlParameter("@U2", match.SenderUserId));
+                                    cmd.ExecuteNonQuery();
+                                }
+
+                                // Notify the sender
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = @"
+                                        INSERT INTO dbo.Notifications (UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt)
+                                        VALUES (@UserId, 'Collaboration Request Accepted!', @FounderName + ' accepted your request to collaborate on ' + @StartupName + '.', 'Matches', 0, 0, SYSUTCDATETIME());";
+                                    cmd.Parameters.Add(new SqlParameter("@UserId", match.SenderUserId));
+                                    cmd.Parameters.Add(new SqlParameter("@FounderName", currentUserName));
+                                    cmd.Parameters.Add(new SqlParameter("@StartupName", match.StartupName));
+                                    cmd.ExecuteNonQuery();
                                 }
                             }
-                        }
-
-                        if (senderUserId > 0 && startupId > 0)
-                        {
-                            // Update collaboration request
-                            using (var cmd = conn.CreateCommand())
+                            else
                             {
-                                cmd.Transaction = tx;
-                                cmd.CommandText = "UPDATE dbo.CollaborationRequests SET Status = 'Accepted' WHERE ReceiverUserId = @UserId AND SenderUserId = @SenderId AND StartupId = @StartupId AND Status = 'Pending'";
-                                cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
-                                cmd.Parameters.Add(new SqlParameter("@SenderId", senderUserId));
-                                cmd.Parameters.Add(new SqlParameter("@StartupId", startupId));
-                                cmd.ExecuteNonQuery();
-                            }
+                                // Update connection request
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = "UPDATE dbo.ConnectionRequests SET Status = 'Accepted' WHERE RequestId = @RequestId AND Status = 'Pending'";
+                                    cmd.Parameters.Add(new SqlParameter("@RequestId", match.RequestId));
+                                    cmd.ExecuteNonQuery();
+                                }
 
-                            // Add to TeamMembers
-                            using (var cmd = conn.CreateCommand())
-                            {
-                                cmd.Transaction = tx;
-                                cmd.CommandText = @"
-                                    IF NOT EXISTS (SELECT 1 FROM dbo.TeamMembers WHERE StartupId = @StartupId AND UserId = @SenderId)
-                                    BEGIN
-                                        INSERT INTO dbo.TeamMembers (StartupId, UserId, Name, Role, JoinedDate)
-                                        VALUES (@StartupId, @SenderId, @SenderName, 'Co-Founder', SYSUTCDATETIME());
-                                    END";
-                                cmd.Parameters.Add(new SqlParameter("@StartupId", startupId));
-                                cmd.Parameters.Add(new SqlParameter("@SenderId", senderUserId));
-                                cmd.Parameters.Add(new SqlParameter("@SenderName", senderName));
-                                cmd.ExecuteNonQuery();
-                            }
+                                // Add to Connections
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = @"
+                                        IF NOT EXISTS (SELECT 1 FROM dbo.Connections WHERE (RequesterUserId = @U1 AND ReceiverUserId = @U2) OR (RequesterUserId = @U2 AND ReceiverUserId = @U1))
+                                        BEGIN
+                                            INSERT INTO dbo.Connections (RequesterUserId, ReceiverUserId, Status, CreatedAt)
+                                            VALUES (@U1, @U2, 'Connected', SYSUTCDATETIME());
+                                        END";
+                                    cmd.Parameters.Add(new SqlParameter("@U1", CurrentUserId));
+                                    cmd.Parameters.Add(new SqlParameter("@U2", match.SenderUserId));
+                                    cmd.ExecuteNonQuery();
+                                }
 
-                            // Add to Connections
-                            using (var cmd = conn.CreateCommand())
-                            {
-                                cmd.Transaction = tx;
-                                cmd.CommandText = @"
-                                    IF NOT EXISTS (SELECT 1 FROM dbo.Connections WHERE (RequesterUserId = @U1 AND ReceiverUserId = @U2) OR (RequesterUserId = @U2 AND ReceiverUserId = @U1))
-                                    BEGIN
-                                        INSERT INTO dbo.Connections (RequesterUserId, ReceiverUserId, Status, CreatedAt)
-                                        VALUES (@U1, @U2, 'Connected', SYSUTCDATETIME());
-                                    END";
-                                cmd.Parameters.Add(new SqlParameter("@U1", CurrentUserId));
-                                cmd.Parameters.Add(new SqlParameter("@U2", senderUserId));
-                                cmd.ExecuteNonQuery();
-                            }
-
-                            // Notify the sender
-                            string currentUserName = SecurityHelper.GetCurrentUserName();
-                            using (var cmd = conn.CreateCommand())
-                            {
-                                cmd.Transaction = tx;
-                                cmd.CommandText = @"
-                                    INSERT INTO dbo.Notifications (UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt)
-                                    VALUES (@UserId, 'Collaboration Request Accepted!', @FounderName + ' accepted your request to collaborate on ' + @StartupName + '.', 'Matches', 0, 0, SYSUTCDATETIME());";
-                                cmd.Parameters.Add(new SqlParameter("@UserId", senderUserId));
-                                cmd.Parameters.Add(new SqlParameter("@FounderName", currentUserName));
-                                cmd.Parameters.Add(new SqlParameter("@StartupName", startupName));
-                                cmd.ExecuteNonQuery();
+                                // Notify the sender
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = @"
+                                        INSERT INTO dbo.Notifications (UserId, Title, Message, NotificationType, ActionRequired, IsRead, CreatedAt)
+                                        VALUES (@UserId, 'Connection Request Accepted!', @ReceiverName + ' accepted your connection request.', 'Matches', 0, 0, SYSUTCDATETIME());";
+                                    cmd.Parameters.Add(new SqlParameter("@UserId", match.SenderUserId));
+                                    cmd.Parameters.Add(new SqlParameter("@ReceiverName", currentUserName));
+                                    cmd.ExecuteNonQuery();
+                                }
                             }
                         }
                     });
@@ -244,12 +282,69 @@ namespace FoundrLink
                 }
                 else if (e.CommandName == "Decline")
                 {
-                    string sql = @"
-                        UPDATE dbo.Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId;
-                        UPDATE dbo.CollaborationRequests SET Status = 'Declined' WHERE ReceiverUserId = @UserId AND Status = 'Pending';
-                        UPDATE dbo.ConnectionRequests SET Status = 'Declined' WHERE ReceiverId = @UserId AND Status = 'Pending';";
+                    DbHelper.ExecuteInTransaction((conn, tx) =>
+                    {
+                        // 1. Fetch notification details
+                        string notifTitle = string.Empty;
+                        string notifMessage = string.Empty;
+                        DateTime notifCreatedAt = DateTime.UtcNow;
 
-                    DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", notifId), new SqlParameter("@UserId", CurrentUserId));
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = tx;
+                            cmd.CommandText = "SELECT Title, Message, CreatedAt FROM dbo.Notifications WHERE NotificationId = @Id AND UserId = @UserId";
+                            cmd.Parameters.Add(new SqlParameter("@Id", notifId));
+                            cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
+                            using (var rdr = cmd.ExecuteReader())
+                            {
+                                if (rdr.Read())
+                                {
+                                    notifTitle = rdr["Title"]?.ToString() ?? string.Empty;
+                                    notifMessage = rdr["Message"]?.ToString() ?? string.Empty;
+                                    if (rdr["CreatedAt"] != DBNull.Value)
+                                    {
+                                        notifCreatedAt = Convert.ToDateTime(rdr["CreatedAt"]);
+                                    }
+                                }
+                            }
+                        }
+
+                        // 2. Mark notification read and clear action required
+                        using (var cmd = conn.CreateCommand())
+                        {
+                            cmd.Transaction = tx;
+                            cmd.CommandText = "UPDATE dbo.Notifications SET IsRead = 1, ActionRequired = 0 WHERE NotificationId = @Id AND UserId = @UserId";
+                            cmd.Parameters.Add(new SqlParameter("@Id", notifId));
+                            cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
+                            cmd.ExecuteNonQuery();
+                        }
+
+                        // 3. Find specific matching request (Collaboration or Connection) without bulk declining
+                        var match = FindMatchingRequest(conn, tx, notifTitle, notifMessage, notifCreatedAt);
+                        if (match != null)
+                        {
+                            if (match.IsCollaboration)
+                            {
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = "UPDATE dbo.CollaborationRequests SET Status = 'Declined' WHERE RequestId = @RequestId AND Status = 'Pending'";
+                                    cmd.Parameters.Add(new SqlParameter("@RequestId", match.RequestId));
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                            else
+                            {
+                                using (var cmd = conn.CreateCommand())
+                                {
+                                    cmd.Transaction = tx;
+                                    cmd.CommandText = "UPDATE dbo.ConnectionRequests SET Status = 'Declined' WHERE RequestId = @RequestId AND Status = 'Pending'";
+                                    cmd.Parameters.Add(new SqlParameter("@RequestId", match.RequestId));
+                                    cmd.ExecuteNonQuery();
+                                }
+                            }
+                        }
+                    });
 
                     litSuccessMsg.Text = "Request declined.";
                     pnlSuccessAlert.Visible = true;
@@ -295,6 +390,142 @@ namespace FoundrLink
             if (span.TotalHours < 24) return $"{(int)span.TotalHours}h ago";
             if (span.TotalDays < 7) return $"{(int)span.TotalDays}d ago";
             return dt.ToString("MMM dd");
+        }
+
+        private PendingRequestMatch FindMatchingRequest(SqlConnection conn, SqlTransaction tx, string notifTitle, string notifMessage, DateTime notifCreatedAt)
+        {
+            bool isConnHint = notifTitle.IndexOf("Connection", StringComparison.OrdinalIgnoreCase) >= 0
+                           || notifMessage.IndexOf("connection", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            bool isCollabHint = notifTitle.IndexOf("Collaboration", StringComparison.OrdinalIgnoreCase) >= 0
+                             || notifTitle.IndexOf("Join", StringComparison.OrdinalIgnoreCase) >= 0
+                             || notifMessage.IndexOf("collaborat", StringComparison.OrdinalIgnoreCase) >= 0
+                             || notifMessage.IndexOf("join", StringComparison.OrdinalIgnoreCase) >= 0;
+
+            string collabSql = @"
+                SELECT TOP 1 cr.RequestId, cr.SenderUserId, cr.StartupId, s.Name AS StartupName, u.FullName AS SenderName,
+                       CASE WHEN @Message LIKE '%' + u.FullName + '%' THEN 1 ELSE 0 END AS NameMatched,
+                       ABS(DATEDIFF(second, cr.CreatedAt, @CreatedAt)) AS TimeDiff
+                FROM dbo.CollaborationRequests cr
+                JOIN dbo.Startups s ON cr.StartupId = s.StartupId
+                JOIN dbo.Users u ON cr.SenderUserId = u.UserId
+                WHERE cr.ReceiverUserId = @UserId AND cr.Status = 'Pending'
+                ORDER BY 
+                    CASE WHEN @Message LIKE '%' + u.FullName + '%' THEN 0 ELSE 1 END,
+                    ABS(DATEDIFF(second, cr.CreatedAt, @CreatedAt)) ASC,
+                    cr.RequestId DESC";
+
+            string connSql = @"
+                SELECT TOP 1 cr.RequestId, cr.SenderId, u.FullName AS SenderName,
+                       CASE WHEN @Message LIKE '%' + u.FullName + '%' THEN 1 ELSE 0 END AS NameMatched,
+                       ABS(DATEDIFF(second, cr.CreatedAt, @CreatedAt)) AS TimeDiff
+                FROM dbo.ConnectionRequests cr
+                JOIN dbo.Users u ON cr.SenderId = u.UserId
+                WHERE cr.ReceiverId = @UserId AND cr.Status = 'Pending'
+                ORDER BY 
+                    CASE WHEN @Message LIKE '%' + u.FullName + '%' THEN 0 ELSE 1 END,
+                    ABS(DATEDIFF(second, cr.CreatedAt, @CreatedAt)) ASC,
+                    cr.RequestId DESC";
+
+            if (isCollabHint && !isConnHint)
+            {
+                var collabMatch = QueryCollabMatch(conn, tx, collabSql, notifMessage, notifCreatedAt);
+                if (collabMatch != null) return collabMatch;
+                return QueryConnMatch(conn, tx, connSql, notifMessage, notifCreatedAt);
+            }
+
+            if (isConnHint && !isCollabHint)
+            {
+                var connMatch = QueryConnMatch(conn, tx, connSql, notifMessage, notifCreatedAt);
+                if (connMatch != null) return connMatch;
+                return QueryCollabMatch(conn, tx, collabSql, notifMessage, notifCreatedAt);
+            }
+
+            var cMatch = QueryCollabMatch(conn, tx, collabSql, notifMessage, notifCreatedAt);
+            var kMatch = QueryConnMatch(conn, tx, connSql, notifMessage, notifCreatedAt);
+
+            if (cMatch != null && kMatch != null)
+            {
+                if (cMatch.NameMatched && !kMatch.NameMatched) return cMatch;
+                if (kMatch.NameMatched && !cMatch.NameMatched) return kMatch;
+                return cMatch.TimeDiffSeconds <= kMatch.TimeDiffSeconds ? cMatch : kMatch;
+            }
+
+            return cMatch ?? kMatch;
+        }
+
+        private PendingRequestMatch QueryCollabMatch(SqlConnection conn, SqlTransaction tx, string sql, string message, DateTime createdAt)
+        {
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = sql;
+                cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
+                cmd.Parameters.Add(new SqlParameter("@Message", message ?? string.Empty));
+                cmd.Parameters.Add(new SqlParameter("@CreatedAt", createdAt));
+
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    if (rdr.Read())
+                    {
+                        return new PendingRequestMatch
+                        {
+                            IsCollaboration = true,
+                            RequestId = Convert.ToInt32(rdr["RequestId"]),
+                            SenderUserId = Convert.ToInt32(rdr["SenderUserId"]),
+                            StartupId = Convert.ToInt32(rdr["StartupId"]),
+                            StartupName = rdr["StartupName"]?.ToString() ?? string.Empty,
+                            SenderName = rdr["SenderName"]?.ToString() ?? string.Empty,
+                            NameMatched = Convert.ToInt32(rdr["NameMatched"]) == 1,
+                            TimeDiffSeconds = Convert.ToDouble(rdr["TimeDiff"])
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        private PendingRequestMatch QueryConnMatch(SqlConnection conn, SqlTransaction tx, string sql, string message, DateTime createdAt)
+        {
+            using (var cmd = conn.CreateCommand())
+            {
+                cmd.Transaction = tx;
+                cmd.CommandText = sql;
+                cmd.Parameters.Add(new SqlParameter("@UserId", CurrentUserId));
+                cmd.Parameters.Add(new SqlParameter("@Message", message ?? string.Empty));
+                cmd.Parameters.Add(new SqlParameter("@CreatedAt", createdAt));
+
+                using (var rdr = cmd.ExecuteReader())
+                {
+                    if (rdr.Read())
+                    {
+                        return new PendingRequestMatch
+                        {
+                            IsCollaboration = false,
+                            RequestId = Convert.ToInt32(rdr["RequestId"]),
+                            SenderUserId = Convert.ToInt32(rdr["SenderId"]),
+                            StartupId = 0,
+                            StartupName = string.Empty,
+                            SenderName = rdr["SenderName"]?.ToString() ?? string.Empty,
+                            NameMatched = Convert.ToInt32(rdr["NameMatched"]) == 1,
+                            TimeDiffSeconds = Convert.ToDouble(rdr["TimeDiff"])
+                        };
+                    }
+                }
+            }
+            return null;
+        }
+
+        private class PendingRequestMatch
+        {
+            public bool IsCollaboration { get; set; }
+            public int RequestId { get; set; }
+            public int SenderUserId { get; set; }
+            public string SenderName { get; set; }
+            public int StartupId { get; set; }
+            public string StartupName { get; set; }
+            public bool NameMatched { get; set; }
+            public double TimeDiffSeconds { get; set; }
         }
     }
 }

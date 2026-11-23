@@ -7,7 +7,7 @@ namespace FoundrLink
 {
     public partial class TeamDetails : Page
     {
-        private int _startupId = 4; // Default NeuroSync (Id 4)
+        private int _startupId = 1;
         private int _founderId = 1;
 
         protected void Page_Load(object sender, EventArgs e)
@@ -15,6 +15,14 @@ namespace FoundrLink
             if (!string.IsNullOrEmpty(Request.QueryString["id"]) && int.TryParse(Request.QueryString["id"], out int sId))
             {
                 _startupId = sId;
+            }
+            else
+            {
+                object firstId = DbHelper.ExecuteScalar("SELECT TOP 1 StartupId FROM dbo.Startups WHERE Status IN ('Active', 'Approved', 'Published') ORDER BY StartupId ASC");
+                if (firstId != null && firstId != DBNull.Value)
+                {
+                    _startupId = Convert.ToInt32(firstId);
+                }
             }
 
             lnkManageTeam.HRef = "ManageStartup.aspx?id=" + _startupId;
@@ -100,23 +108,17 @@ namespace FoundrLink
 
                 // 4. Startup Updates / Activity
                 string updatesQuery = @"
-                    SELECT UpdateId, AuthorName, Content, '2 hours ago' AS TimeAgo 
+                    SELECT UpdateId, AuthorName, Content, CreatedAt,
+                           CASE 
+                               WHEN DATEDIFF(MINUTE, CreatedAt, GETDATE()) < 60 THEN CAST(ISNULL(NULLIF(DATEDIFF(MINUTE, CreatedAt, GETDATE()), 0), 1) AS VARCHAR(10)) + 'm ago'
+                               WHEN DATEDIFF(HOUR, CreatedAt, GETDATE()) < 24 THEN CAST(DATEDIFF(HOUR, CreatedAt, GETDATE()) AS VARCHAR(10)) + 'h ago'
+                               ELSE CAST(DATEDIFF(DAY, CreatedAt, GETDATE()) AS VARCHAR(10)) + 'd ago'
+                           END AS TimeAgo 
                     FROM dbo.StartupUpdates 
                     WHERE StartupId = @StartupId 
                     ORDER BY UpdateId DESC";
 
                 DataTable dtUpdates = DbHelper.ExecuteDataTable(updatesQuery, DbHelper.CreateParam("@StartupId", SqlDbType.Int, _startupId));
-                if (dtUpdates.Rows.Count == 0)
-                {
-                    // Create default presentation updates
-                    dtUpdates.Columns.Add("AuthorName");
-                    dtUpdates.Columns.Add("Content");
-                    dtUpdates.Columns.Add("TimeAgo");
-
-                    dtUpdates.Rows.Add("Ananya Iyer published an update", "Beta version 1.4 deployed to early access partners. Seeing 15% reduction in latency.", "2 hours ago");
-                    dtUpdates.Rows.Add("Sneha Joshi joined the team", "Joined as Senior Machine Learning Engineer.", "Yesterday");
-                    dtUpdates.Rows.Add("Rohan Malhotra opened a new position", "Now hiring: Full Stack Developer (Remote).", "3 days ago");
-                }
                 rptUpdates.DataSource = dtUpdates;
                 rptUpdates.DataBind();
             }

@@ -102,7 +102,7 @@ namespace FoundrLink
                 navDiscover.Attributes["class"] = "fl-nav-link active";
             else if (path.Contains("findcofounders") || path.Contains("profile"))
                 navFounders.Attributes["class"] = "fl-nav-link active";
-            else if (path.Contains("managestartup") || path.Contains("teamdetails"))
+            else if (path.Contains("managestartup") || path.Contains("teamdetails") || path.Contains("mystartups"))
                 navStartups.Attributes["class"] = "fl-nav-link active";
             else if (path.Contains("settings"))
                 navSettings.Attributes["class"] = "fl-nav-link active";

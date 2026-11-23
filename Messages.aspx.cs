@@ -9,7 +9,7 @@ namespace FoundrLink
     public partial class Messages : Page
     {
         public int CurrentUserId { get; set; }
-        public int ActivePartnerId { get; set; } = 4; // Default to Ananya Iyer (UserId 4) or first contact
+        public int ActivePartnerId { get; set; } = 0;
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -78,6 +78,14 @@ namespace FoundrLink
                 if (dt.Rows.Count > 0 && Request.QueryString["partnerId"] == null)
                 {
                     ActivePartnerId = Convert.ToInt32(dt.Rows[0]["PartnerUserId"]);
+                }
+                else if (dt.Rows.Count == 0 && Request.QueryString["partnerId"] == null && ActivePartnerId == 0)
+                {
+                    object otherUser = DbHelper.ExecuteScalar("SELECT TOP 1 UserId FROM dbo.Users WHERE UserId != @UserId AND Status = 'Active' ORDER BY UserId ASC", new SqlParameter("@UserId", CurrentUserId));
+                    if (otherUser != null && otherUser != DBNull.Value)
+                    {
+                        ActivePartnerId = Convert.ToInt32(otherUser);
+                    }
                 }
 
                 rptThreads.DataSource = dt;

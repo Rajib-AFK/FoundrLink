@@ -122,7 +122,7 @@
         <div class="container" style="max-width: 1000px;">
             <div class="fl-landing-badge">
                 <i class="bi bi-circle-fill" style="font-size: 0.5rem; color: #4EE8C4;"></i>
-                NOW ACCEPTING Q3 COHORT APPLICATIONS
+                <asp:Literal ID="litCohortBadge" runat="server" />
             </div>
 
             <h1 class="fl-landing-highlight">
@@ -238,42 +238,30 @@
                 <div class="col-lg-6">
                     <div class="fl-match-card-wrapper">
                         <div class="fl-match-card d-flex flex-column gap-3">
-                            <!-- Match Candidate 1 -->
-                            <div class="fl-match-candidate">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100" class="rounded-circle" width="40" height="40" style="object-fit:cover;" alt="Shreya J" />
-                                        <div class="fw-bold text-dark small">Shreya J</div>
+                            <asp:Repeater ID="rptMatchCandidates" runat="server">
+                                <ItemTemplate>
+                                    <div class="fl-match-candidate">
+                                        <div class="d-flex align-items-center justify-content-between mb-2">
+                                            <a href='<%# "Profile.aspx?id=" + Eval("UserId") %>' class="d-flex align-items-center gap-3 text-decoration-none">
+                                                <img src='<%# Eval("AvatarUrl") %>' class="rounded-circle" width="40" height="40" style="object-fit:cover;" alt='<%# Eval("FullName") %>' onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100';" />
+                                                <div>
+                                                    <div class="fw-bold text-dark small"><%#: Eval("FullName") %></div>
+                                                    <div class="text-muted" style="font-size: 0.72rem;"><%#: Eval("Title") %></div>
+                                                </div>
+                                            </a>
+                                            <span class="small fw-bold" style='<%# Container.ItemIndex == 0 ? "color: #059669; font-size: 0.78rem;" : "color: #64748B; font-size: 0.78rem;" %>'>
+                                                <%# Container.ItemIndex == 0 ? "98% Match" : "84% Match" %>
+                                            </span>
+                                        </div>
+                                        <div class="progress mb-3" style="height: 5px; background-color: #E2E8F0; border-radius: 4px;">
+                                            <div class="progress-bar" style='<%# "width: " + (Container.ItemIndex == 0 ? "98" : "84") + "%; background-color: " + (Container.ItemIndex == 0 ? "#059669" : "#CBD5E1") + "; border-radius: 4px;" %>'></div>
+                                        </div>
+                                        <div class="d-flex flex-wrap gap-2">
+                                            <%# FormatCandidateSkills(Eval("Skills")) %>
+                                        </div>
                                     </div>
-                                    <span class="small fw-bold" style="color: #059669; font-size: 0.78rem;">98% Match</span>
-                                </div>
-                                <div class="progress mb-3" style="height: 5px; background-color: #E2E8F0; border-radius: 4px;">
-                                    <div class="progress-bar" style="width: 98%; background-color: #059669; border-radius: 4px;"></div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-weight: 500; font-size: 0.72rem;">React</span>
-                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-weight: 500; font-size: 0.72rem;">Node.js</span>
-                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-weight: 500; font-size: 0.72rem;">Series A</span>
-                                </div>
-                            </div>
-
-                            <!-- Match Candidate 2 -->
-                            <div class="fl-match-candidate">
-                                <div class="d-flex align-items-center justify-content-between mb-2">
-                                    <div class="d-flex align-items-center gap-3">
-                                        <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100" class="rounded-circle" width="40" height="40" style="object-fit:cover;" alt="Manoj T" />
-                                        <div class="fw-bold text-dark small">Manoj T.</div>
-                                    </div>
-                                    <span class="small fw-semibold text-muted" style="font-size: 0.78rem;">74% Match</span>
-                                </div>
-                                <div class="progress mb-3" style="height: 5px; background-color: #E2E8F0; border-radius: 4px;">
-                                    <div class="progress-bar" style="width: 74%; background-color: #CBD5E1; border-radius: 4px;"></div>
-                                </div>
-                                <div class="d-flex gap-2">
-                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-weight: 500; font-size: 0.72rem;">Fintech</span>
-                                    <span class="badge bg-white text-secondary border px-2 py-1" style="font-weight: 500; font-size: 0.72rem;">Seed</span>
-                                </div>
-                            </div>
+                                </ItemTemplate>
+                            </asp:Repeater>
                         </div>
                     </div>
                 </div>
@@ -347,15 +335,21 @@
         <div class="container py-4" style="max-width: 1200px;">
             <div class="row g-4 text-center align-items-center">
                 <div class="col-md-4 border-end" style="border-color: #1F2937 !important;">
-                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">12000+</h2>
+                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">
+                        <asp:Literal ID="litStatFounders" runat="server" Mode="Encode" />
+                    </h2>
                     <p class="text-uppercase small fw-semibold mb-0" style="color: #64748B; letter-spacing: 0.08em; font-size: 0.75rem;">Vetted Founders</p>
                 </div>
                 <div class="col-md-4 border-end" style="border-color: #1F2937 !important;">
-                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">&#8377;4.2Cr</h2>
+                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">
+                        <asp:Literal ID="litStatCapital" runat="server" Mode="Encode" />
+                    </h2>
                     <p class="text-uppercase small fw-semibold mb-0" style="color: #64748B; letter-spacing: 0.08em; font-size: 0.75rem;">Capital Deployed</p>
                 </div>
                 <div class="col-md-4">
-                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">850+</h2>
+                    <h2 class="display-5 fw-extrabold mb-1" style="color: #4EE8C4; letter-spacing: -0.02em;">
+                        <asp:Literal ID="litStatInvestors" runat="server" Mode="Encode" />
+                    </h2>
                     <p class="text-uppercase small fw-semibold mb-0" style="color: #64748B; letter-spacing: 0.08em; font-size: 0.75rem;">Active Funds &amp; Angels</p>
                 </div>
             </div>

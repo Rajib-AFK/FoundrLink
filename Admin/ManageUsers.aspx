@@ -130,7 +130,7 @@
                             <%#: Eval("Email") %>
                         </td>
                         <td class="fl-admin-td text-dark small">
-                            <asp:DropDownList ID="ddlRoleChange" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlRoleChange_SelectedIndexChanged" CssClass="form-select form-select-sm py-0 px-2 d-inline-block" style="font-size: 0.8rem; height: 28px; width: auto; max-width: 125px;">
+                            <asp:DropDownList ID="ddlRoleChange" runat="server" AutoPostBack="true" OnSelectedIndexChanged="ddlRoleChange_SelectedIndexChanged" CssClass="form-select form-select-sm d-inline-block" style="font-size: 0.8rem; height: 32px; width: 140px; min-width: 140px; padding-left: 0.75rem; padding-right: 2rem;">
                                 <asp:ListItem Text="Founder" Value="Founder" />
                                 <asp:ListItem Text="Co-Founder" Value="Co-Founder" />
                                 <asp:ListItem Text="Investor" Value="Investor" />

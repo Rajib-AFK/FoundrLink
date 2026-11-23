@@ -64,7 +64,7 @@
                         <i class="bi bi-chevron-up text-muted small" style="font-size: 0.7rem;"></i>
                     </div>
                     <div class="form-check mb-2">
-                        <asp:CheckBox ID="chkRoleTech" runat="server" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" Checked="true" />
+                        <asp:CheckBox ID="chkRoleTech" runat="server" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" />
                         <label class="form-check-label small text-dark" for="chkRoleTech">Technical (CTO)</label>
                     </div>
                     <div class="form-check mb-2">
@@ -89,7 +89,7 @@
                         </asp:LinkButton>
                         <asp:LinkButton ID="btnSkillPython" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="Python" style="border-radius: 20px; font-weight: 500;">Python</asp:LinkButton>
                         <asp:LinkButton ID="btnSkillAI" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="AI/ML" style="border-radius: 20px; font-weight: 500;">AI/ML</asp:LinkButton>
-                        <asp:LinkButton ID="btnSkillFintech" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="Fintech" style="border-radius: 20px; font-weight: 500;">Sales</asp:LinkButton>
+                        <asp:LinkButton ID="btnSkillFintech" runat="server" CssClass="badge bg-light text-dark border text-decoration-none py-2 px-3" OnClick="btnSkill_Click" CommandArgument="Sales" style="border-radius: 20px; font-weight: 500;">Sales</asp:LinkButton>
                     </div>
                     <div class="mt-2">
                         <div class="input-group input-group-sm">
@@ -123,14 +123,17 @@
                         <i class="bi bi-chevron-up text-muted small" style="font-size: 0.7rem;"></i>
                     </div>
                     <div class="form-check mb-2">
-                        <asp:RadioButton ID="rbAvailFull" runat="server" GroupName="avail" Checked="true" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" />
+                        <asp:RadioButton ID="rbAvailAll" runat="server" GroupName="avail" Checked="true" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" />
+                        <label class="form-check-label small text-dark" for="rbAvailAll">All</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <asp:RadioButton ID="rbAvailFull" runat="server" GroupName="avail" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" />
                         <label class="form-check-label small text-dark" for="rbAvailFull">Full-time</label>
                     </div>
                     <div class="form-check">
                         <asp:RadioButton ID="rbAvailPart" runat="server" GroupName="avail" CssClass="form-check-input" AutoPostBack="true" OnCheckedChanged="Filter_Changed" />
                         <label class="form-check-label small text-dark" for="rbAvailPart">Part-time / Side Hustle</label>
                     </div>
-                    <asp:RadioButton ID="rbAvailAll" runat="server" GroupName="avail" style="display:none;" />
                 </div>
             </div>
         </div>

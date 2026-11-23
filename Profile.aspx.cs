@@ -12,7 +12,7 @@ namespace FoundrLink
         {
             if (!IsPostBack)
             {
-                int targetUserId = 1; // Default to Yash Vinchhi (UserId 1) as seen in Figma screenshot
+                int targetUserId = 0;
 
                 if (!string.IsNullOrEmpty(Request.QueryString["id"]) && int.TryParse(Request.QueryString["id"], out int qId))
                 {
@@ -22,8 +22,19 @@ namespace FoundrLink
                 {
                     targetUserId = SecurityHelper.GetCurrentUserId().Value;
                 }
+                else
+                {
+                    object firstId = DbHelper.ExecuteScalar("SELECT TOP 1 UserId FROM dbo.Users WHERE Role != 'Admin' AND Status = 'Active' ORDER BY UserId ASC");
+                    if (firstId != null && firstId != DBNull.Value)
+                    {
+                        targetUserId = Convert.ToInt32(firstId);
+                    }
+                }
 
-                LoadProfile(targetUserId);
+                if (targetUserId > 0)
+                {
+                    LoadProfile(targetUserId);
+                }
             }
         }
 
@@ -61,7 +72,7 @@ namespace FoundrLink
                     litBio.Text = Server.HtmlEncode(bioText).Replace("\n", "<br/>");
 
                     // Real database-derived platform impact metrics
-                    object connCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Connections WHERE (RequesterUserId = @UserId OR ReceiverUserId = @UserId) AND Status = 'Connected'",
+                    object connCount = DbHelper.ExecuteScalar("SELECT COUNT(1) FROM dbo.Connections WHERE (RequesterUserId = @UserId OR ReceiverUserId = @UserId) AND Status IN ('Accepted', 'Connected')",
                         DbHelper.CreateParam("@UserId", SqlDbType.Int, userId));
                     int conns = connCount != null ? Convert.ToInt32(connCount) : 0;
                     if (conns == 0 && r["PlatformImpactConnections"] != DBNull.Value) conns = Convert.ToInt32(r["PlatformImpactConnections"]);
@@ -150,6 +161,12 @@ namespace FoundrLink
                 {
                     DataRow sr = dtStartup.Rows[0];
                     int sId = Convert.ToInt32(sr["StartupId"]);
+                    string logo = sr["LogoUrl"]?.ToString();
+                    if (!string.IsNullOrEmpty(logo))
+                    {
+                        imgStartupLogo.ImageUrl = logo;
+                    }
+
                     string web = sr["WebsiteUrl"]?.ToString();
                     if (!string.IsNullOrWhiteSpace(web))
                     {

@@ -9,6 +9,7 @@ namespace FoundrLink
         protected global::System.Web.UI.WebControls.Literal litIndustry;
         protected global::System.Web.UI.WebControls.Panel pnlVerified;
         protected global::System.Web.UI.WebControls.Literal litBio;
+        protected global::System.Web.UI.WebControls.Image imgStartupLogo;
         protected global::System.Web.UI.HtmlControls.HtmlAnchor lnkStartupWebsite;
         protected global::System.Web.UI.WebControls.Literal litStartupWebsite;
         protected global::System.Web.UI.WebControls.Literal litStartupStage;
