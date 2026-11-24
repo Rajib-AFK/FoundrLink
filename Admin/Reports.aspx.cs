@@ -56,7 +56,7 @@ namespace FoundrLink.Admin
                 string priority = ddlPriorityFilter.SelectedValue;
 
                 string countSql = "SELECT COUNT(1) FROM dbo.ModerationReports WHERE 1=1";
-                string sql = "SELECT ReportId, ReportCode, ReporterEmail, ReportedItem, ReportType, Priority, Details, Status, CreatedAt, ResolvedAt, ResolutionNotes FROM dbo.ModerationReports WHERE 1=1";
+                string sql = "SELECT ReportId, ReportCode, ReporterEmail, ReportedItem, ReportType, Priority, Details, Status, CreatedAt, ResolvedAt FROM dbo.ModerationReports WHERE 1=1";
 
                 string filterSql = "";
                 if (!string.IsNullOrEmpty(search))
@@ -120,10 +120,23 @@ namespace FoundrLink.Admin
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError("LoadReports error: " + ex);
-                litAlertMsg.Text = "An error occurred while loading reports.";
-                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
-                pnlAlert.Visible = true;
+                ShowAlert("An error occurred while loading reports.", "danger");
             }
+        }
+
+        private void ShowAlert(string message, string type)
+        {
+            litAlertMsg.Text = message;
+            pnlAlert.CssClass = $"alert alert-{type} alert-dismissible fade show rounded-3 shadow-sm border-0 mb-3";
+            if (type == "danger")
+                litAlertIcon.Text = "<i class=\"bi bi-exclamation-triangle-fill fs-5 text-danger\"></i>";
+            else if (type == "warning")
+                litAlertIcon.Text = "<i class=\"bi bi-exclamation-circle-fill fs-5 text-warning\"></i>";
+            else if (type == "secondary" || type == "info")
+                litAlertIcon.Text = "<i class=\"bi bi-info-circle-fill fs-5 text-secondary\"></i>";
+            else
+                litAlertIcon.Text = "<i class=\"bi bi-check-circle-fill fs-5 text-success\"></i>";
+            pnlAlert.Visible = true;
         }
 
         protected void btnFilter_Click(object sender, EventArgs e)
@@ -170,41 +183,33 @@ namespace FoundrLink.Admin
             {
                 if (e.CommandName == "Resolve")
                 {
-                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Resolved', ResolvedAt = SYSUTCDATETIME(), ResolutionNotes = 'Resolved by platform administrator' WHERE ReportId = @Id";
+                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Resolved', ResolvedAt = SYSUTCDATETIME() WHERE ReportId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
 
-                    litAlertMsg.Text = "Ticket successfully marked as <strong>Resolved</strong>.";
-                    pnlAlert.CssClass = "alert alert-success py-2 small mb-3";
-                    pnlAlert.Visible = true;
+                    ShowAlert("Ticket successfully marked as <strong>Resolved</strong>.", "success");
                     LoadReports();
                 }
                 else if (e.CommandName == "Dismiss")
                 {
-                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Dismissed', ResolvedAt = SYSUTCDATETIME(), ResolutionNotes = 'Dismissed by platform administrator after review' WHERE ReportId = @Id";
+                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Dismissed', ResolvedAt = SYSUTCDATETIME() WHERE ReportId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
 
-                    litAlertMsg.Text = "Ticket marked as <strong>Dismissed</strong>.";
-                    pnlAlert.CssClass = "alert alert-secondary py-2 small mb-3";
-                    pnlAlert.Visible = true;
+                    ShowAlert("Ticket marked as <strong>Dismissed</strong>.", "secondary");
                     LoadReports();
                 }
                 else if (e.CommandName == "Reopen")
                 {
-                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Pending', ResolvedAt = NULL, ResolutionNotes = 'Reopened for investigation' WHERE ReportId = @Id";
+                    string sql = "UPDATE dbo.ModerationReports SET Status = 'Pending', ResolvedAt = NULL WHERE ReportId = @Id";
                     DbHelper.ExecuteNonQuery(sql, new SqlParameter("@Id", reportId));
 
-                    litAlertMsg.Text = "Ticket has been <strong>Reopened</strong> for investigation.";
-                    pnlAlert.CssClass = "alert alert-warning py-2 small mb-3";
-                    pnlAlert.Visible = true;
+                    ShowAlert("Ticket has been <strong>Reopened</strong> for investigation.", "warning");
                     LoadReports();
                 }
             }
             catch (Exception ex)
             {
                 System.Diagnostics.Trace.TraceError("rptReports_ItemCommand error: " + ex);
-                litAlertMsg.Text = "An error occurred while updating the report status.";
-                pnlAlert.CssClass = "alert alert-danger py-2 small mb-3";
-                pnlAlert.Visible = true;
+                ShowAlert("An error occurred while updating the report status.", "danger");
             }
         }
 

@@ -242,6 +242,7 @@ BEGIN
         Priority NVARCHAR(50) NOT NULL DEFAULT 'Medium', -- High, Medium, Low
         Details NVARCHAR(MAX) NULL,
         Status NVARCHAR(100) NOT NULL DEFAULT 'Pending', -- Pending, Resolved, Dismissed
+        ResolutionNotes NVARCHAR(1000) NULL,
         CreatedAt DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
         ResolvedAt DATETIME2 NULL
     );

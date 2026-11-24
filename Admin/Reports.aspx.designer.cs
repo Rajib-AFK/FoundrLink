@@ -9,6 +9,7 @@ namespace FoundrLink.Admin
     public partial class Reports
     {
         protected global::System.Web.UI.WebControls.Panel pnlAlert;
+        protected global::System.Web.UI.WebControls.Literal litAlertIcon;
         protected global::System.Web.UI.WebControls.Literal litAlertMsg;
         protected global::System.Web.UI.WebControls.TextBox txtSearch;
         protected global::System.Web.UI.WebControls.DropDownList ddlStatusFilter;

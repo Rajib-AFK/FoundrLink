@@ -49,7 +49,7 @@
 
     <asp:Panel ID="pnlAlert" runat="server" Visible="false" CssClass="alert alert-success alert-dismissible fade show rounded-3 shadow-sm border-0" role="alert">
         <div class="d-flex align-items-center gap-2">
-            <i class="bi bi-check-circle-fill fs-5 text-success"></i>
+            <asp:Literal ID="litAlertIcon" runat="server" Text='<i class="bi bi-check-circle-fill fs-5 text-success"></i>' />
             <div><asp:Literal ID="litAlertMsg" runat="server" /></div>
         </div>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
